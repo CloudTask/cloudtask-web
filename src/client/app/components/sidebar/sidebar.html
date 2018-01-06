@@ -1,0 +1,118 @@
+<aside class="main-sidebar" #mainSidebar>
+  <section class="sidebar">
+    <ul class="sidebar-menu">
+      <li class="header">ENVIRONMENT</li>
+      <li class="select-hide">
+        <!-- <select class="form-select" style="padding-left:15px;" #selectVar (change)="selectEnv(selectVar.value)" (change)="activeSubMenu = ''"
+          [(ngModel)]="envValue">
+          <option value="DEV">DEV</option>
+          <option value="GDEV">GDEV</option>
+          <option value="GQC">GQC</option>
+          <option value="PRD">PRD</option>
+        </select> -->
+        <div class="ct-select" (click)="toggleShow($event,selectdrop)">
+          <input autocomplete="off" [(ngModel)]="envValue" size="" readonly type="text" rows="2" class="input-inner">
+            <span class="select-arror">
+              <i class="fa fa-caret-down pull-right" style="margin-right: 10px"></i><!---->
+            </span>
+        </div>
+        <div #selectdrop id="selectdrop" class="selectdrop">
+          <div class="select-drop select-poper">
+            <ul class="select-drop-list">
+              <li class="select-item" (click)="changeEnv('GDEV')">GDEV</li>
+              <li class="select-item" (click)="changeEnv('GQC')">GQC</li>
+              <li class="select-item" (click)="changeEnv('PRD')">PRD</li>
+            </ul>
+            <div class="popper-arrow" style="left: 112.5px;"></div>
+          </div>
+        </div>
+      </li>
+      <li class="header">BASIC NAVIGATION</li>
+      <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" [class.hide-border]="activeSubMenu">
+        <a [routerLink]="['/']" (click)="activeSubMenu = ''">
+          <i class="fa fa-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li routerLinkActive="active" [class.hide-border]="activeSubMenu">
+        <a [routerLink]="['/task']" (click)="activeSubMenu = ''">
+          <i class="fa fa-tasks"></i>
+          <span>Task</span>
+        </a>
+      </li>
+      <li routerLinkActive="active" [class.hide-border]="activeSubMenu" *ngIf="!config.EnableClusterMode">
+        <a [routerLink]="['/group']" (click)="activeSubMenu = ''">
+          <i class="fa fa-object-group"></i>
+          <span>Runtime</span>
+        </a>
+      </li>
+      <li routerLinkActive="active" [class.hide-border]="activeSubMenu">
+        <a [routerLink]="['/activity']" (click)="activeSubMenu = ''">
+          <i class="fa fa-rss"></i>
+          <span>Activity</span>
+        </a>
+      </li>
+      <li routerLinkActive="active" [class.hide-border]="activeSubMenu" (click)="removeTaskpageSession()">
+        <a [routerLink]="['/search-job']" (click)="activeSubMenu = ''">
+          <i class="fa fa-search"></i>
+          <span>Search job</span>
+        </a>
+      </li>
+      <li class="header">ADVANCE NAVIGATION</li>
+      <li class="treeview" #accountMenu [class.active]="activeSubMenu == 'account'">
+        <a href="javascript:void(0)" (click)="toggleSubMenu(accountMenu, 'account')">
+          <i class="fa fa-user"></i> <span>Account</span>
+          <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+          </span>
+        </a>
+        <ul class="treeview-menu" routerLinkActive="menu-open">
+          <li routerLinkActive="active">
+            <a [routerLink]="['/account', 'profile']">
+              <i class="fa fa-circle-o"></i> Profile
+            </a>
+          </li>
+          <li routerLinkActive="active">
+            <a [routerLink]="['/account', 'change-password']">
+              <i class="fa fa-lock"></i> Change Password
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="treeview" #manageMenu [class.active]="activeSubMenu == 'manage'">
+        <a href="javascript:void(0)" (click)="toggleSubMenu(manageMenu, 'manage')">
+          <i class="fa fa-cube"></i>
+          <span>Manage</span>
+          <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+          </span>
+        </a>
+        <ul class="treeview-menu" routerLinkActive="menu-open">
+          <li routerLinkActive="active">
+            <a [routerLink]="['/manage', 'runtimes']">
+              <i class="fa fa-circle-o"></i> Runtimes
+            </a>
+          </li>
+          <li routerLinkActive="active">
+            <a [routerLink]="['/manage', 'groups']">
+              <i class="fa fa-circle-o"></i> Groups
+            </a>
+          </li>
+          <li routerLinkActive="active" *ngIf="userInfo?.IsAdmin">
+            <a [routerLink]="['/manage', 'system-config']">
+              <i class="fa fa-gear"></i>
+              <span>System Config</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <a href="javascript:void(0)" class="bottom-logo flex-display">
+      <img src="./../../../static/images/logo.png" alt="">
+      <div class="text-panel">
+        <p>Cloudtask</p>
+        <p>©2016-2017</p>
+      </div>
+    </a>
+  </section>
+</aside>

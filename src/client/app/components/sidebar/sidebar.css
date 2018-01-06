@@ -1,0 +1,129 @@
+.sidebar-menu>li.active.hide-border>a {
+  background: transparent;
+  border-left-color: transparent;
+}
+
+.sidebar-menu {
+  margin-bottom: 65px;
+}
+
+.ct-select{
+  width: 100%;
+  height: 34px;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.input-inner{
+  height: 100%;
+  padding: 0 15px;
+  color: #fff;
+  background-color: #222d32;
+  border: none;
+  cursor: pointer;
+}
+
+.select-arror{
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  margin-top: -7px;
+  color: #fff;
+}
+#selectdrop .select-drop{
+  /* display: none; */
+  opacity: 0;
+  transition: opacity .2s;
+  -webkit-transition: opacity .2s;
+  -moz-transition: opacity .2s;
+  -ms-transition: opacity .2s;
+}
+#selectdrop.active .select-drop{
+  opacity: 1;
+  position: absolute;
+  left: 50%;
+  margin: 5px 0 5px -75px;
+  width: 150px;
+  transform-origin: center top 0px;
+  z-index: 2034;
+  color: #fff;
+  border: 1px solid #000;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #424d52;
+  display: inline-block;
+}
+
+.select-drop-list{
+  display: none;
+}
+
+.active .select-drop-list{
+  display: block;
+  list-style: none;
+  padding: 6px 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.active .select-item{
+  font-size: 14px;
+  padding: 0 20px;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #b8c7ce;
+  height: 34px;
+  line-height: 34px;
+  box-sizing: border-box;
+  cursor: pointer;
+
+}
+
+.active .select-item:hover{
+  background-color: #3b474c;
+  color: #fff;
+}
+
+.active .select-poper{
+  margin-right: 3px;
+  border-top-width: 0;
+}
+
+.active .popper-arrow{
+  width:0;
+  height:0;
+  border-style: solid;
+  border-width: 8px;
+  border-color: transparent transparent #424d52 transparent;
+  position: absolute;
+  top: -16px;
+  transform: translateX(-600%);
+}
+
+.bottom-logo {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px 5px;
+  background: #222d32;
+  align-items: center;
+  color: white;
+}
+
+.bottom-logo > img {
+  width: 40px;
+  height: 40px;
+  margin-right: initial;
+}
+
+.bottom-logo p {
+  white-space: nowrap;
+  margin: 0;
+}
+
+.bottom-logo .text-panel {
+  margin-left: 10px;
+}

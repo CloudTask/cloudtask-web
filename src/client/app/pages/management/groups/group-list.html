@@ -1,0 +1,135 @@
+<section class="content">
+  <div class="box no-border">
+    <div class="box-body">
+      <div class="flex-display">
+        <div class="input-group input-group-sm" style="width: 170px;">
+          <span class="input-group-addon">Runtime</span>
+          <select class="form-control" [value]="" [ngModel]="runtimeValue" (ngModelChange)="selectRuntime($event)">
+              <option [value]="">All</option>
+              <option *ngFor="let location of locations" [value]="location">{{ location }}</option>
+          </select>
+        </div>
+        <div class="form-group form-group-sm has-feedback flex-1">
+          <input autocomplete="off" class="form-control" name="filterCondition" placeholder="Enter key word" type="text" [ngModel]="filterCondition"
+            (ngModelChange)="search($event)">
+          <span class="fa fa-search form-control-feedback"></span>
+        </div>
+        <div class="form-group" *ngIf="userInfo?.IsAdmin">
+          <a href="javascript:void(0)" class="btn btn-sm btn-flat bg-olive" (click)="addNewGroup($event)">
+              <i class="fa fa-plus"></i> Add Group
+          </a>
+        </div>
+      </div>
+      <div class="alert alert-info" *ngIf="!filterGroups?.length">
+        <i class="fa-fw fa fa-info"></i>
+        <span>No groups found</span>
+      </div>
+      <table class="table table-bordered table-hover dataTable" role="grid" *ngIf="filterGroups.length>0">
+        <thead>
+          <tr role="row">
+            <th>Runtime</th>
+            <th>Group</th>
+            <th>EditUser</th>
+            <th>EditDate</th>
+            <th *ngIf="showOperate"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of currentGroups;let i = index">
+            <td>{{ item.location }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.edituser }}</td>
+            <td>{{ item.editat | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+            <td *ngIf="item.isOwner || userInfo?.IsAdmin" class="text-center">
+              <a href="javascript:void(0)" (click)="selectGroup(i)" class="margin-right-10">
+                <i class="fa fa-pencil"></i>
+              </a>
+              <a href="javascript:void(0)" (click)="deleteGroup(i)">
+                <i class="fa fa-close text-danger"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box-footer" *ngIf="filterGroups.length > 0">
+      <hb-pagination [totalCount]="filterGroups.length" [pageSize]="pageSize" [maxSize]="10" [options]="pageOptions" [currentIndex]="currentIndex"
+        (onSelectPage)="setPage($event)">
+      </hb-pagination>
+    </div>
+  </div>
+  <!--modal -->
+  <hb-modal [options]="groupInfoModal">
+    <form novalidate (ngSubmit)="save()" [formGroup]="groupForm" *ngIf="groupForm">
+      <div class="form-group row" [class.has-error]="submitted && !groupForm.controls.groupLocation.value">
+        <label class="col-md-1 control-label text-right">Runtime</label>
+        <div class="col-md-5">
+          <select id="runtimeInput" formControlName="groupLocation" type="text" class="form-control">
+              <option value="">Select Runtime</option>
+              <option [value]="group.location" *ngFor="let group of groups">{{ group.location }}</option>
+          </select>
+          <div *ngIf="submitted && !groupForm.controls.groupLocation.value">
+            <span class="help-block" *ngIf="!groupForm.controls.groupLocation.value">Please select Runtime.</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row" [class.has-error]="submitted && groupForm.controls.groupName.invalid">
+        <label class="col-md-1 control-label text-right">Group</label>
+        <div class="col-md-5">
+          <input formControlName="groupName" type="text" class="form-control" required>
+          <div *ngIf="submitted && groupForm.controls.groupName.invalid">
+            <span class="help-block" *ngIf="groupForm.controls.groupName.errors?.required">Group name cannot be empty.</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row" [class.has-error]="(submitted && !owner?.length) || groupForm.controls.groupOwners.errors?.pattern">
+        <label class="col-md-1 control-label text-right">Owners</label>
+        <div class="col-md-5">
+          <!--<select2 [data]="groupSelected.owners" [value]="groupSelected.owners" (valueChanged)="refreshSelectedUser($event)" [cssImport]="false"
+                            [width]="'100%'" [options]="ownerSelect2Options"></select2>-->
+          <!--<input class="select2-search__field" style="width: 0.75em;" formControlName="groupOwners" [value]="groupSelected.owners" type="text" class="form-control" (keyup)="a($event)"  (valueChanged)="refreshSelectedUser($event)" required> -->
+          <span class="select2 select2-container select2-container--default" dir="ltr" style="width: 100%;">
+            <span class="selection">
+              <span class="select2-selection select2-selection--multiple" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1">
+                <ul class="select2-selection__rendered">
+                    <li class="select2-selection__choice" *ngFor="let item of owner;let i = index" >
+                        <span class="select2-selection__choice__remove" role="presentation" (click)="removeOwner(i)">×</span>
+                        {{ item }}
+                    </li>
+                    <li class="select2-search select2-search--inline">
+                      <input formControlName="groupOwners" #input [value]="" class="select2-search__field" type="search" tabindex="0" autocomplete="off"
+                        autocorrect="off" autocapitalize="off" spellcheck="false" role="textbox" aria-autocomplete="list" placeholder=""
+                        (keyup)="onKeyUp(input.value)" style="width: 3em;" maxlength="4" pattern="^[0-9a-z]{0,4}$">
+                    </li>
+                  </ul>
+              </span>
+            </span>
+            <span class="dropdown-wrapper" aria-hidden="true"></span>
+          </span>
+          <div>
+            <span class="help-block" *ngIf="groupForm.controls.groupOwners.errors?.pattern">Owners cannot contain any special symbol.</span>
+            <span class="help-block" *ngIf="submitted && !owner?.length">Owners cannot be empty.</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <hb-modal-footer>
+          <button type="button" class="btn btn-default btn-flat" (click)="groupInfoModal.show = fasle">Cancel</button>
+          <button class="btn btn-success btn-flat">Save</button>
+        </hb-modal-footer>
+      </div>
+    </form>
+  </hb-modal>
+  <hb-modal [options]="deleteGroupModalOptions">
+    <h4>
+      This group has <span class="text-danger">{{ jobNum }}</span> jobs, this operate will delete all jobs in this group.
+      Are you sure?
+    </h4>
+    <div class="modal-footer">
+      <hb-modal-footer>
+        <button type="button" class="btn btn-default btn-flat" (click)="deleteGroupModalOptions.show = fasle">Cancel</button>
+        <button type="button" class="btn btn-success btn-flat" (click)="confirmDelete(currentGroupLocation, currentGroupId)">Ok</button>
+      </hb-modal-footer>
+    </div>
+  </hb-modal>
+</section>

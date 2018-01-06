@@ -1,0 +1,8 @@
+.notify-hr{
+    border-top: 1px solid #a9a9a9;
+    margin: 10px 0;
+}
+
+.form-group .form-control{
+    height: auto;
+}

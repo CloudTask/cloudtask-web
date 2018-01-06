@@ -1,0 +1,77 @@
+<div class="dashboard">
+  <section class="content-header">
+    <h1> Dashboard </h1>
+  </section>
+  <section class="content">
+    <div class="row">
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-aqua">
+            <i class="fa fa-object-group"></i>
+          </span>
+          <div class="info-box-content">
+            <span class="info-box-text">Total Groups</span>
+            <span class="info-box-number">{{ this.countInfo.groupcount }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-aqua" style="background-color: darkgoldenrod !important">
+            <i class="fa fa-server"></i>
+          </span>
+          <div class="info-box-content">
+            <span class="info-box-text">Total Servers</span>
+            <span class="info-box-number">{{ this.countInfo.totalserver }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-yellow" style="background-color: steelblue !important;">
+            <i class="fa fa-cubes"></i>
+          </span>
+          <div class="info-box-content">
+            <span class="info-box-text">Total Jobs</span>
+            <span class="info-box-number">{{ this.countInfo.totaljob }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-green">
+            <i class="fa fa-cog fa-spin fa-fw"></i>
+          </span>
+          <div class="info-box-content">
+            <span class="info-box-text">Alive Jobs</span>
+            <span class="info-box-number">{{ this.countInfo.alivejob }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="box box-widget">
+          <div class="box-header with-border">
+            <h3 class="box-title">Activity</h3>
+          </div>
+          <div class="box-body box-comments">
+            <div class="alert alert-info" *ngIf="logs?.length == 0 && !systemConfig?.TopNews">
+              No activities.
+            </div>
+            <div class="box-comment" *ngFor="let log of logs;">
+              <img src="{{'http://apis.newegg.org/common/v1/domain/user/'+ log.userid +'/avatar'}}" class="img-circle img-sm">
+              <div class="comment-text">
+                <span class="username">
+                  {{ log.fullname || log.userid }}
+                  <span class="text-muted pull-right">{{ log.indate | relativeTime }}</span>
+                </span>
+                {{ log.content | upperFirstWord }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

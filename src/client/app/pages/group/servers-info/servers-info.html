@@ -1,0 +1,76 @@
+<div class="group-wrapper" [class.hidden]="!groups?.length">
+  <div class="group-tree-panel" *ngIf="groups?.length > 0">
+    <div #groupTreePanel>
+      <ul class="group-tree">
+        <li class="treeview" *ngFor="let group of groups,let i = index" [class.active]="i == selectedGroupId">
+          <a *ngIf="group.location" (click)="selectNode(i)">
+            <span>{{ group.location }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="routerOutlet" *ngIf="selectedGroupId + 1">
+    <section class="content-header">
+      <h1> Servers Info <i class="fa fa-info-circle" style="cursor: pointer;" (click)="showAssignTable()"></i></h1>
+      <hb-modal [options]="assignTableModalOptions">
+        <div class="form-group form-group-sm has-feedback flex-1">
+          <input type="text" class="form-control" autocomplete="off" placeholder="Enter key word" name="serverInfo" [(ngModel)]="serverInfo"
+            (ngModelChange)="serverInfoChange($event)">
+          <span class="fa fa-search form-control-feedback"></span>
+        </div>
+        <table class="table table-hover" *ngIf="filterJobs?.length > 0">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Job Name</th>
+              <th>Job ID</th>
+              <th>Version</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of filterJobs;">
+              <td>{{ item.name }}</td>
+              <td>{{ item.jobname }}</td>
+              <td>{{ item.jobid }}</td>
+              <td>{{ item.version }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="alert alert-info" *ngIf="!filterJobs?.length">
+          <i class="fa-fw fa fa-info"></i>
+          <span>No servers info</span>
+        </div>
+      </hb-modal>
+    </section>
+    <section class="content">
+      <div class="box no-border" *ngIf="currentGroups.length > 0">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Server Id</th>
+              <th>IP</th>
+              <th>OS</th>
+              <th>Platform</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of currentGroups;">
+              <td>{{ item.name }}</td>
+              <td>{{ item.key }}</td>
+              <td>{{ item.ipaddr }}</td>
+              <td><i class="fa fa-windows" [class.fa-linux]="item.os == 'linux'"></i> {{ item.os }}</td>
+              <td>{{ item.platform }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="alert alert-info" *ngIf="!currentGroups?.length">
+        <i class="fa-fw fa fa-info"></i>
+        <span>No servers info</span>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+<div class="group-wrapper" *ngIf="locations?.length > 0 && hasOwnerGroup">
+  <div class="group-tree-panel" #secondSidebar>
+    <div class="sidebar" #groupTreePanel>
+      <ul class="group-tree">
+        <li class="treeview" *ngFor="let item of locations;let numIndex = index" [class.active]="numIndex == selectedGroupId">
+          <a (click)="toggleMenus(numIndex)">
+            <span>{{ item.location }}</span>
+            <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+          </span>
+          </a>
+          <ul class="treeview-menu menu-open" [@groupMenuState]="numIndex == selectedGroupId ? 'active' : 'inactive'">
+            <li [hb-router-active]="{'url':'/task/'+groupArr.location+'/'+group.id+'/', 'cls': 'active'}" *ngFor="let group of ownerGroups[selectedGroupId];let i = index">
+              <a [routerLink]="['/task', groupArr.location, group.id, 'overview']" (click)="showGroupSelect(i)">
+                <i class="fa fa-circle-o"></i>{{ group.name }}
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="routerOutlet">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+<section class="content" *ngIf="!locations?.length && !hasOwnerGroup">
+  <div class="alert alert-info">
+    <i class="fa-fw fa fa-info"></i>
+    <span>There is no group belongs to you</span>
+  </div>
+</section>

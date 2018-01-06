@@ -1,0 +1,13 @@
+/*.color-primary{
+    color: #3c8dbc;
+}
+
+.tr-selected{
+    color: #fff;
+    background-color: #3c8dbc;
+}
+
+.box-body>.table-hover>tbody>.tr-selected:hover{
+    color: #fff;
+    background-color: #428bca !important;
+}*/

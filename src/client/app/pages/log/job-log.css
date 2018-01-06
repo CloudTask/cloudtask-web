@@ -1,0 +1,43 @@
+table{
+  border-collapse: separate !important;
+}
+
+.img-sm, .box-comments .box-comment img, .user-block.user-block-sm img {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.box-comments .comment-text {
+  margin-left: 50px;
+}
+
+.box-comment:hover {
+  background-color: rgba(0, 0, 0, .05);
+}
+
+.tr-detail{
+  display: table-row !important;
+  text-align: center;
+}
+
+.tr-row{
+  cursor: pointer;
+}
+
+.detail-box{
+  padding: 10px;
+  box-shadow: 1px 1px 10px 1px #a9a9a9;
+  word-wrap: break-word;
+  white-space: normal;
+  display: inline-block;
+  width: 100%;
+  text-align: left;
+}
+
+.detail-box .row{
+  margin: 10px 0;
+}
+
+.detail-box .row .col-sm-2{
+  text-align: right;
+}

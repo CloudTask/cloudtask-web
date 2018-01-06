@@ -1,0 +1,176 @@
+<div class="routerOutlet">
+  <section class="content-header">
+    <h1> Job List
+      <small>
+      ({{ groupName}} / {{ location }})
+    </small>
+    </h1>
+  </section>
+
+  <section class="content-header">
+    <!--<div class="form-group">
+      <a [routerLink]="['/task', location, groupId, 'new-job']" class="btn btn-sm btn-flat bg-olive">
+        <i class="fa fa-plus"></i> Create New Job
+      </a>
+      <a class="btn btn-sm btn-flat bg-aqua" [routerLink]="['/task', location, groupId, 'import']">
+        <i class="fa fa-reply"></i> Import
+      </a>
+      <a class="btn btn-sm btn-flat bg-gray" (click)="showUpdateModal()">
+        <i class="fa fa-upload"></i> Batch Update File
+      </a>
+      <a class="btn btn-sm btn-flat bg-gray" (click)="fresh()">
+        <i class="fa fa-refresh"></i>
+      </a>
+    </div>-->
+    <!--modal-->
+    <hb-modal [options]="batchUpdateModalOptions">
+      <div class="form-group">
+        <label class="control-label">Select Jobs</label>
+        <select class="form-control" id="selectJobs" multiple="multiple">
+          <option value="{{allJobNames}}" *ngIf="jobs.length > 1" [disabled]="selectArr.length && !isAllJob">--All jobs--</option>
+          <option value="{{job.name}}" *ngFor="let job of jobs" [disabled]="selectArr.length && isAllJob">{{job.name}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="control-label">File</label>
+        <div class="form-control" style="display:inline-table;">
+          <input type="file" accept="application/gzip, .gz" name="" value="" style="outline: none;width: 100%;cursor: pointer;" #fileName
+            (change)="fileNameChange($event)">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <hb-modal-footer>
+          <button type="button" class="btn btn-default btn-flat" (click)="cacelBatchUpdate()">Cancel</button>
+          <button id="confirmButton" type="button" class="btn btn-success btn-flat" [disabled]="!jobNames?.length" (click)="confirmBatchUpdate()">Ok</button>
+        </hb-modal-footer>
+      </div>
+    </hb-modal>
+  </section>
+  <section class="content">
+    <div class="box no-border">
+      <div class="box-body">
+        <div class="flex-display">
+          <div class="input-group input-group-sm" style="width: 170px;">
+            <span class="input-group-addon">Status</span>
+            <select class="form-control" #selectVar (change)="filterJobStat(selectVar.value, true)" [(ngModel)]="currentStat">
+              <option value="all">All</option>
+              <option value="running">running</option>
+              <option value="disabled">disabled</option>
+              <option value="idle">idle</option>
+              <option value="reallocating">reallocating</option>
+              <option value="failed">failed</option>
+            </select>
+          </div>
+          <div class="form-group form-group-sm has-feedback flex-1">
+            <input type="text" class="form-control" form-control autocomplete="off" placeholder="Enter key word" name="jobFilter" [(ngModel)]="jobFilter"
+              (ngModelChange)="jobFilterChange($event)">
+            <span class="fa fa-search form-control-feedback"></span>
+          </div>
+          <div class="form-group form-group-sm margin-bottom-10">
+            <a class="btn btn-sm btn-flat bg-gray" (click)="fresh()">
+              <i class="fa fa-refresh"></i> Refresh
+            </a>
+            <a [routerLink]="['/task', location, groupId, 'new-job']" class="btn btn-sm btn-flat bg-olive">
+              <i class="fa fa-plus"></i> Add New Job
+            </a>
+            <a class="btn btn-sm btn-flat bg-aqua" [routerLink]="['/task', location, groupId, 'import']">
+              <i class="fa fa-reply"></i> Import
+            </a>
+            <a class="btn btn-sm btn-flat bg-gray" (click)="showUpdateModal()">
+              <i class="fa fa-upload"></i> Batch Update File
+            </a>
+          </div>
+        </div>
+        <table class="table table-hover table-bordered" *ngIf="filterJobs?.length > 0">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Job Name</th>
+              <th>Next Run Time</th>
+              <th>Last Run Time</th>
+              <th>Last Result</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="tr-row" *ngFor="let job of currentJobs;let i = index; let last = last; let first = first;">
+              <td style="text-align: center;">
+                <!--<i class="fa fa-2x fa-stop" style="color: rgb(160, 160, 160);" title="Disabled" *ngIf="!job.enabled"></i>
+                <i class="fa fa-2x fa-hourglass-2" style="color: #FE9A76" title="Idle" *ngIf="job.enabled && job.stat == 0"></i>
+                <i class="fa fa-2x fa-times-circle" style="color: tomato" [title]="job.execerr" *ngIf="job.enabled && job.stat == -1"></i>
+                <i class="fa fa-2x fa-play-circle-o" style="color: yellowgreen;" title="Executing" *ngIf="job.enabled && job.stat == 200"></i>
+                <i class="fa fa-2x fa-refresh text-success" title="" *ngIf="job.enabled && job.stat == 202"></i>-->
+                <span class="label label-success" *ngIf="job.enabled && job.stat == 200">Running</span>
+                <span class="label label-default" *ngIf="!job.enabled">Disabled</span>
+                <span class="label label-warning" *ngIf="job.enabled && job.stat == 0">Idle</span>
+                <span class="label label-primary" *ngIf="job.enabled && job.stat == 202">Reallocating</span>
+                <span class="label label-danger" [title]="job.execerr" *ngIf="job.enabled && job.stat == -1">Failed</span>
+              </td>
+              <td class="container-name">
+                <a [routerLink]="['/task', location, groupId, 'detail', job.jobid]" style="display:inline-block;max-width:380px;word-wrap:break-word;">
+                  {{ job.name }}
+                </a>
+              </td>
+              <td>{{ job.nextat | date:'yyyy/MM/dd HH:mm:ss' }}</td>
+              <td>{{ job.execat | date:'yyyy/MM/dd HH:mm:ss' }}</td>
+              <td>
+                <span *ngIf="job.execerr == '' && job.execat">Successed</span>
+                <span *ngIf="!job.execerr == '' && job.execat">Failed</span>
+              </td>
+              <td class="operate" style="text-align: center;">
+                <div class="btn-group operate" [class.dropup]="last && !first">
+                  <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+                    <i class="fa fa-wrench"></i>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li>
+                      <a href="javascript:void(0)" *ngIf="job.enabled && job.stat != 200 && job.stat != 202" (click)="activeJob(job.location, job.jobid, job.stat, job.name)">
+                        <i class="fa fa-refresh text-success"></i> Start
+                      </a>
+                      <a href="javascript:void(0)" *ngIf="job.enabled && job.stat == 200" (click)="activeJob(job.location, job.jobid, job.stat, job.name)">
+                        <i class="fa fa-refresh" style="color: yellowgreen;"></i> Stop
+                      </a>
+                    </li>
+                    <li *ngIf="job.stat != 200">
+                      <a href="javascript:void(0)" (click)="changeEnabled(i, job.name)">
+                        <span *ngIf="job.enabled && job.stat != 200">
+                          <i class="fa fa-stop"></i> Disable
+                        </span>
+                        <span *ngIf="!job.enabled && job.stat != 200">
+                          <i class="fa fa-stop" style="color: tomato"></i> Enabled
+                        </span>
+                      </a>
+                    </li>
+                    <li>
+                      <a [routerLink]="['/task', location, groupId, 'detail', job.jobid, 'job-log']">
+                        <span>
+                          <i class="fa fa-file-text-o"></i> Logs
+                        </span>
+                      </a>
+                    </li>
+                    <li *ngIf="job.filename">
+                      <a href="javascript:void(0)" (click)="downloadFile(job.filename)">
+                        <span>
+                          <i class="fa fa-download"></i> Download file
+                        </span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="box-footer clearfix">
+        <hb-pagination [totalCount]="filterJobs.length" [pageSize]="pageSize" [currentIndex]="jobPageIndex" [maxSize]="10" [options]="jobPageOption"
+          (onSelectPage)="setJobPage($event)" *ngIf="filterJobs?.length > 0">
+        </hb-pagination>
+      </div>
+    </div>
+    <div class="alert alert-info" *ngIf="!filterJobs || filterJobs.length == 0">
+      <i class="fa-fw fa fa-info"></i>
+      <span>No jobs found.</span>
+    </div>
+  </section>
+</div>

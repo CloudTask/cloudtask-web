@@ -1,0 +1,125 @@
+import { Injectable } from '@angular/core';
+import { Router, CanActivate, CanActivateChild, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { AuthService } from './auth.service';
+import { GroupService } from './group.service';
+import { CusHttpService } from './custom-http.service';
+
+declare let ConfAddress: any;
+declare let Config: any;
+
+@Injectable()
+export class IsLogin implements CanActivate {
+  constructor(
+    private _http: CusHttpService,
+    private _router: Router,
+    private _authService: AuthService) {
+
+  }
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this._authService.isLogin()
+        .then(result => {
+          // if (localStorage.getItem('ConfEnvValue')) {
+          //   ConfAddress = localStorage.getItem('ConfAddress');
+          // } else {
+          //   ConfAddress = Config.Gdev;
+          // }
+          this._http.get('/api/transferEnv')
+            .then(res => {
+              let resData = res.json() ? res.json() : res;
+              if (resData.CurrentAddress) {
+                ConfAddress = resData.CurrentAddress;
+              } else {
+                ConfAddress = Config.Gdev;
+              }
+              if (!result || result == null) {
+                this._router.navigate(['/login', { returnUrl: state.url }]);
+                // if (localStorage.getItem('token')) {
+                //   localStorage.removeItem('token');
+                // }
+                this._http.get('api/users/getToken')
+                  .then(res => {
+                    if (res) {
+                      let postToken = JSON.stringify({ token: '' })
+                      this._http.post('api/users/setToken', postToken)
+                        .then(res => {
+
+                        })
+                        .catch(err => console.log(err))
+                    }
+                  })
+                  .catch(err => console.log(err))
+                return resolve(false);
+              }
+              if (route.data['Admin'] && !result.IsAdmin) {
+                this._router.navigate(['/401']);
+                return resolve(false);
+              }
+              // this._http.get('/api/transferEnv')
+              //   .then((res) => {
+              //     console.log(res);
+              //     ConfAddress = res;
+              //   })
+              resolve(true);
+            })
+            .catch(err => console.log(err))
+        })
+        .catch(err => {
+          this._router.navigate(['/401']);
+          resolve(false);
+        });
+    });
+  }
+
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this._authService.isLogin()
+        .then(result => {
+          if (!result) {
+            this._router.navigate(['/login', { returnUrl: state.url }]);
+            return resolve(false);
+          }
+          if (route.data['Admin'] && !result.IsAdmin) {
+            this._router.navigate(['/401']);
+            return resolve(false);
+          }
+          resolve(true);
+        })
+        .catch(err => {
+          this._router.navigate(['/401']);
+          resolve(false);
+        });
+    });
+  }
+}
+
+@Injectable()
+export class IsGroupOwner implements CanActivateChild {
+  constructor(
+    private _router: Router,
+    private _groupService: GroupService) {
+
+  }
+
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+    let groupId = route.params['groupId'];
+    return new Promise((resolve, reject) => {
+      let type = route.data['GroupType'] || route.parent.data['GroupType'] || 'normal';
+      this._groupService.get(false, type)
+        .then(data => {
+          data = data || [];
+          let groupIds = data.map((item: any) => item.ID);
+          if (groupIds.indexOf(groupId) === -1) {
+            this._router.navigate(['/401']);
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        })
+        .catch(err => {
+          resolve(false);
+        });
+    });
+  }
+}

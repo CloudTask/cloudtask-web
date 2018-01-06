@@ -1,0 +1,56 @@
+<div class="routerOutlet">
+  <section class="content-header">
+    <h1> Search Job</h1>
+  </section>
+  <section class="content">
+    <div class="search-panel">
+        <form method="get" class="search-input" novalidate="">
+          <input type="text" class="form-control" name="keyword" autocomplete="off" placeholder="Search job by name" required="" [(ngModel)]="inputValue">
+          <button type="submit" class="btn btn-success btn-flat" (click)="validateDocSearch(inputValue)">
+            <i class="fa fa-search"></i> Search
+          </button>
+        </form>
+      </div>
+    <div class="box no-border" *ngIf="filterJobs.length > 0">
+      <div class="box-body">
+        <table class="table table-hover table-bordered">
+          <thead>
+            <tr>
+              <th>Runtime</th>
+              <th>Group</th>
+              <th>Job name</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="tr-row" *ngFor="let job of currentJobs;let i = index; let last = last; let first = first;">
+              <td>{{ job.location }}</td>
+              <td>{{ job.groupName }}</td>
+              <td class="container-name">
+                <a [routerLink]="['/task', job.location, job.groupid, 'detail', job.jobid]" (click)="removeTaskpageSession()" style="display:inline-block;max-width:380px;word-wrap:break-word;">
+                  {{ job.name }}
+                </a>
+              </td>
+              <td>
+                <span class="label label-success" *ngIf="job.enabled && job.stat == 200">Running</span>
+                <span class="label label-default" *ngIf="!job.enabled">Disabled</span>
+                <span class="label label-warning" *ngIf="job.enabled && job.stat == 0">Idle</span>
+                <span class="label label-primary" *ngIf="job.enabled && job.stat == 202">Reallocating</span>
+                <span class="label label-danger" [title]="job.execerr" *ngIf="job.enabled && job.stat == -1">Failed</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="box-footer clearfix">
+        <hb-pagination [totalCount]="filterJobs.length" [pageSize]="pageSize" [currentIndex]="jobPageIndex" [maxSize]="10" [options]="jobPageOption"
+          (onSelectPage)="setJobPage($event)" *ngIf="filterJobs?.length > 0">
+        </hb-pagination>
+      </div>
+    </div>
+    <div class="alert alert-info" *ngIf="filterJobs.length == 0">
+      <i class="fa-fw fa fa-info"></i>
+      <span>No jobs found.</span>
+    </div>
+  </section>
+</div>

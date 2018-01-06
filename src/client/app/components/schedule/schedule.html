@@ -1,0 +1,142 @@
+<hb-modal [options]="options">
+    <form novalidate (ngSubmit)="save()" [formGroup]="scheduleForm" *ngIf="scheduleForm">
+        <div class="form-group row">
+            <div class="col-md-6">
+                <span class="control-label col-md-3 text-right">Type</span>
+                <div class="input-group">
+                    <select class="form-control" formControlName="Type" (change)="changeType(scheduleForm.value.Type)">
+                        <option value="2">Minutes</option>
+                        <option value="3">Hours</option>
+                        <option value="4">Days</option>
+                        <option value="5">Weeks</option>
+                        <option value="6">Months</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row" *ngIf="scheduleForm.value.Type != '6'">
+            <div class="col-md-6">
+                <span class="control-label col-md-3 text-right">Every</span>
+                <div class="input-group">
+                    <input type="number" min="1" class="form-control" value="1" formControlName="Every">
+                    <div class="input-group-btn">
+                        <input formControlName="SelectTypeName" type="button" class="btn btn-defualt" value="scheduleForm.value.Type">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-6">
+                <span class="control-label col-md-3 text-right">Start Time</span>
+                <div class="input-group">
+                    <input formControlName="StartTime" type="text" class="form-control timepicker" [value]="startTimeValue" [(ngModel)]="startTimeValue"
+                        ct-time-picker (click)="showTimePicker()">
+                    <div class="input-group-addon">
+                        <i class="fa fa-clock-o"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" *ngIf="scheduleForm.value.Type == '2' || scheduleForm.value.Type == '3'">
+                <span class="control-label col-md-3 text-right">End Time</span>
+                <div class="input-group">
+                    <input formControlName="EndTime" type="text" class="form-control timepicker" [value]="endTimeValue" [(ngModel)]="endTimeValue"
+                        ct-time-picker (click)="showTimePicker()">
+                    <div class="input-group-addon">
+                        <i class="fa fa-clock-o"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row" *ngIf="scheduleForm.value.Type == '5'">
+            <div class="col-md-12">
+                <span class="control-label col-md-3 text-right">At</span>
+                <div class="input-group">
+                    <span class="checkbox" *ngFor="let day of weekdays; let i = index">
+                        <label>
+                            <input type="checkbox" [value]="i" name="notifySuccess" [checked]="selectedDays.indexOf(i) > -1" (click)="toggleSelection(i)">
+                            {{ day }}
+                        </label>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="month-type" *ngIf="scheduleForm.value.Type == '6'">
+            <div class="form-group row">
+                <div class="col-md-7">
+                    <label class="control-label col-md-3 text-right">On</label>
+                    <div style="display: flex; flex-direction: column;">
+                        <div class="flex-layout">
+                            <input formControlName="MonthType" type="radio" name="MonthType" value="day" [checked]="scheduleForm.value.Type == '6'" (click)="choseMonthly('day')">
+                            <label>The</label>
+                            <select formControlName="MonthlyDaySeq" class="form-control value-box day-value">
+                                <option value="first">First</option>
+                                <option value="last">Last</option>
+                            </select>
+                            <input type="number" min="1" class="form-control value-box day-value" formControlName="MonthlyDays">
+                            <label class="control-label">of the month(s)</label>
+                        </div>
+                        <div class="flex-layout" style="margin-top: 10px">
+                            <input formControlName="MonthType" type="radio" name="MonthType" value="week" (click)="choseMonthly('week')">
+                            <label>Day</label>
+                            <select class="form-control value-box week-value" formControlName="MonthlyWeekSeq">
+                                <option value="1">First</option>
+                                <option value="2">Second</option>
+                                <option value="3">Third</option>
+                                <option value="4">Fourth</option>
+                                <option value="0">Last</option>
+                            </select>
+                            <select class="form-control value-box week-value" formControlName="MonthlyWeekdays">
+                                <option [value]="i" *ngFor="let weekday of weekdays;let i = index" >{{ weekday }}</option>
+                            </select>
+                            <label class="control-label">of the month(s)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-12 flex-layout">
+                    <label class="control-label col-md-3 text-right">At</label>
+                    <div class="month-checks">
+                        <span class="checkbox" *ngFor="let month of months;let i = 'index + 1'">
+                            <label>
+                                <input type="checkbox" name="notifySuccess" [checked]="selectedMonths.indexOf(i) > -1" (click)="toggleSelectionMonth(i)">
+                                {{ month }}
+                            </label>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group row">
+            <div class="col-md-6">
+                <span class="control-label col-md-3 text-right">Start Date</span>
+                <div class="input-group">
+                    <input formControlName="StartDate" type="text" class="form-control" [value]="startDateValue" [(ngModel)]="startDateValue"
+                        ct-date-picker>
+                    <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <span class="control-label col-md-3 text-right">End Date</span>
+                <div class="input-group">
+                    <input formControlName="EndDate" type="text" class="form-control" [value]="endDateValue" [(ngModel)]="endDateValue" ct-date-picker>
+                    <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                    <div type="button" class="input-group-addon" (click)="emptyEndDate()">
+                        <i class="fa fa-trash"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <hb-modal-footer>
+                <button type="button" class="btn btn-default btn-flat" (click)="close()">Cancel</button>
+                <button type="submit" class="btn btn-success btn-flat">Ok</button>
+            </hb-modal-footer>
+        </div>
+    </form>
+</hb-modal>

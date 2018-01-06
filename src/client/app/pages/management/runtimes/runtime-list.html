@@ -1,0 +1,69 @@
+<section class="content">
+  <div class="box no-border">
+    <div class="box-body">
+      <div class="flex-display">
+        <div class="input-group input-group-sm" style="width: 170px;">
+          <span class="input-group-addon">Runtime</span>
+          <select class="form-control" [value]="" [ngModel]="runtimeValue" (ngModelChange)="selectRuntime($event)">
+              <option [value]="">All</option>
+              <option *ngFor="let item of runtimes" [value]="item.location">{{ item.location }}</option>
+          </select>
+        </div>
+        <div class="form-group form-group-sm has-feedback flex-1">
+          <input autocomplete="off" class="form-control" name="filterCondition" placeholder="Enter key word" type="text" [ngModel]="filterCondition"
+            (ngModelChange)="search($event)">
+          <span class="fa fa-search form-control-feedback"></span>
+        </div>
+        <div class="form-group" *ngIf="userInfo?.IsAdmin">
+          <a href="javascript:void(0)" class="btn btn-sm btn-flat bg-olive" (click)="addNewRuntime($event)">
+              <i class="fa fa-plus"></i> Add Runtime
+          </a>
+        </div>
+      </div>
+      <div class="alert alert-info" *ngIf="!filterRuntimes?.length">
+        <i class="fa-fw fa fa-info"></i>
+        <span>No runtime found</span>
+      </div>
+      <table class="table table-bordered table-hover dataTable" role="grid" *ngIf="filterRuntimes.length>0">
+        <thead>
+          <tr role="row">
+            <th>Runtime</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of currentRuntimes;let i = index">
+            <td>{{ item.location }}</td>
+            <td class="text-center">
+              <a href="javascript:void(0)" (click)="modifyRuntime(i)" class="margin-right-10">
+                <i class="fa fa-pencil"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box-footer" *ngIf="filterRuntimes.length > 0">
+      <hb-pagination [totalCount]="filterRuntimes.length" [pageSize]="pageSize" [maxSize]="10" [options]="pageOptions" [currentIndex]="currentIndex"
+        (onSelectPage)="setPage($event)">
+      </hb-pagination>
+    </div>
+  </div>
+  <!--modal -->
+  <hb-modal [options]="runtimeInfoModal">
+    <form novalidate (ngSubmit)="save()" [formGroup]="runtimeForm" *ngIf="runtimeForm">
+      <div class="form-group row" [class.has-error]="submitted && !runtimeForm.controls.runtimeLocation.value">
+        <label class="col-md-1 control-label text-right">Runtime</label>
+        <div class="col-md-5">
+          <input formControlName="runtimeLocation" type="text" class="form-control">
+        </div>
+      </div>
+      <div class="modal-footer">
+          <hb-modal-footer>
+            <button type="button" class="btn btn-default btn-flat" (click)="runtimeInfoModal.show = fasle">Cancel</button>
+            <button class="btn btn-success btn-flat">Save</button>
+          </hb-modal-footer>
+        </div>
+    </form>
+  </hb-modal>
+</section>

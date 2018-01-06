@@ -1,0 +1,29 @@
+.show.modal {
+  overflow-y: auto;
+}
+
+.modal {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modal-dialog {
+  width: 900px;
+  /*height: calc(100% - 60px);*/
+}
+
+.modal-content {
+  max-height: 100%;
+}
+
+.modal-header {
+  border-bottom-color: #e5e5e5;
+}
+
+.modal-body {
+  max-height: calc(100vh - 181px);
+  overflow-y: auto;
+}
+
+.modal-footer {
+  border-top-color: #e5e5e5;
+}

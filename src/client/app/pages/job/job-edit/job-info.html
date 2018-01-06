@@ -1,0 +1,346 @@
+<div class="routerOutlet">
+  <section class="content-header">
+    <h1 *ngIf="isNew">New Job</h1>
+    <h1 *ngIf="isClone">Job Clone</h1>
+  </section>
+  <section class="content">
+    <form novalidate (ngSubmit)="save()" [formGroup]="serverForm" *ngIf="serverForm">
+      <div *ngIf="isImport">
+        <ct-import-job [options]="importModalOptions" (selectedImportJob)="onImportJob($event)"></ct-import-job>
+      </div>
+      <div class="page-content">
+        <div class="form-group" [class.has-error]="submitted && serverForm.controls.JobName.invalid">
+          <label class="control-label">Job Name</label>
+          <input type="text" class="form-control" name="jobName" value="" formControlName="JobName" maxlength="100" required pattern="^[0-9a-zA-Z-_.]*$">
+          <div *ngIf="submitted && serverForm.controls.JobName.invalid">
+            <span class="help-block" *ngIf="serverForm.controls.JobName.errors?.required">JobName cannot be empty.</span>
+            <span class="help-block" *ngIf="serverForm.controls.JobName.errors?.maxlength">JobName cannot more than 100 characters.</span>
+            <span class="help-block" *ngIf="serverForm.controls.JobName.errors?.pattern">JobName cannot contain any special symbol.</span>
+          </div>
+        </div>
+        <div class="form-group" [class.has-error]="submitted && serverForm.controls.Description.invalid">
+          <label class="control-label">Description</label>
+          <textarea class="form-control" name="description" rows="3" maxlength="500" required formControlName="Description"></textarea>
+          <div *ngIf="submitted && serverForm.controls.Description.invalid">
+            <span class="help-block" *ngIf="serverForm.controls.Description.errors?.required">Description cannot be empty.</span>
+            <span class="help-block" *ngIf="serverForm.controls.Description.errors?.maxlength">Description cannot more than 500 characters.</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group" [class.has-error]="submitted && !serverForm.controls.Runtime.value">
+              <label class="control-label">Runtime</label>
+              <select required id="runtimeSelect" class="form-control" formControlName="Runtime" [value]="serverForm.controls.Runtime.value"
+                (change)="updateGroup(serverForm.controls.Runtime.value)">
+                  <option value="">Select Runtime</option>
+                  <option [value]="item" *ngFor="let item of groupLocations" >{{ item }}</option>
+              </select>
+              <div *ngIf="submitted && !serverForm.controls.Runtime.value">
+                <span class="help-block" *ngIf="!serverForm.controls.Runtime.value">Please select Runtime.</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group" [class.has-error]="submitted && groupError && !serverForm.controls.GroupId.value">
+              <label class="control-label">Group</label>
+              <select required class="form-control" formControlName="GroupId" #group (change)="onChangeGroup(group.value)">
+                  <option value="">Select Group</option>
+                  <option [value]="group.id" *ngFor="let group of ownerGroups" >{{ group.name }}</option>
+              </select>
+              <div *ngIf="submitted && groupError && !serverForm.controls.GroupId.value">
+                <span class="help-block" *ngIf="!serverForm.controls.GroupId.value && groupError">Please select Group.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Target Server</label>
+          <select class="form-control" id="selectServers" multiple="multiple" formControlName="TargetServer" [value]="targetServer">
+              <option value="{{ipaddr}}" *ngFor="let ipaddr of ipaddrs" >{{ipaddr}}</option>
+          </select>
+        </div>
+        <div class="form-group" [class.has-error]="submitted && serverForm.controls.Command.invalid">
+          <label class="control-label">Command</label>
+          <input type="text" class="form-control" name="command" value="" formControlName="Command" required>
+          <div *ngIf="submitted && serverForm.controls.Command.invalid">
+            <span class="help-block" *ngIf="serverForm.controls.Command.errors?.required">Command cannot be empty.</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label">File name<span *ngIf="!serverForm.controls.CurrentFile.value" style="color: tomato;">(No files are being used.)</span></label>
+          <div class="equal-fields">
+            <div class="form-group">
+              <input type="text" class="form-control" value="" formControlName="CurrentFile" readonly>
+            </div>
+            <div class="form-group">
+              <button *ngIf="serverForm.controls.CurrentFile.value" title="Empty the file currently being used" class="btn btn-default btn-flat" type="button" (click)="removeFile()">
+                <i class="fa fa-close"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="checkbox">
+            <label>
+                <input type="checkbox" name="" value="" formControlName="EnableJobFile">
+                Update Job File
+            </label>
+          </div>
+          <div class="well well-sm" *ngIf="serverForm.controls.EnableJobFile.value">
+            <div class="form-group" *ngIf=" isNew || customSelectFile" [class.has-error]="submitted && serverForm.controls.EnableJobFile.value && serverForm.controls.InputFile.invalid">
+              <div class="form-control">
+                <label class="exampleInputFile">Upload :</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input (change)="selectedFileOnChanged($event)" type="file" value="" name="jobFile" accept="application/gzip, .gz" style="display: inline-block"
+                      formControlName="InputFile" style="width:100%;">
+                    <p class="text-danger margin-top-5" style="margin-bottom: 0">
+                      Please compress your folder as <strong>tar.gz</strong> archive and make sure the size is less than
+                      <strong>50MB</strong>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group" *ngIf="serverForm.controls.EnableJobFile.value && !isNew">
+              <label>Backup List :</label>
+              <div style="display: flex">
+                <select class="form-control" formControlName="SelectFile" #batchSelectedJob (change)="selectBatchFile(batchSelectedJob.value)">
+                    <option value="">Upload file</option>
+                    <option value={{file.name}} *ngFor="let file of fileArr" >{{ file.name }}</option>
+                </select>
+                <button id="downloadButton" [disabled]="customSelectFile" type="button" style="margin-left: 10px;" class="btn btn-sm btn-default"
+                  (click)="downloadFile()">
+                    Download
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="checkbox">
+            <label class="control-label">
+                <input type="checkbox" name="" value="" formControlName="EnabledTimeout">
+                Enable Timeout(s)
+            </label>
+          </div>
+          <div class="form-group" *ngIf="serverForm.controls.EnabledTimeout.value" [class.has-error]="submitted && serverForm.controls.Timeout.invalid">
+            <input validateRange class="form-control" formControlName="Timeout" type="number" name="timeout" value="" min="1" max="172800" required>
+              <div *ngIf="submitted && serverForm.controls.Timeout.invalid">
+                <span class="help-block" *ngIf="serverForm.controls.Timeout.value == null || serverForm.controls.Timeout.errors?.required">Timeout cannot be null or empty.</span>
+                <span class="help-block" *ngIf="serverForm.controls.Timeout.errors.numberRange">Timeout must be between 1 and 172800(two days).</span>
+              </div>
+            <span>
+                Tips: If the program is running for longer than the timeout period, it will be killed.
+            </span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label">Environment Variables</label>
+          <div class="box no-border">
+            <div class="well-sm">
+              <table *ngIf="envArr?.length > 0" class="table table-bordered table-hover dataTable" role="grid">
+                <tbody>
+                  <tr role="row" *ngFor="let item of envArr;let i = index">
+                    <td class="col-sm-11">
+                      <span class="text-danger">Key:</span> {{item.key}}&nbsp;,&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-danger">Value:</span>                      {{item.value}}
+                    </td>
+                    <td class="text-center">
+                      <a href="javascript:void(0)" class="margin-right-10" (click)="editEnv(i)">
+                        <i class="fa fa-pencil"></i>
+                      </a>
+                      <a href="javascript:void(0)" (click)="deleteEnv(i)">
+                        <i class="fa fa-close text-danger"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <button type="button" class="btn btn-md btn-flat bg-gray" (click)="showAddEnv()">
+                <i class="fa fa-plus"></i> Add
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label">Schedules</label>
+          <div class="box no-border">
+            <div class="well-sm">
+              <table *ngIf="scheduleArr?.length > 0" class="table table-bordered table-hover dataTable" role="grid">
+                <tbody>
+                  <tr role="row" *ngFor="let item of scheduleArr;let i = index">
+                    <td class="col-sm-11">
+                      {{ item | scheduleInfo }}
+                    </td>
+                    <td class="text-center">
+                      <a href="javascript:void(0)" class="margin-right-10" (click)="editSchedule(i)">
+                        <i class="fa fa-pencil"></i>
+                      </a>
+                      <a href="javascript:void(0)" (click)="deleteSchedule(i)">
+                        <i class="fa fa-close text-danger"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <button type="button" class="btn btn-md btn-flat bg-gray" (click)="showAddSchedule()">
+                  <i class="fa fa-plus"></i> Add
+              </button>
+            </div>
+          </div>
+          <ct-schedule [options]="addScheduleModalOptions" [editScheInfo]="editScheInfo" [scheIsNew]="scheIsNew" (addSchedule)="showSchedule($event)"></ct-schedule>
+        </div>
+        <div class="form-group">
+          <div class="checkbox">
+            <span style="padding-right: 10px;">Send Notification When Job</span>
+            <label>
+                <input type="checkbox" name="notifySuccess" formControlName="NotifySuccessChecked">
+                Succeed
+            </label>
+            <label style="margin-left: 10px;">
+                <input type="checkbox" name="notifyFail" formControlName="NotifyFailChecked">
+                Failed
+            </label>
+          </div>
+          <div class="row">
+            <div class="col-md-6" *ngIf="serverForm.controls.NotifySuccessChecked.value">
+              <div class="well well-sm">
+                <div>
+                  Notify When
+                  <strong>Succeed</strong>
+                </div>
+                <hr class="notify-hr">
+                <div class="row form-group" [class.has-error]="submitted && serverForm.controls.SucceedSubject.invalid">
+                  <span class="col-md-2 control-label">Subject</span>
+                  <div class="col-md-9">
+                    <input class="form-control" type="text" name="notifySucceedSubject" formControlName="SucceedSubject" value="" maxlength="100" required>
+                    <div *ngIf="submitted && serverForm.controls.SucceedSubject.invalid">
+                      <span class="help-block" *ngIf="!serverForm.controls.SucceedSubject.value">Email subject cannot be empty.</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row form-group" [class.has-error]="submitted && serverForm.controls.SucceedTo.invalid">
+                  <span class="col-md-2 control-label">To</span>
+                  <div class="col-md-9">
+                    <input class="form-control" type="text" name="notifySucceedTo" formControlName="SucceedTo" value="" maxlength="500" multipleEmails
+                      required>
+                    <div *ngIf="submitted && serverForm.controls.SucceedTo.invalid">
+                      <span class="help-block" *ngIf="!serverForm.controls.SucceedTo.value">Email address cannot be empty.</span>
+                      <span class="help-block" *ngIf="serverForm.controls.SucceedTo.errors?.maxlength">Contact info cannot more than 500 characters.</span>
+                      <span class="help-block" *ngIf="serverForm.controls.SucceedTo.errors?.multipleEmails">Invalid email address(es).</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row form-group">
+                  <span class="col-md-2 control-label">Content</span>
+                  <div class="col-md-9">
+                    <textarea class="form-control" type="text" name="notifycontent" formControlName="SucceedContent" value="" maxlength="200"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6" *ngIf="serverForm.controls.NotifyFailChecked.value">
+              <div class="well well-sm">
+                <div>
+                  Notify When
+                  <strong>Failed</strong>
+                </div>
+                <hr class="notify-hr">
+                <div class="row form-group" [class.has-error]="submitted && serverForm.controls.FailedSubject.invalid">
+                  <span class="col-md-2 control-label">Subject</span>
+                  <div class="col-md-9">
+                    <input class="form-control" type="text" name="notifySucceedSubject" formControlName="FailedSubject" [value]="serverForm.controls.FailedSubject.value"
+                      maxlength="100" required>
+                    <div *ngIf="submitted && serverForm.controls.FailedSubject.invalid">
+                      <span class="help-block" *ngIf="!serverForm.controls.FailedSubject.value">Email subject cannot be empty.</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row form-group" [class.has-error]="submitted && serverForm.controls.FailedTo.invalid">
+                  <span class="col-md-2 control-label">To</span>
+                  <div class="col-md-9">
+                    <input class="form-control" type="text" name="notifyFailedTo" formControlName="FailedTo" maxlength="500" multipleEmails required>
+                    <div *ngIf="submitted && serverForm.controls.FailedTo.invalid">
+                      <span class="help-block" *ngIf="!serverForm.controls.FailedTo.value">Email address cannot be empty.</span>
+                      <span class="help-block" *ngIf="serverForm.controls.FailedTo.errors?.maxlength">Contact info cannot more than 500 characters.</span>
+                      <span class="help-block" *ngIf="serverForm.controls.FailedTo.errors?.multipleEmails">Invalid email address(es).</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row form-group">
+                  <span class="col-md-2 control-label">Content</span>
+                  <div class="col-md-9">
+                    <textarea class="form-control" type="text" name="notifySucceedTo" formControlName="FailedContent" maxlength="200"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="checkbox">
+            <label>
+                <input type="checkbox" name="" value="" formControlName="EnableJobRun">
+                Enabled (Job runs at specified time)
+            </label>
+          </div>
+        </div>
+        <hr class="notify-hr">
+        <div class="form-group">
+          <button type="submit" class="btn btn-flat bg-olive">
+              <i class="fa fa-save"></i> Save
+          </button>
+          <button type="button" class="btn btn-flat bg-red" (click)="deleteJob()">
+              <i class="fa fa-remove"></i> Delete
+          </button>
+          <button type="button" class="btn btn-flat bg-gray" [routerLink]="['/task', location, groupId, 'overview']">
+              <i class="fa fa-mail-reply-all"></i> Cancel
+          </button>
+        </div>
+
+        <!--delete modal-->
+        <hb-modal [options]="deleteJobModalOptions">
+          <h4>
+            Are you sure to delete job?
+          </h4>
+          <div class="modal-footer">
+            <hb-modal-footer>
+              <button type="button" class="btn btn-default btn-flat" (click)="deleteJobModalOptions.show = fasle">Cancel</button>
+              <button type="button" class="btn btn-success btn-flat" (click)="confirmDelete()">Ok</button>
+            </hb-modal-footer>
+          </div>
+        </hb-modal>
+      </div>
+    </form>
+    <!--env modal-->
+    <hb-modal [options]="envModalOptions">
+      <form novalidate (ngSubmit)="confirmAdd()" [formGroup]="envForm" *ngIf="envForm">
+        <div class="form-group row" [class.has-error]="envSubmitted && envForm.controls.Key.invalid">
+          <label class="col-md-1 control-label text-right">Key</label>
+          <div class="col-md-5">
+            <input formControlName="Key" class="form-control" type="text" value="" maxlength="225" required>
+            <div *ngIf="envSubmitted && envForm.controls.Key.invalid">
+              <span class="help-block" *ngIf="envForm.controls.Key.errors?.required">Key cannot be empty.</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group row" [class.has-error]="envSubmitted && envForm.controls.Value.invalid">
+          <label class="col-md-1 control-label text-right">Value</label>
+          <div class="col-md-5">
+            <textarea formControlName="Value" class="form-control" type="text" value="" maxlength="225" required>
+            </textarea>
+            <div *ngIf="envSubmitted && envForm.controls.Value.invalid">
+              <span class="help-block" *ngIf="envForm.controls.Value.errors?.required">Value cannot be empty.</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <hb-modal-footer>
+            <button type="button" class="btn btn-default btn-flat" (click)="envModalOptions.show = fasle">Cancel</button>
+            <button class="btn btn-success btn-flat">Ok</button>
+          </hb-modal-footer>
+        </div>
+      </form>
+    </hb-modal>
+  </section>
+</div>

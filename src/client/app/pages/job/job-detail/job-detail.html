@@ -1,0 +1,301 @@
+<section class="content-header">
+  <h1> Job Detail <small></small></h1>
+  <ol class="breadcrumb">
+    <li>
+      <a [routerLink]="['/task', location, groupId, 'overview']"><i class="fa fa-th"></i> Job List</a>
+    </li>
+    <li class="active">Detail</li>
+  </ol>
+</section>
+<section class="content">
+  <div class="btn-panel flex-display">
+    <div class="btn-group">
+      <button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        Operate&nbsp;&nbsp;
+        <span class="fa fa-caret-down"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li *ngIf="jobInfor.enabled && jobInfor.stat != 200 && jobInfor.stat != 202">
+          <a href="javascript:void(0)" (click)="activeJob(jobInfor.location, jobInfor.jobid, jobInfor.stat, jobInfor.name)">Start</a>
+        </li>
+        <li *ngIf="jobInfor.enabled && jobInfor.stat == 200">
+          <a href="javascript:void(0)" (click)="activeJob(jobInfor.location, jobInfor.jobid, jobInfor.stat, jobInfor.name)">Stop</a>
+        </li>
+        <li *ngIf="jobInfor.enabled && jobInfor.stat != 200">
+          <a href="javascript:void(0)" (click)="changeEnabled()">Disable</a>
+        </li>
+        <li *ngIf="!jobInfor.enabled && jobInfor.stat != 200">
+          <a href="javascript:void(0)" (click)="changeEnabled()">Enabled</a>
+        </li>
+      </ul>
+    </div>
+    <button type="button" id="edit" [disabled]="stateText == 'Running'" class="btn btn-default btn-flat" [routerLink]="['/task', location, groupId, 'detail', jobId, 'edit']">
+      <i class="fa fa-pencil"></i>
+      Edit
+    </button>
+    <a class="btn btn-default btn-flat" [routerLink]="['/task', location, groupId, 'detail', jobId, 'clone']">
+      <i class="fa fa-clone"></i> Clone
+    </a>
+    <a class="btn btn-default btn-flat" [routerLink]="['/task', location, groupId, 'detail', jobId, 'job-log']">
+      <i class="fa fa-file-text-o"></i> Logs
+    </a>
+  </div>
+  <ul class="timeline">
+    <li>
+      <i class="fa fa-cog"></i>
+      <div class="timeline-item">
+        <div class="timeline-header flex-display">
+          <span>Basic Info</span>
+          <span class="label" [ngClass]="{
+            'label-success': stateText == 'Running',
+            'label-default': stateText == 'Disabled',
+            'label-warning': stateText == 'Idle',
+            'label-primary': stateText == 'Reallocating',
+            'label-danger': stateText == 'Failed' || !stateText }">
+            {{ stateText }}
+          </span>
+        </div>
+        <div class="timeline-body container-basic-info">
+          <table class="table table-bordered" style="margin-bottom:0px;">
+            <tbody>
+              <ng-template ngFor let-item let-i="index" let-odd="odd" let-isEven="even" [ngForOf]="jobBasicInfo">
+                <tr *ngIf="isEven">
+                  <td class="basic-info-title">{{ jobBasicInfo[i].title }}</td>
+                  <td style="max-width: 200px; word-wrap:break-word;">
+                    {{ jobBasicInfo[i].content }}
+                  </td>
+                  <td class="basic-info-title">{{ jobBasicInfo[i+1]?.title }}</td>
+                  <td class="col-sm-4">
+                    {{ jobBasicInfo[i+1]?.content }}
+                  </td>
+                </tr>
+              </ng-template>
+            </tbody>
+          </table>
+          <table class="table table-bordered">
+            <tbody>
+              <ng-template ngFor let-i="index" [ngForOf]="basicInfoDes">
+                <tr>
+                  <td class="basic-info-title">{{ basicInfoDes[i]?.title }}</td>
+                  <td>
+                    {{ basicInfoDes[i]?.content }}
+                  </td>
+                </tr>
+              </ng-template>
+            </tbody>
+          </table>
+          <!--<table class="table table-bordered">
+            <tbody>
+              <ng-template ngFor let-item let-i="index" [ngForOf]="BasicInfoDes">
+                <tr>
+                  <td class="basic-info-title">{{ BasicInfoDes?.title }}</td>
+                  <td class="col-sm-10">
+                    {{ BasicInfoDes?.content }}
+                  </td>
+                </tr>
+              </ng-template>
+            </tbody>
+          </table>-->
+        </div>
+      </div>
+    </li>
+    <li>
+      <i class="fa fa-gears"></i>
+      <div class="timeline-item">
+        <div class="timeline-header">
+          <span>Command Info</span>
+        </div>
+        <div class="timeline-body">
+          <table class="table table-bordered">
+            <tbody>
+              <ng-template ngFor let-item let-i="index" [ngForOf]="commandInfo">
+                <tr>
+                  <td class="basic-info-title col-sm-2">{{ commandInfo[i].title }}</td>
+                  <td style="max-width: 200px; word-wrap:break-word;">
+                    {{ commandInfo[i].content }}
+                  </td>
+                </tr>
+              </ng-template>
+            </tbody>
+          </table>
+          <div class="text-right" *ngIf="jobInfor.filename">
+            <a class="btn btn-default btn-flat bg-olive" style="width: auto;" (click)="downloadFile()">
+              <i class="fa fa-download"></i> Download file
+            </a>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>
+      <i class="fa fa-server"></i>
+      <div class="timeline-item">
+        <div class="timeline-header">
+          <span>Target Server Info</span>
+        </div>
+        <div class="timeline-body">
+          <ul class="list-unstyled" *ngIf="env">
+            <li value="-" class="flex-display custom-list" *ngFor="let item of serverInfo">
+              <span class="break-word">{{ item }}</span>
+            </li>
+          </ul>
+          <span *ngIf="!serverInfo?.length">
+            All server in cluster.
+          </span>
+        </div>
+      </div>
+    </li>
+    <li>
+      <i class="fa fa-tag"></i>
+      <div class="timeline-item">
+        <div class="timeline-header">
+          <span>Schedule Info</span>
+        </div>
+        <div class="timeline-body">
+          <table class="table table-bordered">
+            <tbody>
+              <ng-template ngFor let-item let-i="index" let-isEven="even" [ngForOf]="scheduleRuntimeInfo">
+                <tr *ngIf="isEven">
+                  <td class="basic-info-title col-sm-2">{{ scheduleRuntimeInfo[i].title }}</td>
+                  <td style="max-width: 200px; word-wrap:break-word;" class="col-sm-4">
+                    {{ scheduleRuntimeInfo[i].content }}
+                  </td>
+                  <td class="basic-info-title col-sm-2">{{ scheduleRuntimeInfo[i+1]?.title }}</td>
+                  <td class="col-sm-4">
+                    {{ scheduleRuntimeInfo[i+1]?.content }}
+                  </td>
+                </tr>
+              </ng-template>
+            </tbody>
+          </table>
+          <ul class="list-unstyled" *ngIf="scheduleInforArr">
+            <li value="-" class="flex-display custom-list" *ngFor="let item of scheduleInforArr">
+              <span class="break-word">{{ item | scheduleInfo }}</span>
+            </li>
+          </ul>
+          <span *ngIf="!scheduleInforArr?.length">
+            No schedule defined.
+          </span>
+        </div>
+      </div>
+    </li>
+    <li>
+      <i class="fa fa-envira"></i>
+      <div class="timeline-item">
+        <div class="timeline-header">
+          <span>Environment</span>
+        </div>
+        <div class="timeline-body">
+          <ul class="list-unstyled" *ngIf="env">
+            <li value="-" class="flex-display custom-list" *ngFor="let item of env">
+              <span class="break-word">{{ item }}</span>
+            </li>
+          </ul>
+          <span *ngIf="!env?.length">
+            No environment variable defined.
+          </span>
+        </div>
+      </div>
+    </li>
+    <li>
+      <i class="fa fa-file-text-o"></i>
+      <div class="timeline-item">
+        <div class="timeline-header">
+          <span>Logs</span>
+        </div>
+        <div class="timeline-body">
+          <div class="alert alert-info" *ngIf="!logs || logs.length == 0">
+            <i class="fa-fw fa fa-info"></i>
+            <span>No logs found.</span>
+          </div>
+          <table class="table table-bordered table-log" *ngIf="logs?.length > 0">
+            <thead>
+              <tr>
+                <th>Job Name</th>
+                <th>Start Time</th>
+                <th>Duration</th>
+                <th>Server</th>
+                <th>Run Outcome</th>
+                <th>Create Time</th>
+              </tr>
+            </thead>
+            <tbody *ngFor="let log of logs;let i = index">
+              <tr (click)="toggleDetailBox(i)" style="cursor:pointer">
+                <td>
+                  {{ jobInfor.name }}
+                </td>
+                <td>
+                  {{ log. execat | date:'yyyy-MM-dd HH:mm:ss'}}
+                </td>
+                <td>
+                  {{ log.exectimes.toFixed(2) }}
+                </td>
+                <td>
+                  {{ log.ipaddr }}
+                </td>
+                <td>
+                  {{ log.stat == 0 ? 'Succeed' : 'Failed' }}
+                </td>
+                <td>
+                  {{ log. createat | date:'yyyy-MM-dd HH:mm:ss'}}
+                </td>
+              </tr>
+              <tr [class.tr-detail]="i == detailId" style="display:none">
+                <td colspan="8">
+                  <div class="detail-box" style="max-width:880px;">
+                    <div class="row" *ngIf="log.command">
+                      <div class="col-sm-2"><strong>Command</strong></div>
+                      <div class="col-sm-10">
+                        {{ log.command }}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-2"><strong>Directory</strong></div>
+                      <div class="col-sm-10">
+                        {{ log.workdir }}
+                      </div>
+                    </div>
+                    <div class="row" *ngIf="log.stdout">
+                      <div class="col-sm-2"><strong>Output</strong></div>
+                      <div class="col-sm-10">
+                        <p [outerHTML]="log.stdout | lineFeed"></p>
+                      </div>
+                    </div>
+                    <div class="row" *ngIf="!log.stdout && !log.errout && log.execerr">
+                      <div class="col-sm-2"><strong>Output</strong></div>
+                      <div class="col-sm-10">
+                        The job was run failed by schedule.
+                      </div>
+                    </div>
+                    <div class="row" *ngIf="!log.stdout && !log.errout && !log.execerr">
+                      <div class="col-sm-2"><strong>Output</strong></div>
+                      <div class="col-sm-10">
+                        The job was run secceed by schedule.
+                      </div>
+                    </div>
+                    <div class="row" *ngIf="log.errout">
+                      <div class="col-sm-2"><strong>Errout</strong></div>
+                      <div class="col-sm-10">
+                        {{ log.errout }}
+                      </div>
+                    </div>
+                    <div class="row" *ngIf="log.execerr">
+                      <div class="col-sm-2"><strong>Exec Error</strong></div>
+                      <div class="col-sm-10">
+                        {{ log.execerr }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="text-right">
+            <a class="btn btn-default btn-flat bg-olive" [routerLink]="['/task', location, groupId, 'detail', jobId, 'job-log']">
+              <i class="fa fa-eye"></i> View more
+            </a>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</section>

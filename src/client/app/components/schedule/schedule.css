@@ -1,0 +1,28 @@
+.control-label{
+    padding-top: 6px;
+    width: 100px;
+}
+
+.checkbox{
+    display: inline-block;
+    padding-right: 10px;
+}
+
+.month-type .form-control{
+    width: auto;
+    display: inline-block;
+}
+
+.flex-layout{
+    display: flex;
+    align-items: center;
+}
+
+.form-group .value-box{
+    margin: 0 5px;
+    width: 120px;
+}
+
+.month-checks{
+    flex-wrap: wrap;
+}

@@ -1,0 +1,21 @@
+.img-sm, .box-comments .box-comment img, .user-block.user-block-sm img {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.box-body {
+  background-color: #fff;
+}
+
+.box-comments .comment-text {
+  margin-left: 50px;
+}
+
+.box-comments .box-comment:first-of-type {
+  padding-top: 10px;
+}
+
+.box-comment:hover {
+  border-left: 3px solid mediumaquamarine;
+  padding-left: 5px;
+}

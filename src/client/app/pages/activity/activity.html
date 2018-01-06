@@ -1,0 +1,53 @@
+<section class="content-header">
+  <h1> Activity </h1>
+</section>
+<section class="content">
+  <div class="flex-display flex-wrapper margin-bottom-10">
+    <div class="from-group flex-1">
+      <select class="form-control" [ngModel]="selectedLocation" (ngModelChange)="selectedLocationChange($event)">
+        <option value="">All</option>
+        <option value="{{item.location}}" *ngFor="let item of locationGroups; let i = index">{{ item.location }}</option>
+      </select>
+    </div>
+    <div class="from-group flex-1">
+      <select class="form-control" [ngModel]="selectedGroupId" (ngModelChange)="selectedGroupChange($event)">
+        <option value="">All</option>
+        <option value="{{item.id}}" *ngFor="let item of groups">{{ item.name }}</option>
+      </select>
+    </div>
+    <div class="from-group flex-1">
+      <select class="form-control" [ngModel]="selectedType" (ngModelChange)="selectedTypeChange($event)">
+        <option value="">All</option>
+        <option value="group">Group</option>
+        <option value="job">Job</option>
+      </select>
+    </div>
+    <div class="from-group">
+      <button type="button" class="btn bg-olive btn-flat" (click)="search()">
+        <i class="fa fa-search"></i>
+      </button>
+    </div>
+  </div>
+  <div class="box" *ngIf="logs.length > 0">
+    <div class="box-body box-comments">
+      <div class="box-comment" *ngFor="let log of logs;">
+        <img src="{{'http://apis.newegg.org/common/v1/domain/user/'+ log.userid +'/avatar'}}" class="img-circle img-sm">
+        <div class="comment-text">
+          <span class="username">
+          {{ log.fullname || log.userid }}
+          <span class="text-muted pull-right">{{ log.indate | date:'yyyy/MM/dd HH:mm:ss' }}</span>
+          </span>
+          {{ log.content | upperFirstWord }}
+        </div>
+      </div>
+    </div>
+    <div class="box-footer clearfix">
+      <hb-pagination [totalCount]="totalCount" [pageSize]="pageSize" [maxSize]="10" [options]="pageOptions" (onSelectPage)="setPage($event)">
+      </hb-pagination>
+    </div>
+  </div>
+  <div class="alert alert-info" *ngIf="!logs || logs.length == 0">
+    <i class="fa-fw fa fa-info"></i>
+    <span>No logs found.</span>
+  </div>
+</section>

@@ -1,0 +1,154 @@
+<section class="content-header">
+  <h1> Logs <small>{{ logJobName }}</small></h1>
+  <ol class="breadcrumb">
+    <li>
+      <a [routerLink]="['/task', location, groupId, 'overview']"><i class="fa fa-th"></i> Job List</a>
+    </li>
+    <li>
+      <a [routerLink]="['/task', location, groupId, 'detail', jobId]"><i class="fa fa-th"></i> Job Detail</a>
+    </li>
+    <li class="active">Detail</li>
+  </ol>
+</section>
+<section class="content form-horizontal">
+  <div class="flex-display flex-wrapper margin-bottom-10">
+    <div class="form-group col-sm-12">
+      <div class="col-sm-4">
+        <label class="col-sm-3 control-label">Type:</label>
+        <div class="col-sm-9">
+          <select class="form-control" [ngModel]="selectedType" (ngModelChange)="selectedTypeChange($event)">
+            <option value="">All</option>
+            <option value="0">Succeed</option>
+            <option value="-1">Failed</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <label class="col-sm-3 control-label">From:</label>
+        <div class="col-sm-9">
+          <div class="input-group">
+            <input type="text" class="form-control" [value]="startDateValue" [(ngModel)]="startDateValue" (ngModelChange)="dateValueChange($event)"
+              ct-date-picker>
+            <div class="input-group-addon">
+              <i class="fa fa-calendar"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="from-group col-sm-4">
+        <label class="col-sm-3 control-label">To:</label>
+        <div class="col-sm-9">
+          <div class="input-group">
+            <input type="text" class="form-control" [value]="endDateValue" [(ngModel)]="endDateValue" (ngModelChange)="dateValueChange($event)"
+              ct-date-picker>
+            <div class="input-group-addon">
+              <i class="fa fa-calendar"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display: inline-block;position: absolute; right: -14px;">
+        <button type="button" class="btn bg-olive btn-flat" (click)="search()">
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
+    </div>
+    <div class="input-test">
+      <span>{{dateValue}}</span>
+    </div>
+  </div>
+  <div class="alert alert-info" *ngIf="!logs || logs.length == 0">
+    <i class="fa-fw fa fa-info"></i>
+    <span>No logs found.</span>
+  </div>
+  <div class="box no-border" *ngIf="logs?.length > 0">
+    <div class="box-body">
+      <table class="table table-hover table-bordered">
+        <thead>
+          <tr>
+            <th>Job Name</th>
+            <th>Start Time</th>
+            <th>Duration</th>
+            <th>Server</th>
+            <th>Run Outcome</th>
+            <th>Create Time</th>
+          </tr>
+        </thead>
+        <tbody *ngFor="let log of logs;let i = index">
+          <tr (click)="toggleDetailBox(i)" style="cursor:pointer">
+            <td>
+              {{ logJobName }}
+            </td>
+            <td>
+              {{ log. execat | date:'yyyy-MM-dd HH:mm:ss'}}
+            </td>
+            <td>
+              {{ log.exectimes.toFixed(2) }}
+            </td>
+            <td>
+              {{ log.ipaddr }}
+            </td>
+            <td>
+              {{ log.stat == 0 ? 'Succeed' : 'Failed' }}
+            </td>
+            <td>
+              {{ log. createat | date:'yyyy-MM-dd HH:mm:ss'}}
+            </td>
+          </tr>
+          <tr [class.tr-detail]="i == detailId" style="display:none">
+            <td colspan="8">
+              <div class="detail-box" style="max-width:973px">
+                <div class="row" *ngIf="log.command">
+                  <div class="col-sm-2"><strong>Command</strong></div>
+                  <div class="col-sm-10">
+                    {{ log.command }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-2"><strong>Directory</strong></div>
+                  <div class="col-sm-10">
+                    {{ log.workdir }}
+                  </div>
+                </div>
+                <div class="row" *ngIf="log.stdout">
+                  <div class="col-sm-2"><strong>Output</strong></div>
+                  <div class="col-sm-10">
+                    <p [outerHTML]="log.stdout | lineFeed"></p>
+                  </div>
+                </div>
+                <div class="row" *ngIf="!log.stdout && !log.errout && log.execerr">
+                  <div class="col-sm-2"><strong>Output</strong></div>
+                  <div class="col-sm-10">
+                    The job was run failed by schedule.
+                  </div>
+                </div>
+                <div class="row" *ngIf="!log.stdout && !log.errout && !log.execerr">
+                  <div class="col-sm-2"><strong>Output</strong></div>
+                  <div class="col-sm-10">
+                    The job was run secceed by schedule.
+                  </div>
+                </div>
+                <div class="row" *ngIf="log.errout">
+                  <div class="col-sm-2"><strong>Errout</strong></div>
+                  <div class="col-sm-10">
+                    {{ log.errout }}
+                  </div>
+                </div>
+                <div class="row" *ngIf="log.execerr">
+                  <div class="col-sm-2"><strong>Exec Error</strong></div>
+                  <div class="col-sm-10">
+                    {{ log.execerr }}
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="box-footer" *ngIf="logs.length > 0">
+        <hb-pagination [totalCount]="totalCount" [pageSize]="pageSize" [currentIndex]="logPageIndex" [maxSize]="10" [options]="pageOptions" (onSelectPage)="setPage($event)">
+        </hb-pagination>
+      </div>
+    </div>
+  </div>
+</section>

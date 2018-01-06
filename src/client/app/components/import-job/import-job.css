@@ -1,0 +1,9 @@
+.tr-selected{
+    color: #fff;
+    background-color: #3c8dbc;
+}
+
+.table-hover>tbody>.tr-selected:hover{
+    color: #fff;
+    background-color: #428bca !important;
+}
