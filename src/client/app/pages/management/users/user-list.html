@@ -1,0 +1,116 @@
+<section class="content">
+  <div class="box no-border">
+    <div class="box-body">
+      <div class="flex-display">
+        <div class="form-group form-group-sm has-feedback flex-1">
+          <input autocomplete="off" class="form-control" name="filterCondition" placeholder="Enter key word" type="text" [ngModel]="filterCondition"
+            (ngModelChange)="search($event)">
+          <span class="fa fa-search form-control-feedback"></span>
+        </div>
+        <div class="form-group" *ngIf="userInfo?.IsAdmin">
+          <a href="javascript:void(0)" class="btn btn-sm btn-flat bg-olive" (click)="addNewGroup($event)">
+              <i class="fa fa-plus"></i> Add User
+          </a>
+        </div>
+      </div>
+      <div class="alert alert-info" *ngIf="!filterGroups?.length">
+        <i class="fa-fw fa fa-info"></i>
+        <span>No users found</span>
+      </div>
+      <table class="table table-bordered table-hover dataTable" role="grid" *ngIf="filterGroups.length>0">
+        <thead>
+          <tr role="row">
+            <th>UserID</th>
+            <th>FullName</th>
+            <th>Department</th>
+            <th>Email</th>
+            <th>LastEditUser</th>
+            <th>LastEditDate</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of currentGroups;let i = index">
+            <td>{{ item.userid }}</td>
+            <td>{{ item.fullname }}</td>
+            <td>{{ item.department }}</td>
+            <td>{{ item.email }}</td>
+            <td>{{ item.edituser }}</td>
+            <td>{{ item.editat | date:'yyyy-MM-dd HH:mm' }}</td>
+            <td>
+              <a href="javascript:void(0)" (click)="selectGroup(i)" class="margin-right-10">
+                <i class="fa fa-pencil"></i>
+              </a>
+              <a href="javascript:void(0)" (click)="deleteGroup(i)">
+                <i class="fa fa-close text-danger"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box-footer" *ngIf="filterGroups.length > 0">
+      <hb-pagination [totalCount]="filterGroups.length" [pageSize]="pageSize" [maxSize]="10" [options]="pageOptions" [currentIndex]="currentIndex"
+        (onSelectPage)="setPage($event)">
+      </hb-pagination>
+    </div>
+  </div>
+  <!--modal -->
+  <hb-modal [options]="groupInfoModal">
+    <form novalidate (ngSubmit)="save()" [formGroup]="userForm" *ngIf="userForm">
+      <div class="form-group row" [class.has-error]="submitted && !userForm.controls.UserId.value">
+        <label class="col-md-2 control-label text-right">UserID</label>
+        <div class="col-md-5">
+          <input formControlName="UserId" type="text" class="form-control" required>
+          <div *ngIf="submitted && !userForm.controls.UserId.value">
+            <span class="help-block" *ngIf="!userForm.controls.UserId.value">Please select Runtime.</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row" [class.has-error]="submitted && userForm.controls.FullName.invalid">
+        <label class="col-md-2 control-label text-right">FullName</label>
+        <div class="col-md-5">
+          <input formControlName="FullName" type="text" class="form-control" required>
+          <div *ngIf="submitted && userForm.controls.FullName.invalid">
+            <span class="help-block" *ngIf="userForm.controls.FullName.errors?.required">Group name cannot be empty.</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-md-2 control-label text-right">Password</label>
+        <div class="col-md-5">
+          <input type="text" formControlName="Password" class="form-control">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-md-2 control-label text-right">Department</label>
+        <div class="col-md-5">
+          <input type="text" formControlName="Department" class="form-control">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-md-2 control-label text-right">Email</label>
+        <div class="col-md-5">
+          <input type="text" formControlName="Email" class="form-control">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <hb-modal-footer>
+          <button type="button" class="btn btn-default btn-flat" (click)="groupInfoModal.show = fasle">Cancel</button>
+          <button class="btn btn-success btn-flat">Save</button>
+        </hb-modal-footer>
+      </div>
+    </form>
+  </hb-modal>
+  <hb-modal [options]="deleteGroupModalOptions">
+    <h4>
+      Are you sure?
+    </h4>
+    <div class="modal-footer">
+      <hb-modal-footer>
+        <button type="button" class="btn btn-default btn-flat" (click)="deleteGroupModalOptions.show = fasle">Cancel</button>
+        <button type="button" class="btn btn-success btn-flat" (click)="confirmDelete(currentUserId)">Ok</button>
+      </hb-modal-footer>
+    </div>
+  </hb-modal>
+</section>

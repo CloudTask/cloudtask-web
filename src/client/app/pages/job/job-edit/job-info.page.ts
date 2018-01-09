@@ -579,7 +579,7 @@ export class JobInfoPage {
         let currentDate = Date.now();
         this.activityData.content = `Delete job ${this.serverForm.value.JobName} on ${this.groupName} on ${this.location}`;
         this.activityData.indate = currentDate;
-        this._jobService.postActivity(this.activityData);
+        // this._jobService.postActivity(this.activityData);
         this._jobService.clear();
         this._router.navigate(['/task', this.location, this.groupId, 'overview']);
       })
@@ -694,7 +694,7 @@ export class JobInfoPage {
           let currentDate = Date.now();
           this.activityData.content = `Add job ${this.serverForm.value.JobName} on ${this.groupNewName} on ${this.location}`;
           this.activityData.indate = currentDate;
-          this._jobService.postActivity(this.activityData);
+          // this._jobService.postActivity(this.activityData);
           this._jobService.clear();
           this._router.navigate(['/task', this.location, this.groupId, 'overview']);
         })
@@ -714,7 +714,7 @@ export class JobInfoPage {
             this.activityData.content = `Update job ${this.serverForm.value.JobName} on ${this.groupName} on ${this.location}`;
           }
           this.activityData.indate = currentDate;
-          this._jobService.postActivity(this.activityData);
+          // this._jobService.postActivity(this.activityData);
           this._jobService.clear();
           this._router.navigate(['/task', this.location, this.groupId, 'detail', this.jobId]);
         })

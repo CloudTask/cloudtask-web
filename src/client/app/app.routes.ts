@@ -1,7 +1,7 @@
 import { Routes, RouterModule } from '@angular/router';
 
 import { IsLogin, IsGroupOwner } from './services';
-import { GroupResolve, SystemConfigResolve } from './resolves';
+import { GroupResolve, UserResolve, SystemConfigResolve } from './resolves';
 import {
   RootLayoutPage,
   DashboardPage,
@@ -12,6 +12,7 @@ import {
   GroupListPage,
   SearchJobPage,
   RuntimeListPage,
+  UserListPage,
   LoginPage,
   ServersInfoPage, GroupsLayoutPage,
   JobLogPage,
@@ -49,6 +50,7 @@ let routes: Routes = [
       { path: 'search-job', component: SearchJobPage },
       { path: 'manage/runtimes', component: RuntimeListPage, resolve: { groups: GroupResolve } },
       { path: 'manage/groups', component: GroupListPage, resolve: { groups: GroupResolve } },
+      { path: 'manage/users', component: UserListPage,  resolve: { users: UserResolve } },
       { path: 'manage/system-config', component: SystemConfigPage },
 
       { path: 'account/profile', component: UserProfilePage },

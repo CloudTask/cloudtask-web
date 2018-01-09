@@ -6,6 +6,16 @@ const envValidator = require('./../validators/env');
 
 let router = express.Router();
 
+router.get('/',
+  envValidator.getCurrentEnv,
+  userCtrl.getAll
+);
+
+router.post('/createUser',
+  envValidator.getCurrentEnv,
+  userCtrl.createUser
+);
+
 router.get('/isLogin',
   sysCtrl.getUserValidate,
   userCtrl.isLogin
@@ -28,6 +38,11 @@ router.post('/setToken',
 
 router.get('/getToken',
   userCtrl.getToken
+);
+
+router.delete('/removeUser/:userId',
+  envValidator.getCurrentEnv,
+  userCtrl.removeUser
 );
 
 module.exports = router;

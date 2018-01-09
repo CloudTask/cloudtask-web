@@ -100,96 +100,106 @@ exports.createJob = (req, res, next) => {
   })
 }
 
-exports.changeInfo = (res, postJob, db, envConfig) => {
-  db.getById("sys_jobs", postJob.jobid)
-    .then((data) => {
-      if (!data) {
-        return Promise.reject({ message: 'Get job failed' });
-      }
-      jobLocation = data.location;
-      postJob.createat = data.createat;
-      postJob.createuser = data.createuser;
-      postJob.stat = data.stat;
-      let editat = moment().format();;
-      postJob.editat = editat;
-      postJob.files = data.files;
-      postJob.execat = data.execat;
-      postJob.nextat = data.nextat;
-      postJob.execerr = data.execerr;
-      if(postJob.nextat == ""){
-        postJob.nextat = '0001-01-01T00:00:00.000Z';
-      }
-      if(postJob.execat == ""){
-        postJob.execat = '0001-01-01T00:00:00.000Z';
-      }
-      if (data.filename !== postJob.filename) {         //修改了filename
-        if (data.filename) {
-          let fileIsExist = data.files.some(item => item.name == data.filename);
-          if (!fileIsExist) {
-            let fileObj = {
-              name: data.filename,
-              createat: Date.now(),
-            }
-            postJob.files.push(fileObj);
+exports.changeInfo = (res, postJob, collectionLocation, db, envConfig) => {
+  collectionLocation.find({ 'jobid': postJob.jobid }).toArray((err, resultJob) => {
+    if (err) {
+      console.log('Error:' + err);
+      return;
+    }
+    let data = resultJob[0];
+    console.log(data)
+    // jobLocation = data.location;
+    // postJob.createat = data.createat;
+    // postJob.createuser = data.createuser;
+    // postJob.stat = data.stat;
+    let editat = moment().format();;
+    postJob.editat = editat;
+    // postJob.files = data.files;
+    // postJob.execat = data.execat;
+    // postJob.nextat = data.nextat;
+    // postJob.execerr = data.execerr;
+    if(postJob.nextat == ""){
+      postJob.nextat = '0001-01-01T00:00:00.000Z';
+    }
+    if(postJob.execat == ""){
+      postJob.execat = '0001-01-01T00:00:00.000Z';
+    }
+    if (data.filename !== postJob.filename) {         //修改了filename
+      if (data.filename) {
+        let fileIsExist = data.files.some(item => item.name == data.filename);
+        if (!fileIsExist) {
+          let fileObj = {
+            name: data.filename,
+            createat: Date.now(),
           }
-        }
-        let currentFileExist = data.files.some(item => item.name == postJob.filename);
-        if(currentFileExist) {
-          let fileIndex = data.files.findIndex(item => item.name == postJob.filename);
-          postJob.files.splice(fileIndex, 1)
-        }
-        if (postJob.files.length > 0) {                 //排序
-          postJob.files.sort((a, b) => {
-            return a.createat < b.createat ? 1 : -1;
-          });
-          postJob.files = postJob.files.slice(0, 60);   //截取前60条
+          postJob.files.push(fileObj);
         }
       }
-      if (postJob.schedule.length == 0) {                 //schedule为空
-        postJob.nextat = '0001-01-01T00:00:00.000Z';
-      } else {
-        postJob.schedule.forEach(item => {                //判断id为空的schedule添加id值
-          if (!item.id) {
-            item.id = util.getRandomId();
-          }
-        })
+      let currentFileExist = data.files.some(item => item.name == postJob.filename);
+      if(currentFileExist) {
+        let fileIndex = data.files.findIndex(item => item.name == postJob.filename);
+        postJob.files.splice(fileIndex, 1)
       }
-      if (!postJob.enabled) {                             //enabled为0
-        postJob.nextat = '0001-01-01T00:00:00.000Z';
-        postJob.stat = jobstat.jobstatus.STATE_STOPED     //停止状态
+      if (postJob.files.length > 0) {                 //排序
+        postJob.files.sort((a, b) => {
+          return a.createat < b.createat ? 1 : -1;
+        });
+        postJob.files = postJob.files.slice(0, 60);   //截取前60条
       }
-      return postJob;
-    })
-    .then(postJob => {
-      return db.update("sys_jobs", postJob)               //更改数据库中对应job信息
-    })
-    .then((data) => {
-      if (data !== 'Accepted') {
-        return Promise.reject({ message: 'Update job failed' })
+    }
+    if (postJob.schedule.length == 0) {                 //schedule为空
+      postJob.nextat = '0001-01-01T00:00:00.000Z';
+    } else {
+      postJob.schedule.forEach(item => {                //判断id为空的schedule添加id值
+        if (!item.id) {
+          item.id = util.getRandomId();
+        }
+      })
+    }
+    if (!postJob.enabled) {                             //enabled为0
+      postJob.nextat = '0001-01-01T00:00:00.000Z';
+      postJob.stat = jobstat.jobstatus.STATE_STOPED     //停止状态
+    }
+    collectionLocation.update({ 'jobid': postJob.jobid }, { $set: {
+      'name': postJob.name,
+      'editat': postJob.editat,
+      'edituser': postJob.edituser,
+      'nextat': postJob.nextat,
+      'files': postJob.files,
+      'filename': postJob.filename,
+      'schedule':  postJob.schedule,
+      'enabled': postJob.enabled,
+      'nextat': postJob.nextat,
+      'stat': postJob.stat,
+      'groupid': postJob.groupid,
+      'env': postJob.env,
+      'description': postJob.description,
+      'cmd': postJob.cmd,
+      'timeout': postJob.timeout,
+      'servers': postJob.servers,
+      'notifysetting': postJob.notifysetting
+    } }, (err, result) => {
+      if (err) {
+        console.log('Error:' + err);
+        return;
       }
+      console.log('=====');
       let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, postJob);
-      return resultData;
-    })
-    .then(resultData => {
-      let time =  Date.now();
-      let dataObj = {
-        msgname: 'SystemEvent',
-        msgid: '',
-        jobids: [postJob.jobid],
-        groupids: [],
-        event: "change_job",
-        runtime: jobLocation,
-        timestamp: time
-      }
       res.json(resultData);
-      return requestHelper.requestMQ(envConfig, dataObj, { method: 'post' })
+      db.close();
+      // let time =  Date.now();
+      // let dataObj = {
+      //   msgname: 'SystemEvent',
+      //   msgid: '',
+      //   jobids: [postJob.jobid],
+      //   groupids: [],
+      //   event: "change_job",
+      //   runtime: jobLocation,
+      //   timestamp: time
+      // }
+      // return requestHelper.requestMQ(envConfig, dataObj, { method: 'post' })
     })
-    .then((data) => {
-      if (!data) {
-        return Promise.reject({ message: 'Job alloc failed' });
-      }
-      return data;
-    });
+  })
 }
 
 exports.updateJob = (req, res, next) => {
@@ -200,31 +210,23 @@ exports.updateJob = (req, res, next) => {
   let jobId = postJob.jobid;
   let job = {};
   let jobLocation = '';
-  db.get("sys_jobs", { pageSize: 10000, andQuery: { groupid: groupId } })
-    .then(result => {
-      if (!result) {
-        return Promise.reject({ message: 'Get jobs failed' });
-      }
-      return result;
-    })
-    .then(result => {
-      job = result.rows;
-      let groupJobs = job.filter(item => item.jobid !== jobId);
-      let isExist = groupJobs.some(item => item.name == postJob.name); //判断当前group是否有job与新建job重名
-      if (isExist) {
-        let resultData = response.setResult(request.requestResultCode.RequestConflict, request.requestResultErr.ErrRequestConflict, {});
-        res.status(409);
-        res.json(resultData);
-        return { done: true }
-      }
-      return { done: false }
-    })
-    .then(result => {
-      if (!result.done) {
-        this.changeInfo(res, postJob, db, envConfig);
-      }
-    })
-    .catch(err => next(err));
+
+  let collectionLocation = db.collection('sys_jobs');
+  collectionLocation.find({ 'groupid': groupId }).toArray((err, resultJob) => {
+    if (err) {
+      console.log('Error:' + err);
+      return;
+    }
+    job = resultJob;
+    let groupJobs = job.filter(item => item.jobid !== jobId);
+    let isExist = groupJobs.some(item => item.name == postJob.name); //判断当前group是否有job与新建job重名
+    if (isExist) {
+      let resultData = response.setResult(request.requestResultCode.RequestConflict, request.requestResultErr.ErrRequestConflict, {});
+      res.status(409);
+      res.json(resultData);
+    }
+    this.changeInfo(res, postJob, collectionLocation, db, envConfig);
+  })
 }
 
 exports.getGroupJobs = (req, res, next) => {
@@ -253,14 +255,16 @@ exports.getGroupJobs = (req, res, next) => {
 exports.getById = (req, res, next) => {
   let db = req.db;
   let jobId = req.params.jobId;
-  db.getById("sys_jobs", jobId)
-    .then((data) => {
-      if (!data) {
-        return Promise.reject({ message: 'Get job info failed' });
-      }
-      res.json(data);
-    })
-    .catch(err => next(err));
+
+  let collectionLocation = db.collection('sys_jobs');
+  collectionLocation.find({'jobid': jobId}).toArray((err, resultJob) => {
+    if (err) {
+      console.log('Error:' + err);
+      return;
+    }
+    res.json(resultJob[0]);
+    db.close();
+  })
 }
 
 exports.updatefiles = (req, res, next) => {
@@ -347,39 +351,34 @@ exports.removeJob = (req, res, next) => {
   let envConfig = req.envConfig;
   let jobId = req.params.jobId;
   let jobLocation = '';
-  db.getById("sys_jobs", jobId)
-    .then((data) => {
-      if (!data) {
-        return Promise.reject({ message: 'Get jobs failed' });
-      } else {
-        jobLocation = data.location;
-        return db.delete("sys_jobs", jobId);                                    //从数据库中删除job
-      }
-    })
-    .then((data) => {
-      if (data !== 'Accepted') {
-        return Promise.reject({ message: 'Delete jobs info failed' });
+  let collectionLocation = db.collection('sys_jobs');
+  collectionLocation.find({ 'jobid': jobId }).toArray((err, resultJob) => {
+    if (err) {
+      console.log('Error:' + err);
+      return;
+    }
+    jobLocation = resultJob.location;
+    collectionLocation.remove({ 'jobid': jobId  }, (err, result) => {
+      if (err) {
+        console.log('Error:' + err);
+        return;
       }
       let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
       res.json(resultData);
-      let time =  Date.now();
-      let dataObj = {
-        msgname: 'SystemEvent',
-        msgid: '',
-        runtime: jobLocation,
-        jobids: [jobId],
-        groupids: [],
-        event: "remove_job",
-        timestamp: time
-      }
-      return requestHelper.requestMQ(envConfig, dataObj, { method: 'post' });
+      db.close();
+      // let time =  Date.now();
+      // let dataObj = {
+      //   msgname: 'SystemEvent',
+      //   msgid: '',
+      //   runtime: jobLocation,
+      //   jobids: [jobId],
+      //   groupids: [],
+      //   event: "remove_job",
+      //   timestamp: time
+      // }
+      // return requestHelper.requestMQ(envConfig, dataObj, { method: 'post' });
     })
-    .then(data => {
-      if (!data) {
-        return Promise.reject({ message: 'Failed' });
-      }
-    })
-    .catch(err => next(err));
+  })
 }
 
 // exports.actionJob = (req, res, next) => {

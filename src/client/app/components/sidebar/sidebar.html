@@ -98,6 +98,11 @@
               <i class="fa fa-circle-o"></i> Groups
             </a>
           </li>
+          <li routerLinkActive="active">
+            <a [routerLink]="['/manage', 'users']">
+              <i class="fa fa-circle-o"></i> Users
+            </a>
+          </li>
           <li routerLinkActive="active" *ngIf="userInfo?.IsAdmin">
             <a [routerLink]="['/manage', 'system-config']">
               <i class="fa fa-gear"></i>

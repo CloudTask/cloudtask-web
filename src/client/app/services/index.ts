@@ -1,6 +1,7 @@
 import { IsLogin, IsGroupOwner } from './auth-guard.service';
 import { AuthService } from './auth.service';
 import { GroupService } from './group.service';
+import { UserService } from './user.service';
 import { JobService } from './job.service';
 import { DfisUploader } from './dfisUploader';
 import { CusHttpService } from './custom-http.service';
@@ -13,6 +14,7 @@ import { SystemConfigService } from './system-config.service';
 export * from './auth-guard.service';
 export * from './auth.service';
 export * from './group.service';
+export * from './user.service';
 export * from './job.service';
 export * from './dfisUploader';
 export * from './custom-http.service';
@@ -27,6 +29,7 @@ let Services: Array<any> = [
   IsGroupOwner,
   AuthService,
   GroupService,
+  UserService,
   JobService,
   DfisUploader,
   CusHttpService,

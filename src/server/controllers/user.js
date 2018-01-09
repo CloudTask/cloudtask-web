@@ -1,7 +1,8 @@
 const request = require('request');
 const response = require('./response/response');
 const result = require('./request/request');
-
+const moment = require('../../client/static/vendor/js/moment.min.js');
+// const util = require('./../common/util');
 /*
 UserInfo {
   UserID: 'admin',
@@ -17,6 +18,72 @@ UserInfo {
   EditUser: 'admin'
 }
 */
+
+exports.getAll = (req, res, next) => {
+  let db = req.db;
+  let collectionLocation = db.collection('sys_users');
+  collectionLocation.find({ }).toArray((err, resultUsers) => {
+    res.json(resultUsers);
+    db.close();
+  })
+}
+
+exports.createUser = (req, res, next) => {
+  let db = req.db;
+  let envConfig = req.envConfig;
+  let postUser = req.body;
+
+  let collectionLocation = db.collection('sys_users');
+  collectionLocation.find({ }).toArray((err, resultUser) => {
+    if (err) {
+      console.log('Error:' + err);
+      return;
+    }
+    let isExist = resultUser.some(item => item.userid == postUser.userid);   //判断当前group是否有job与新建job重名
+      if (isExist) {
+        let resultData = response.setResult(result.requestResultCode.RequestConflict, result.requestResultErr.ErrRequestConflict, {});
+        res.status(409);
+        return res.json(resultData);
+      } else {
+        let createat = moment().format();
+        postUser.createat = createat;
+        postUser.editat = createat;
+        postUser.edituser = postUser.createuser;
+        // postUser.userid = util.getRandomId();
+        collectionLocation.insert(postUser, (err, data) => {
+          if (err) {
+            console.log('Error:' + err);
+            return;
+          }
+          console.log('insert succeed.');
+          let resultData = response.setResult(result.requestResultCode.RequestSuccessed, result.requestResultErr.ErrRequestSuccessed, postUser);
+          res.json(resultData);
+          db.close();
+        })
+      }
+  })
+}
+
+exports.removeUser = (req, res, next) => {
+  let db = req.db;
+  let userId = req.params.userId;
+  let collectionLocation = db.collection('sys_users');
+  collectionLocation.find({ 'userid': userId }).toArray((err, resultUser) => {
+    if (err) {
+      console.log('Error:' + err);
+      return;
+    }
+    collectionLocation.remove({ 'userid': userId  }, (err, data) => {
+      if (err) {
+        console.log('Error:' + err);
+        return;
+      }
+      let resultData = response.setResult(result.requestResultCode.RequestSuccessed, result.requestResultErr.ErrRequestSuccessed, {});
+      res.json(resultData);
+      db.close();
+    })
+  })
+}
 
 exports.setToken = (req, res, next) => {
   req.session.token = req.body.token;
