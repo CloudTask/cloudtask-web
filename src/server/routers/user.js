@@ -16,14 +16,18 @@ router.post('/createUser',
   userCtrl.createUser
 );
 
+router.put('/updateUser',
+  envValidator.getCurrentEnv,
+  userCtrl.updateUser
+);
+
 router.get('/isLogin',
   sysCtrl.getUserValidate,
   userCtrl.isLogin
 );
 
 router.post('/login',
-  userValidator.validateLogin,
-  sysCtrl.getUserValidate,
+  envValidator.getCurrentEnv,
   userCtrl.login
 );
 
@@ -38,6 +42,15 @@ router.post('/setToken',
 
 router.get('/getToken',
   userCtrl.getToken
+);
+
+router.get('/search',
+  envValidator.getCurrentEnv,
+  userCtrl.search
+);
+
+router.get('/avatar/:userid',
+  userCtrl.getAvatar
 );
 
 router.delete('/removeUser/:userId',

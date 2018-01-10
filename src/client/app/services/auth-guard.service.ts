@@ -20,50 +20,15 @@ export class IsLogin implements CanActivate {
     return new Promise((resolve, reject) => {
       this._authService.isLogin()
         .then(result => {
-          // if (localStorage.getItem('ConfEnvValue')) {
-          //   ConfAddress = localStorage.getItem('ConfAddress');
-          // } else {
-          //   ConfAddress = Config.Gdev;
-          // }
-          this._http.get('/api/transferEnv')
-            .then(res => {
-              let resData = res.json() ? res.json() : res;
-              if (resData.CurrentAddress) {
-                ConfAddress = resData.CurrentAddress;
-              } else {
-                ConfAddress = Config.Gdev;
-              }
-              if (!result || result == null) {
-                this._router.navigate(['/login', { returnUrl: state.url }]);
-                // if (localStorage.getItem('token')) {
-                //   localStorage.removeItem('token');
-                // }
-                this._http.get('api/users/getToken')
-                  .then(res => {
-                    if (res) {
-                      let postToken = JSON.stringify({ token: '' })
-                      this._http.post('api/users/setToken', postToken)
-                        .then(res => {
-
-                        })
-                        .catch(err => console.log(err))
-                    }
-                  })
-                  .catch(err => console.log(err))
-                return resolve(false);
-              }
-              if (route.data['Admin'] && !result.IsAdmin) {
-                this._router.navigate(['/401']);
-                return resolve(false);
-              }
-              // this._http.get('/api/transferEnv')
-              //   .then((res) => {
-              //     console.log(res);
-              //     ConfAddress = res;
-              //   })
-              resolve(true);
-            })
-            .catch(err => console.log(err))
+          if (!result) {
+            this._router.navigate(['/login', { returnUrl: state.url }]);
+            return resolve(false);
+          }
+          if (route.data['Admin'] && !result.IsAdmin) {
+            this._router.navigate(['/401']);
+            return resolve(false);
+          }
+          resolve(true);
         })
         .catch(err => {
           this._router.navigate(['/401']);

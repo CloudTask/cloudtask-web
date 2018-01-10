@@ -28,7 +28,7 @@ export class HeaderComponent {
   ngOnInit() {
     this.userInfo = this._authService.getUserInfoFromCache();
     if (!this.userInfo) {
-      this.userInfo.IsAdmin = false;
+      this.userInfo.isadmin = false;
     }
     this.logoutModalOptions = {
       show: false,
@@ -56,10 +56,10 @@ export class HeaderComponent {
   private logout() {
     this._authService.logout()
       .then(res => {
-        location.href = `https://account.newegg.org/logout?redirect_url=https://account.newegg.org/login?redirect_url=http://${location.host}/login?returnUrl=/`;
+        this._router.navigate(['/login']);
       })
       .catch(err => {
-        messager.error(err.message);
+        messager.error(err);
       });
   }
 }

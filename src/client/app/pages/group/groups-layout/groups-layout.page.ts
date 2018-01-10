@@ -76,7 +76,7 @@ export class GroupsLayoutPage {
             return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
           });
         })
-        if (this.userInfo && !this.userInfo.IsAdmin) {
+        if (this.userInfo && !this.userInfo.isadmin) {
           this.ownerGroups = this.ownerGroups.map((group: any) => {
             if (group.length > 0) {
               return group = group.filter((item: any) => {

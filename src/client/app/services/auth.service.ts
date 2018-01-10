@@ -22,11 +22,10 @@ export class AuthService {
 
   }
 
-  login(token: string, hideLoading: boolean = false): Promise<any> {
+  login(userInfo: IUserLogin): Promise<any> {
     return new Promise((resolve, reject) => {
       let url = `/api/users/login`;
-      let postToken = JSON.stringify({ Token: token })
-      this.http.post(url, postToken, { disableLoading: hideLoading })
+      this.http.post(url, userInfo)
         .then(res => {
           this.userInfo = res.json();
           resolve(this.userInfo);

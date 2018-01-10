@@ -33,6 +33,7 @@ export class UserListPage {
     password: '',
     department: '',
     email: '',
+    isadmin: false
   };
   private submitted: boolean = false;
   private currentGroupLocation: any;
@@ -112,6 +113,7 @@ export class UserListPage {
       Password: data.password || '',
       Department: data.department || '',
       Email: data.email || '',
+      IsAdmin: data.isadmin || false
     });
   }
 
@@ -174,8 +176,10 @@ export class UserListPage {
         fullname: '',
         password: '',
         department: '',
-        email: ''
+        email: '',
+        isadmin: false
       }
+      this.userForm.controls['UserId'].enable();
       this.buildForm();
     });
   }
@@ -188,19 +192,14 @@ export class UserListPage {
         fullname: this.currentGroups[index].fullname || '',
         password: this.currentGroups[index].password || '',
         department: this.currentGroups[index].department || '',
-        email: this.currentGroups[index].department || '',
+        email: this.currentGroups[index].email || '',
+        isadmin: this.currentGroups[index].isadmin || false,
       }
       this.isNewGroup = false;
+      this.userForm.controls['UserId'].disable();
       this.buildForm();
 
-      this.currentGroupLocation = this.currentGroups[index].location;
       this.currentUserId = this.currentGroups[index].userid;
-      let groupOwners = this.currentGroups[index].owners;
-      if (groupOwners) {
-        this.owner = groupOwners;
-      } else {
-        this.owner = [];
-      }
     });
   }
 
@@ -218,7 +217,8 @@ export class UserListPage {
       fullname: '',
       password: '',
       department: '',
-      email: ''
+      email: '',
+      isadmin: false
     };
     this.isNewGroup = true;
     this.buildForm();
@@ -232,13 +232,17 @@ export class UserListPage {
       fullname: this.userForm.controls.FullName.value,
       password: this.userForm.controls.Password.value,
       department: this.userForm.controls.Department.value,
-      email: this.userForm.controls.Email.value
+      email: this.userForm.controls.Email.value,
+      isadmin: this.userForm.controls.IsAdmin.value,
     }
     let form = this.userForm;
     if (form.invalid) return;
-    let postGroup = this.userSelected;
+    let postUser = this.userSelected;
     if (this.isNewGroup) {
-      this._userService.add(postGroup)
+      if(!postUser.password){
+        postUser.password = '123456';
+      }
+      this._userService.add(postUser)
         .then(data => {
           messager.success('Add Succeed.');
           this.groupInfoModal.show = false;
@@ -258,9 +262,9 @@ export class UserListPage {
           messager.error(err.message || 'Faild');
         })
     } else {
-      postGroup.userid = this.currentUserId;
-      postGroup.edituser = this.userName;
-      this._groupService.update(postGroup)
+      postUser.userid = this.currentUserId;
+      postUser.edituser = this.userName;
+      this._userService.update(postUser)
         .then(data => {
           messager.success('Update Succeed.');
           this.groupInfoModal.show = false;
@@ -268,7 +272,7 @@ export class UserListPage {
           this.activityData.content = `Update user ${this.userForm.value.UserId}`;
           this.activityData.indate = currentDate;
           // this._groupService.postActivity(this.activityData);
-          return this._groupService.get(true);
+          return this._userService.get(true);
         })
         .then(data => {
           let groups = data;

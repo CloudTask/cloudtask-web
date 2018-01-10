@@ -35,15 +35,15 @@ JobInfo {
 
 exports.get = (req, res, next) => {
   let db = req.db;
-  db.get("sys_jobs", { pageSize: 10000})
-    .then(result => {
-      if (!result) {
-        return Promise.reject({ message: 'Get jobs failed' });
-      }
-    let jobs = result.rows;
-    res.json(jobs);
-    })
-    .catch(err => next(err));
+  let collectionLocation = db.collection('sys_jobs');
+  collectionLocation.find({ }).toArray((err, resultJob) => {
+    if (err) {
+      console.log('Error:' + err);
+      return;
+    }
+    res.json(resultJob);
+    db.close();
+  })
 }
 
 exports.createJob = (req, res, next) => {
@@ -107,17 +107,8 @@ exports.changeInfo = (res, postJob, collectionLocation, db, envConfig) => {
       return;
     }
     let data = resultJob[0];
-    console.log(data)
-    // jobLocation = data.location;
-    // postJob.createat = data.createat;
-    // postJob.createuser = data.createuser;
-    // postJob.stat = data.stat;
     let editat = moment().format();;
     postJob.editat = editat;
-    // postJob.files = data.files;
-    // postJob.execat = data.execat;
-    // postJob.nextat = data.nextat;
-    // postJob.execerr = data.execerr;
     if(postJob.nextat == ""){
       postJob.nextat = '0001-01-01T00:00:00.000Z';
     }
@@ -241,15 +232,6 @@ exports.getGroupJobs = (req, res, next) => {
     res.json(resultJob);
     db.close();
   })
-  // db.get("sys_jobs", { pageSize: 10000, andQuery: { groupid: groupId } })
-  //   .then(result => {
-  //     if (!result) {
-  //       return Promise.reject({ message: 'Get jobs info failed' });
-  //     }
-  //     let job = result.rows;
-  //     res.json(job);
-  //   })
-  //   .catch(err => next(err));
 }
 
 exports.getById = (req, res, next) => {
@@ -276,74 +258,82 @@ exports.updatefiles = (req, res, next) => {
   let newFileName = postJobs.jobs[0].filename;
   let jobids = postJobs.jobs.map(item => item.jobid);
   postJobs.jobs.forEach(item => {
-    db.getById("sys_jobs", item.jobid)
-      .then((data) => {
-        if (!data) {
-          return Promise.reject({ message: 'Get jobs failed' });
-        }
-        newJob = data;
-        let postJob = req.body;
-        let files = data.files;
-        if (data.filename !== newFileName) {                      //修改了filename
-          if (data.filename) {
-            let fileIsExist = data.files.some(item => item.name == data.filename);
-            if (!fileIsExist) {
-              let fileObj = {
-                name: data.filename,
-                createat: Date.now(),
-              }
-              files.push(fileObj);
+    let collectionLocation = db.collection('sys_jobs');
+    collectionLocation.finOne({ 'jobid': item.jobid }, (err, resultJob) => {
+      if (err) {
+        console.log('Error:' + err);
+        return;
+      }
+      newJob = resultJob;
+      let postJob = req.body;
+      let files = data.files;
+      if (data.filename !== newFileName) {                      //修改了filename
+        if (data.filename) {
+          let fileIsExist = data.files.some(item => item.name == data.filename);
+          if (!fileIsExist) {
+            let fileObj = {
+              name: data.filename,
+              createat: Date.now(),
             }
-            if (files.length > 0) {                                       //排序
-              files.sort((a, b) => a.createat < b.createat ? 1 : -1);
-              files = files.slice(0, 60);                         //截取前60条
-            }
+            files.push(fileObj);
+          }
+          if (files.length > 0) {                                       //排序
+            files.sort((a, b) => a.createat < b.createat ? 1 : -1);
+            files = files.slice(0, 60);                         //截取前60条
           }
         }
-        newJob.jobid = item.jobid;
-        newJob.filename = newFileName;
-        newJob.files = files;
-        this.changeFiles(res, next, db, envConfig, newJob, jobids, jobLocation);
-      })
-      .catch(err => next(err))
+      }
+      newJob.jobid = item.jobid;
+      newJob.filename = newFileName;
+      newJob.files = files;
+      this.changeFiles(res, next, collectionLocation, envConfig, newJob, jobids, jobLocation);
+    })
   })
 }
 
-exports.changeFiles = (res, next, db, envConfig, newJob, jobids, jobLocation) => {
-  db.update('sys_jobs', newJob)
-    .then((data) => {
-      if (data) {
-        let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
-        res.json(resultData);
-        return { done: false }
-      } else {
-        let resultData = response.setResult(request.requestResultCode.RequestNotFound, request.requestResultErr.ErrRequestNotFound, {});
-        res.json(resultData);
-        return { done: true }
-      }
-    })
-    .then(data => {
-      if (!data.done) {
-        let time =  Date.now();
-        let dataObj = {
-          msgname: 'SystemEvent',
-          msgid: '',
-          event: "change_jobsfile",
-          jobids: jobids,
-          groupids: [],
-          runtime: jobLocation,
-          timestamp: time
-        }
-        requestHelper.requestMQ(envConfig, dataObj, { method: 'post' })
-        .then(data => {
-          if (!data) {
-            return Promise.reject({ message: 'Failed' });
-          }
-        })
-          .catch(err => next(err))
-      }
-    })
-    .catch(err => next(err))
+exports.changeFiles = (res, next, collectionLocation, envConfig, newJob, jobids, jobLocation) => {
+  collectionLocation.update({'jobid': newJob.jobid}, {$set: {'filename': newJob.filename, 'files': newJob.files}}, (err, resultJob) => {
+    if (err) {
+      console.log('Error:' + err);
+      return;
+    }
+    let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
+    res.json(resultData);
+  })
+  // db.update('sys_jobs', newJob)
+  //   .then((data) => {
+  //     if (data) {
+  //       let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
+  //       res.json(resultData);
+  //       return { done: false }
+  //     } else {
+  //       let resultData = response.setResult(request.requestResultCode.RequestNotFound, request.requestResultErr.ErrRequestNotFound, {});
+  //       res.json(resultData);
+  //       return { done: true }
+  //     }
+  //   })
+  //   .then(data => {
+  //     if (!data.done) {
+  //       let time =  Date.now();
+  //       let dataObj = {
+  //         msgname: 'SystemEvent',
+  //         msgid: '',
+  //         event: "change_jobsfile",
+  //         jobids: jobids,
+  //         groupids: [],
+  //         runtime: jobLocation,
+  //         timestamp: time
+  //       }
+  //       requestHelper.requestMQ(envConfig, dataObj, { method: 'post' })
+  //       .then(data => {
+  //         if (!data) {
+  //           return Promise.reject({ message: 'Failed' });
+  //         }
+  //       })
+  //         .catch(err => next(err))
+  //     }
+  //   })
+  //   .catch(err => next(err))
 }
 
 exports.removeJob = (req, res, next) => {

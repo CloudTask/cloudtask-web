@@ -55,6 +55,19 @@ export class UserService {
     });
   }
 
+  update(user: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // this._http.put(`${ConfAddress}/cloudtask/v2/groups`, group)
+      this._http.put(`api/users/updateUser`, user)
+        .then(res => {
+          resolve(res.json ? res.json() : res.text());
+        })
+        .catch(err => {
+          reject(err.json ? err.json() : err);
+        });
+    });
+  }
+
   remove(userid: string): Promise<any> {
     // let url = `${ConfAddress}/cloudtask/v2/groups/${id}`;
     let url = `api/users/removeUser/${userid}`

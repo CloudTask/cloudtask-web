@@ -1,5 +1,5 @@
 export interface IUserLogin {
-  UserID: string;
-  Password: string;
-  RememberMe: boolean;
+  userid: string;
+  password: string;
+  rememberMe: boolean;
 }

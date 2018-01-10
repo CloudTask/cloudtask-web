@@ -11,7 +11,7 @@ exports.getCurrentEnv = (req, res, next) => {
   });
 }
 
-exports.setCunrretEnv = (req, res, next) => {
+exports.setCunrretEnv = () => {
   // let envConfig = req.session.envConfig;
   // if(envConfig){
   //   let envAddress = envConfig.CurrentAddress;
@@ -27,8 +27,10 @@ exports.setCunrretEnv = (req, res, next) => {
   //   req.envConfig = config.configUrl.gdev;
   //   req.envValue = 'GDEV';
   // }
-  MongoClient.connect(DB_CONN_STR, (err, database) => {
-    req.db = database;
+  let db;
+  return MongoClient.connect(DB_CONN_STR, (err, database) => {
+    db = database;
+    return db;
   });
 }
 var MongoClient = require('mongodb').MongoClient;

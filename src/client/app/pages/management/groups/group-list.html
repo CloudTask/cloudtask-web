@@ -14,7 +14,7 @@
             (ngModelChange)="search($event)">
           <span class="fa fa-search form-control-feedback"></span>
         </div>
-        <div class="form-group" *ngIf="userInfo?.IsAdmin">
+        <div class="form-group" *ngIf="userInfo?.isadmin">
           <a href="javascript:void(0)" class="btn btn-sm btn-flat bg-olive" (click)="addNewGroup($event)">
               <i class="fa fa-plus"></i> Add Group
           </a>
@@ -40,7 +40,7 @@
             <td>{{ item.name }}</td>
             <td>{{ item.edituser }}</td>
             <td>{{ item.editat | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-            <td *ngIf="item.isOwner || userInfo?.IsAdmin" class="text-center">
+            <td *ngIf="item.isOwner || userInfo?.isadmin" class="text-center">
               <a href="javascript:void(0)" (click)="selectGroup(i)" class="margin-right-10">
                 <i class="fa fa-pencil"></i>
               </a>
@@ -85,31 +85,9 @@
       <div class="form-group row" [class.has-error]="(submitted && !owner?.length) || groupForm.controls.groupOwners.errors?.pattern">
         <label class="col-md-1 control-label text-right">Owners</label>
         <div class="col-md-5">
-          <!--<select2 [data]="groupSelected.owners" [value]="groupSelected.owners" (valueChanged)="refreshSelectedUser($event)" [cssImport]="false"
-                            [width]="'100%'" [options]="ownerSelect2Options"></select2>-->
-          <!--<input class="select2-search__field" style="width: 0.75em;" formControlName="groupOwners" [value]="groupSelected.owners" type="text" class="form-control" (keyup)="a($event)"  (valueChanged)="refreshSelectedUser($event)" required> -->
-          <span class="select2 select2-container select2-container--default" dir="ltr" style="width: 100%;">
-            <span class="selection">
-              <span class="select2-selection select2-selection--multiple" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1">
-                <ul class="select2-selection__rendered">
-                    <li class="select2-selection__choice" *ngFor="let item of owner;let i = index" >
-                        <span class="select2-selection__choice__remove" role="presentation" (click)="removeOwner(i)">×</span>
-                        {{ item }}
-                    </li>
-                    <li class="select2-search select2-search--inline">
-                      <input formControlName="groupOwners" #input [value]="" class="select2-search__field" type="search" tabindex="0" autocomplete="off"
-                        autocorrect="off" autocapitalize="off" spellcheck="false" role="textbox" aria-autocomplete="list" placeholder=""
-                        (keyup)="onKeyUp(input.value)" style="width: 3em;" maxlength="4" pattern="^[0-9a-z]{0,4}$">
-                    </li>
-                  </ul>
-              </span>
-            </span>
-            <span class="dropdown-wrapper" aria-hidden="true"></span>
-          </span>
-          <div>
-            <span class="help-block" *ngIf="groupForm.controls.groupOwners.errors?.pattern">Owners cannot contain any special symbol.</span>
-            <span class="help-block" *ngIf="submitted && !owner?.length">Owners cannot be empty.</span>
-          </div>
+            <select2 [data]="groupSelected.owners" [value]="groupSelected.owners" (valueChanged)="refreshSelectedUser($event)" [cssImport]="false"
+            [width]="'100%'" [options]="ownerSelect2Options"></select2>
+          <span class="help-block" *ngIf="submitted && !groupSelected.owners?.length">Owners cannot be empty.</span>
         </div>
       </div>
       <div class="modal-footer">

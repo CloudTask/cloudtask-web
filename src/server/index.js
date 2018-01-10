@@ -10,6 +10,8 @@ const http = require("http");
 const util = require('./common/util');
 const config = require('./common/config');
 
+const user = require('./controllers/user');
+
 
 let app = express();
 
@@ -76,6 +78,19 @@ let startServer = () => {
   app.use('/api/location', require('./routers/location'));
   app.use('/api/job', require('./routers/job'));
   app.use('/api/activitys', require('./routers/activity'));
+
+  // console.debug('Init system...');
+  // user.initAdmin()
+  //   .then(() => {
+  //     app.listen(config.listenPort, () => {
+  //       console.debug('Init system succeed');
+  //       console.log(`Humpback Website is started on port ${config.listenPort}`);
+  //     });
+  //   })
+  //   .catch(err => {
+  //     console.log(`System init failed. Error: ${err}`);
+  //     process.exit(-101);
+  //   });
 
   app.listen(config.listenPort, () => {
     console.log(`Website is started on port ${config.listenPort}`);

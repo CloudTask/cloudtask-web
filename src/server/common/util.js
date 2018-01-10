@@ -15,3 +15,10 @@ exports.getRandomId = () => {
   }
   return res;
 }
+
+exports.md5Crypto = (text, salt) => {
+  salt = salt || 'hb@123';
+  let str = `${text}-${salt}`;
+  let encrypted = crypto.createHash('md5').update(str).digest("hex");
+  return encrypted;
+}

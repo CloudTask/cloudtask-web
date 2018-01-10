@@ -50,6 +50,8 @@ export class GroupListPage {
   private currentIndex: any = 1;
   private activityData: any;
 
+  private ownerSelect2Options: any;
+
   private showOperate: boolean = true;
 
   constructor(
@@ -97,6 +99,36 @@ export class GroupListPage {
     this.userInfo = this._authService.getUserInfoFromCache();
     this.userName = this.userInfo.UserName;
     this.userFullName = this.userInfo.FullName;
+
+    this.ownerSelect2Options = {
+      multiple: true,
+      closeOnSelect: true,
+      minimumInputLength: 2,
+      placeholder: 'Select User',
+      dropdownAutoWidth: true,
+      ajax: {
+        url: "/api/users/search",
+        dataType: 'json',
+        delay: 250,
+        data: function (params: any) {
+          return {
+            q: params.term
+          };
+        },
+        processResults: function (data: any, params: any) {
+          return {
+            results: data.map((item: any) => {
+              return { "text": item.fullname, "id": item.userid };
+            })
+          };
+        },
+        cache: true
+      },
+      formatSelection: function (item: any) {
+        if (!item) return;
+        return `${item.useid} - ${item.fullname}`;
+      }
+    };
 
     this.groups = this._route.snapshot.data['groups'];
     this.locations = this.groups.map(group => group.location);
@@ -155,23 +187,23 @@ export class GroupListPage {
     this.search();
   }
 
-  private onKeyUp(value: any) {
-    let start: any = 0, end: any = 4;
-    if (!this.groupForm.controls.groupOwners.invalid) {
-      if (!(value.length % 4) && value.length) {
-        this.owner.push(value.slice(start, end));
-        this.groupSelected.location = this.groupForm.controls.groupLocation.value;
-        this.groupSelected.name = this.groupForm.controls.groupName.value;
-        this.groupSelected.owners = '';
-        this.buildForm();
-        if (this.isSaveClicked) {
-          this.submitted = !this.submitted;
-        }
-      } else {
-        this.groupSelected.owners = value;
-      }
-    }
-  }
+  // private onKeyUp(value: any) {
+  //   let start: any = 0, end: any = 4;
+  //   if (!this.groupForm.controls.groupOwners.invalid) {
+  //     if (!(value.length % 4) && value.length) {
+  //       this.owner.push(value.slice(start, end));
+  //       this.groupSelected.location = this.groupForm.controls.groupLocation.value;
+  //       this.groupSelected.name = this.groupForm.controls.groupName.value;
+  //       this.groupSelected.owners = '';
+  //       this.buildForm();
+  //       if (this.isSaveClicked) {
+  //         this.submitted = !this.submitted;
+  //       }
+  //     } else {
+  //       this.groupSelected.owners = value;
+  //     }
+  //   }
+  // }
 
 
   private setPage(pageIndex: number) {
@@ -252,7 +284,7 @@ export class GroupListPage {
   }
 
   private refreshSelectedUser(data: any) {
-    this.groupSelected.Owners = data.value || [];
+    this.groupSelected.owners = data.value || [];
   }
 
   private removeOwner(index: any) {

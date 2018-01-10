@@ -75,7 +75,7 @@ export class SearchJobPage {
       this.filterJobs = [];
     } else {
       this.jobs = [];
-      if (this.userInfo.IsAdmin) {
+      if (this.userInfo.isadmin) {
         this._jobService.get(true)
           .then(data => {
             this.jobs = data;

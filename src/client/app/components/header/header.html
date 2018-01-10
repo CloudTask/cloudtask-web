@@ -16,15 +16,15 @@
         <ul class="nav navbar-nav">
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="{{userInfo.Avatar}}" class="user-image" alt="User Image">
-              <span class="hidden-xs">{{userInfo.FullName}}</span>
+              <img src="{{'/api/users/avatar/'+userInfo.userid}}" class="user-image" alt="User Image">
+              <span class="hidden-xs">{{userInfo.fullname}}</span>
             </a>
             <ul class="dropdown-menu">
               <li class="user-header">
-                <img src="{{userInfo.Avatar}}" class="img-circle" alt="User Image">
+                <img src="{{'/api/users/avatar/'+userInfo.userid}}" class="img-circle" alt="User Image">
                 <p>
-                  {{userInfo.FullName}}
-                  <small>{{ userInfo.IsAdmin ? 'Administrator' : 'User' }}</small>
+                  {{userInfo.fullname}}
+                  <small>{{ userInfo.isadmin ? 'Administrator' : 'User' }}</small>
                 </p>
               </li>
               <li class="user-footer">
