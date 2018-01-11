@@ -259,7 +259,7 @@ export class UserListPage {
           this.newGroup();
         })
         .catch((err: any) => {
-          messager.error(err.message || 'Faild');
+          messager.error(err || 'Faild');
         })
     } else {
       postUser.userid = this.currentUserId;
@@ -281,7 +281,7 @@ export class UserListPage {
           this.newGroup();
         })
         .catch((err: any) => {
-          messager.error(err.message || 'Faild');
+          messager.error(err || 'Faild');
         })
     }
   }

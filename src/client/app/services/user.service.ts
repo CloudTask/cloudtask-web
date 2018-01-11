@@ -25,6 +25,19 @@ export class UserService {
     })
   }
 
+  getCurrentUser(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url = `/api/users/currentUser`;
+      this._http.get(url)
+        .then(res => {
+          resolve(res.json());
+        })
+        .catch(err => {
+          reject(err.json ? err.json() : err);
+        });
+    });
+  }
+
   get(nocache: boolean = false, type: string = 'normal'): Promise<any> {
     let url = `/api/users`;
     return new Promise((resolve, reject) => {
@@ -80,5 +93,36 @@ export class UserService {
           reject(err.json ? err.json() : err);
         });
     })
+  }
+
+  updateProfile(profile: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url = `api/users/updateUser`;
+      this._http.put(url, profile)
+        .then(res => {
+          resolve(res.json());
+        })
+        .catch(err => {
+          reject(err.json ? err.json() : err);
+        });
+    });
+  }
+
+  changePassword(userId: string, oldPassword: string, newPassword: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let body = {
+        userId: userId,
+        oldPassword: oldPassword,
+        newPassword: newPassword
+      }
+      let url = `api/users/changePassword`;
+      this._http.put(url, body)
+        .then(res => {
+          resolve(res.json());
+        })
+        .catch(err => {
+          reject(err.json ? err.json() : err);
+        });
+    });
   }
 }

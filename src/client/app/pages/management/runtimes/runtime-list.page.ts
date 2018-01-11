@@ -139,12 +139,8 @@ export class RuntimeListPage {
     // this.isNewGroup = true;
     setTimeout(() => {
       this.runtimeSelected = {
-        location: this.runtimeValue !== 'All' ? this.runtimeValue : '',
-        name: '',
-        createuser: '',
-        owners: [],
+        location: '',
       }
-      this.runtimeForm.controls['runtimeLocation'].enable();
       this.buildForm();
     });
   }

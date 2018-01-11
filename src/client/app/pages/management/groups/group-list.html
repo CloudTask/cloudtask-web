@@ -82,12 +82,12 @@
           </div>
         </div>
       </div>
-      <div class="form-group row" [class.has-error]="(submitted && !owner?.length) || groupForm.controls.groupOwners.errors?.pattern">
+      <div class="form-group row" [class.has-error]="submitted && !owners?.length">
         <label class="col-md-1 control-label text-right">Owners</label>
         <div class="col-md-5">
-            <select2 [data]="groupSelected.owners" [value]="groupSelected.owners" (valueChanged)="refreshSelectedUser($event)" [cssImport]="false"
+            <select2 [data]="owners" [value]="owners" (valueChanged)="refreshSelectedUser($event)" [cssImport]="false"
             [width]="'100%'" [options]="ownerSelect2Options"></select2>
-          <span class="help-block" *ngIf="submitted && !groupSelected.owners?.length">Owners cannot be empty.</span>
+          <span class="help-block" *ngIf="submitted && !owners?.length">Owners cannot be empty.</span>
         </div>
       </div>
       <div class="modal-footer">

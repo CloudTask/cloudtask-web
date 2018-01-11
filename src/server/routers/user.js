@@ -21,8 +21,13 @@ router.put('/updateUser',
   userCtrl.updateUser
 );
 
+router.put('/changePassword',
+  envValidator.getCurrentEnv,
+  userCtrl.changePassword
+);
+
 router.get('/isLogin',
-  sysCtrl.getUserValidate,
+  envValidator.getCurrentEnv,
   userCtrl.isLogin
 );
 
@@ -47,6 +52,11 @@ router.get('/getToken',
 router.get('/search',
   envValidator.getCurrentEnv,
   userCtrl.search
+);
+
+router.get('/currentUser',
+  envValidator.getCurrentEnv,
+  userCtrl.getCurrentUser
 );
 
 router.get('/avatar/:userid',

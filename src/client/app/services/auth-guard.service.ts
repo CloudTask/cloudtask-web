@@ -24,7 +24,7 @@ export class IsLogin implements CanActivate {
             this._router.navigate(['/login', { returnUrl: state.url }]);
             return resolve(false);
           }
-          if (route.data['Admin'] && !result.IsAdmin) {
+          if (route.data['Admin'] && !result.isadmin) {
             this._router.navigate(['/401']);
             return resolve(false);
           }
@@ -45,7 +45,7 @@ export class IsLogin implements CanActivate {
             this._router.navigate(['/login', { returnUrl: state.url }]);
             return resolve(false);
           }
-          if (route.data['Admin'] && !result.IsAdmin) {
+          if (route.data['Admin'] && !result.isadmin) {
             this._router.navigate(['/401']);
             return resolve(false);
           }

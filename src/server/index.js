@@ -9,6 +9,7 @@ const session = require('express-session');
 const http = require("http");
 const util = require('./common/util');
 const config = require('./common/config');
+const errorHandler = require('errorhandler');
 
 const user = require('./controllers/user');
 
@@ -91,6 +92,9 @@ let startServer = () => {
   //     console.log(`System init failed. Error: ${err}`);
   //     process.exit(-101);
   //   });
+
+  errorHandler.title = `Cloudtask WebSite`;
+  app.use(errorHandler({ log: false }));
 
   app.listen(config.listenPort, () => {
     console.log(`Website is started on port ${config.listenPort}`);

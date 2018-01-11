@@ -49,7 +49,7 @@ export class AuthService {
           if (!result.IsLogin) {
             return resolve(this.userInfo);
           }
-          this.userInfo = result.UserInfo;
+          this.userInfo = result.userInfo;
           resolve(this.userInfo);
         })
         .catch(err => {

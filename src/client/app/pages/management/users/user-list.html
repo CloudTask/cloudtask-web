@@ -7,7 +7,7 @@
             (ngModelChange)="search($event)">
           <span class="fa fa-search form-control-feedback"></span>
         </div>
-        <div class="form-group" *ngIf="userInfo?.IsAdmin">
+        <div class="form-group" *ngIf="userInfo?.isadmin">
           <a href="javascript:void(0)" class="btn btn-sm btn-flat bg-olive" (click)="addNewGroup($event)">
               <i class="fa fa-plus"></i> Add User
           </a>

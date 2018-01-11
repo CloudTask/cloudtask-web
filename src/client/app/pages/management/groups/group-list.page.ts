@@ -28,7 +28,7 @@ export class GroupListPage {
   private filterCondition: string;
   private pageSize: number = 14;
   private pageOptions: any;
-  private owner: any = [];
+  private owners: any = [];
   private groupSelected: any = {
     location: '',
     name: '',
@@ -97,8 +97,8 @@ export class GroupListPage {
   ngOnInit() {
 
     this.userInfo = this._authService.getUserInfoFromCache();
-    this.userName = this.userInfo.UserName;
-    this.userFullName = this.userInfo.FullName;
+    this.userName = this.userInfo.userid;
+    this.userFullName = this.userInfo.fullname;
 
     this.ownerSelect2Options = {
       multiple: true,
@@ -254,7 +254,8 @@ export class GroupListPage {
         createuser: '',
         owners: [],
       }
-      this.owner = [];
+      this.owners = [];
+      this.owners.push(this.userName);
       this.groupForm.controls['groupLocation'].enable();
       this.buildForm();
     });
@@ -276,20 +277,20 @@ export class GroupListPage {
       this.currentGroupId = this.currentGroups[index].id;
       let groupOwners = this.currentGroups[index].owners;
       if (groupOwners) {
-        this.owner = groupOwners;
+        this.owners = groupOwners;
       } else {
-        this.owner = [];
+        this.owners = [];
       }
     });
   }
 
   private refreshSelectedUser(data: any) {
-    this.groupSelected.owners = data.value || [];
+    this.owners = data.value || [];
   }
 
-  private removeOwner(index: any) {
-    this.owner.splice(index, 1);
-  }
+  // private removeOwner(index: any) {
+  //   this.owner.splice(index, 1);
+  // }
 
   private newGroup() {
     this.groupSelected = {
@@ -307,12 +308,12 @@ export class GroupListPage {
     this.groupSelected = {
       location: this.groupForm.controls.groupLocation.value,
       name: this.groupForm.controls.groupName.value,
-      owners: this.owner,
+      owners: this.owners,
       createuser: this.userName,
     }
     let form = this.groupForm;
     if (form.invalid) return;
-    if (!this.owner.length) return;
+    if (!this.owners.length) return;
     let postGroup = this.groupSelected;
     this.activityData.location = this.currentGroupLocation;
     this.activityData.group = this.currentGroupId;

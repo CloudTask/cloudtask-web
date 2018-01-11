@@ -36,40 +36,33 @@ exports.getAll = (req, res, next) => {
 exports.createUser = (req, res, next) => {
   let db = req.db;
   let envConfig = req.envConfig;
-  let postUser = req.body;
+  let postUser = JSON.parse(JSON.stringify(req.body));
   let password = util.md5Crypto(postUser.password);
 
   let collectionLocation = db.collection('sys_users');
-  collectionLocation.find({}).toArray((err, resultUser) => {
-    if (err) {
-      console.log('Error:' + err);
-      return;
-    }
-    let isExist = resultUser.some(item => item.userid == postUser.userid);   //判断当前group是否有job与新建job重名
-    if (isExist) {
-      let resultData = response.setResult(result.requestResultCode.RequestConflict, result.requestResultErr.ErrRequestConflict, {});
-      res.status(409);
-      return res.json(resultData);
-    } else {
-      let createat = moment().format();
-      postUser.createat = createat;
-      postUser.editat = createat;
-      postUser.edituser = postUser.createuser;
-      postUser.password = password;
-      postUser.isadmin = !!req.body.isadmin;
-      // postUser.userid = util.getRandomId();
-      collectionLocation.insert(postUser, (err, data) => {
-        if (err) {
-          console.log('Error:' + err);
-          return;
-        }
-        console.log('insert succeed.');
-        let resultData = response.setResult(result.requestResultCode.RequestSuccessed, result.requestResultErr.ErrRequestSuccessed, postUser);
-        res.json(resultData);
-        db.close();
-      })
-    }
-  })
+  isExists(collectionLocation, postUser.userid)
+    .then(resdata => {
+      if (resdata) {
+        return next(new Error('UserID is exists.'))
+      } else {
+        let createat = moment().format();
+        postUser.createat = postUser.editat = createat;
+        postUser.edituser = postUser.createuser = req.session.currentUser.userid;
+        postUser.password = password;
+        postUser.isadmin = !!req.body.isadmin;
+        // postUser.userid = util.getRandomId();
+        collectionLocation.insert(postUser, (err, data) => {
+          if (err) {
+            console.log('Error:' + err);
+            return;
+          }
+          console.log('insert succeed.');
+          let resultData = response.setResult(result.requestResultCode.RequestSuccessed, result.requestResultErr.ErrRequestSuccessed, postUser);
+          res.json(resultData);
+          db.close();
+        })
+      }
+    })
 }
 
 exports.updateUser = (req, res, next) => {
@@ -82,31 +75,38 @@ exports.updateUser = (req, res, next) => {
   let updateOpt = {
     $set: {
       fullname: req.body.fullname,
-      edituser: postUser.edituser,
+      edituser: reqUser.userid,
       editat: new Date().valueOf(),
-      email: req.body.email,
-      department: req.body.department
     }
   }
-  if (reqUser.IsAdmin && (typeof req.body.isadmin === 'boolean')) {
+  if (req.body.department) {
+    updateOpt['$set'].department = req.body.department;
+  }
+  if (req.body.email) {
+    updateOpt['$set'].email = req.body.email;
+  }
+  if (reqUser.isadmin && (typeof req.body.isadmin === 'boolean')) {
     updateOpt['$set'].isadmin = req.body.isadmin;
   }
-  collectionLocation.findOne({ 'userid': postUser.userid }, (err, resultUser) => {
-    if (err) {
-      console.log('Error:' + err);
-      return;
-    }
-    collectionLocation.update({ 'userid': postUser.userid }, updateOpt, (err, data) => {
-      if (err) {
-        console.log('Error:' + err);
-        return;
+  let userId = postUser.userid.toLowerCase();
+  isExists(collectionLocation, userId)
+    .then(resdata => {
+      if (!resdata) {
+        return next(new Error('UserID is not exists.'));
+      } else {
+        collectionLocation.update({ 'userid': userId }, updateOpt, (err, data) => {
+          if (err) {
+            console.log('Error:' + err);
+            return;
+          }
+          console.log('update succeed.');
+          let resultData = response.setResult(result.requestResultCode.RequestSuccessed, result.requestResultErr.ErrRequestSuccessed, postUser);
+          res.json(resultData);
+          db.close();
+        })
       }
-      console.log('update succeed.');
-      let resultData = response.setResult(result.requestResultCode.RequestSuccessed, result.requestResultErr.ErrRequestSuccessed, postUser);
-      res.json(resultData);
-      db.close();
     })
-  })
+    .catch(err => next(err));
 }
 
 exports.removeUser = (req, res, next) => {
@@ -189,16 +189,18 @@ exports.isLogin = (req, res, next) => {
   let result = {
     IsLogin: false
   };
-  if (req.session.currentUser && req.session.currentUser.UserID) {
+  if (req.session.currentUser && req.session.currentUser.userid) {
     result.IsLogin = true;
     getUserById(db, req.session.currentUser.userid)
       .then(userInfo => {
         result.userInfo = userInfo;
         res.json(result);
+        db.close();
       })
       .catch(err => next(err));
   } else {
     res.json(result);
+    db.close();
   }
 }
 
@@ -252,6 +254,17 @@ exports.logout = (req, res, next) => {
   next();
 }
 
+exports.getCurrentUser = (req, res, next) => {
+  let db = req.db;
+  let userId = req.session.currentUser.userid;
+  getUserById(db, userId)
+    .then(userInfo => {
+      res.json(userInfo);
+      db.close();
+    })
+    .catch(err => next(err));
+}
+
 exports.getAvatar = (req, res, next) => {
   let userid = req.params.userid.toLowerCase();
   let avatarDir = path.join(__dirname, `./../public/avatar`);
@@ -267,6 +280,32 @@ exports.getAvatar = (req, res, next) => {
         'Content-Length': data.length
       });
       res.end(data);
+    });
+  });
+}
+
+exports.changePassword = (req, res, next) => {
+  let db = req.db;
+  let collectionLocation = db.collection('sys_users');
+  let oldPassword = util.md5Crypto(req.body.oldPassword);
+  let query = {
+    'userid': req.body.userId,
+    'password': oldPassword
+  };
+  collectionLocation.findOne(query, (err, userInfo) => {
+    if (err) return next(err);
+    if (!userInfo) {
+      let err = new Error('OldPassword is not correct.');
+      return next(err);
+    }
+    let newPassword = util.md5Crypto(req.body.newPassword);
+    collectionLocation.update({ 'userid': req.body.userId }, { $set: { 'password': newPassword } }, {}, (err, numReplaced) => {
+      if (err) return next(err);
+      req.session.password = newPassword;
+      res.json({
+        result: true
+      });
+      db.close();
     });
   });
 }
@@ -321,10 +360,19 @@ let login = (db, useid, password, needCrypto) => {
         err.statusCode = 401;
         return reject(err);
       }
-      console.log(userInfo);
       return resolve(userInfo);
     });
   });
+}
+
+let isExists = (collectionLocation, userId) => {
+  return new Promise((resolve, reject) => {
+    let regStr = `^${userId}$`;
+    collectionLocation.findOne({ userid: { $regex: new RegExp(regStr, 'i') } }, (err, userInfo) => {
+      if (err) return reject(err);
+      resolve(!!userInfo);
+    });
+  })
 }
 
 let getUserById = (db, userId) => {
