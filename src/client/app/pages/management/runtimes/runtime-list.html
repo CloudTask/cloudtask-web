@@ -38,6 +38,9 @@
               <a href="javascript:void(0)" (click)="modifyRuntime(i)" class="margin-right-10">
                 <i class="fa fa-pencil"></i>
               </a>
+              <a href="javascript:void(0)" (click)="deleteRuntime(i)">
+                <i class="fa fa-close text-danger"></i>
+              </a>
             </td>
           </tr>
         </tbody>
@@ -65,5 +68,20 @@
           </hb-modal-footer>
         </div>
     </form>
+  </hb-modal>
+
+  <hb-modal [options]="deleteLocationModalOptions">
+    <h4 *ngIf="runtimeSelected.groups?.length">
+      This locations includes no less than one group, you show delete the groups first.
+    </h4>
+    <h4 *ngIf="!runtimeSelected.groups?.length">
+      Are you sure to delete location <span style="color: red"> {{ runtimeSelected.location }}</span>?
+    </h4>
+    <div class="modal-footer">
+      <hb-modal-footer>
+        <button type="button" class="btn btn-default btn-flat" (click)="deleteLocationModalOptions.show = fasle">Cancel</button>
+        <button *ngIf="!runtimeSelected.groups?.length" type="button" class="btn btn-success btn-flat" (click)="confirmDelete(runtimeSelected.location)">Ok</button>
+      </hb-modal-footer>
+    </div>
   </hb-modal>
 </section>

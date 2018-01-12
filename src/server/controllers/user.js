@@ -77,13 +77,9 @@ exports.updateUser = (req, res, next) => {
       fullname: req.body.fullname,
       edituser: reqUser.userid,
       editat: new Date().valueOf(),
+      department: req.body.department,
+      email: req.body.email
     }
-  }
-  if (req.body.department) {
-    updateOpt['$set'].department = req.body.department;
-  }
-  if (req.body.email) {
-    updateOpt['$set'].email = req.body.email;
   }
   if (reqUser.isadmin && (typeof req.body.isadmin === 'boolean')) {
     updateOpt['$set'].isadmin = req.body.isadmin;

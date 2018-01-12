@@ -48,9 +48,9 @@ let routes: Routes = [
         resolve: { groups: GroupResolve },
       },
       { path: 'search-job', component: SearchJobPage },
-      { path: 'manage/runtimes', component: RuntimeListPage, resolve: { groups: GroupResolve } },
+      { path: 'manage/runtimes', component: RuntimeListPage, resolve: { groups: GroupResolve }, data: { Admin: true } },
       { path: 'manage/groups', component: GroupListPage, resolve: { groups: GroupResolve } },
-      { path: 'manage/users', component: UserListPage,  resolve: { users: UserResolve } },
+      { path: 'manage/users', component: UserListPage,  resolve: { users: UserResolve }, data: { Admin: true } },
       { path: 'manage/system-config', component: SystemConfigPage },
 
       { path: 'account/profile', component: UserProfilePage },

@@ -29,6 +29,7 @@ export class RuntimeListPage {
   private locationGroup: Array<any> = [];
   private locationServer: Array<any> = [];
   private runtimeInfoModal: any = {};
+  private deleteLocationModalOptions: any = {};
   private runtimeSelected: any = {
     location: '',
   };
@@ -54,6 +55,12 @@ export class RuntimeListPage {
     this.runtimeInfoModal = {
       show: false,
       title: "Runtime",
+      hideCloseBtn: true,
+      hideFooter: true
+    };
+    this.deleteLocationModalOptions = {
+      show: false,
+      title: "Warn",
       hideCloseBtn: true,
       hideFooter: true
     };
@@ -145,6 +152,30 @@ export class RuntimeListPage {
     });
   }
 
+  private deleteRuntime(index: any){
+    this.deleteLocationModalOptions.show = true;
+    this.runtimeSelected = {
+      location: this.groups[index].location || '',
+      groups: this.groups[index].location || '',
+    }
+  }
+
+  private confirmDelete(location: any){
+    this._locationService.remove(location)
+    .then(data => {
+      messager.success('Delete Succeed.');
+      this.deleteLocationModalOptions.show = false;
+      return this._groupService.get(true);
+    })
+    .then(data => {
+      this.groups = data;
+      this.getLocations();
+    })
+    .catch((err) => {
+      messager.error(err || 'Delete failed');
+    })
+  }
+
   private save() {
     let form = this.runtimeForm;
     let postData = {
@@ -164,10 +195,10 @@ export class RuntimeListPage {
         this.getLocations();
       })
       .catch((err) => {
-        messager.error(err.message || 'Update failed');
+        messager.error(err || 'Add failed');
       })
     } else {
-      this._locationService.modifyLocation(postData)
+      this._locationService.modifyLocation(this.runtimeSelected.location, postData)
         .then((data) => {
           messager.success('Update Succeed.');
           this.runtimeInfoModal.show = false;
@@ -175,9 +206,10 @@ export class RuntimeListPage {
         })
         .then(data => {
           this.groups = data;
+          this.getLocations();
         })
         .catch((err) => {
-          messager.error(err.message || 'Update failed');
+          messager.error(err || 'Update failed');
         })
     }
   }

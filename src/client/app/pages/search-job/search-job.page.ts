@@ -99,13 +99,13 @@ export class SearchJobPage {
             // })
             this.groupsInfo.forEach((group: any) => {
               this._groupService.getJobsById(group.id)
-              .then((result) => {
-                result.forEach((item: any) => {
-                  this.jobs.push(item);
+                .then((result) => {
+                  result.forEach((item: any) => {
+                    this.jobs.push(item);
+                  })
+                  this.filterInput(value);
                 })
-                this.filterInput(value);
-              })
-              .catch(err => messager.error(err))
+                .catch(err => messager.error(err))
             })
           })
           .catch(err => messager.error(err.message || 'Get Groups faild'))
@@ -125,9 +125,16 @@ export class SearchJobPage {
       let keyWord = this.inputValue;
       if (keyWord) {
         let regex = new RegExp(keyWord, 'i');
-        this.filterJobs = this.jobs.filter((item: any) => {
-          return regex.test(item.name);
-        });
+        let idRegex = /^[0-9a-f]{24}$/;
+        if (idRegex.test(this.inputValue)) {
+          this.filterJobs = this.jobs.filter((item: any) => {
+            return regex.test(item.jobid);
+          });
+        } else {
+          this.filterJobs = this.jobs.filter((item: any) => {
+            return regex.test(item.name);
+          });
+        }
       } else {
         this.filterJobs = [];
       }

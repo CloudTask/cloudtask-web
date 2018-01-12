@@ -70,9 +70,9 @@ export class LocationService {
     })
   }
 
-  modifyLocation(value: any): Promise<any> {
+  modifyLocation(location: any, value: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this._http.post(`api/location/modifyLocation`, value)
+      this._http.post(`api/location/modifyLocation/${location}`, value)
         .then(res => {
           let data = res.json();
           resolve(data);
@@ -80,6 +80,19 @@ export class LocationService {
         .catch(err => {
           reject(err.json ? err.json() : err);
         });
+    })
+  }
+
+  remove(location: any){
+    return new Promise((resolve, reject) => {
+      this._http.delete(`api/location/remove/${location}`)
+      .then(res => {
+        let data = res.json? res.json() : res;
+        resolve(data);
+      })
+      .catch(err => {
+        reject(err.json ? err.json() : err)
+      })
     })
   }
 }

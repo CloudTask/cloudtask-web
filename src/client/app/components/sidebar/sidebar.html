@@ -89,7 +89,7 @@
         </a>
         <ul class="treeview-menu" routerLinkActive="menu-open">
           <li routerLinkActive="active">
-            <a [routerLink]="['/manage', 'runtimes']">
+            <a [routerLink]="['/manage', 'runtimes']" *ngIf="userInfo?.isadmin">
               <i class="fa fa-circle-o"></i> Runtimes
             </a>
           </li>
@@ -99,7 +99,7 @@
             </a>
           </li>
           <li routerLinkActive="active">
-            <a [routerLink]="['/manage', 'users']">
+            <a [routerLink]="['/manage', 'users']" *ngIf="userInfo?.isadmin">
               <i class="fa fa-circle-o"></i> Users
             </a>
           </li>

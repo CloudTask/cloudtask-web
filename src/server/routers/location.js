@@ -4,7 +4,7 @@ const envValidator = require('./../validators/env');
 
 let router = express.Router();
 
-router.post('/modifyCluster',
+router.post('/modifyLocation/:oldLocation',
   envValidator.getCurrentEnv,
   locationCtrl.modifyLocation
 );
@@ -12,6 +12,11 @@ router.post('/modifyCluster',
 router.post('/add',
   envValidator.getCurrentEnv,
   locationCtrl.add
+);
+
+router.delete('/remove/:location',
+  envValidator.getCurrentEnv,
+  locationCtrl.remove
 );
 
 module.exports = router;
