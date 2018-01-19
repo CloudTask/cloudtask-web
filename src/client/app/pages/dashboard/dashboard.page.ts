@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LogService, LocationService, SystemConfigService } from './../../services';
+import { LogService, LocationService } from './../../services';
 
 declare let messager: any;
 declare let ConfAddress: any;
@@ -22,8 +22,7 @@ export class DashboardPage {
 
   constructor(
     private _logService: LogService,
-    private _locationService: LocationService,
-    private _systemConfigService: SystemConfigService) {
+    private _locationService: LocationService) {
 
   }
 
@@ -38,7 +37,7 @@ export class DashboardPage {
       })
     this._logService.getActiveLog('', '', '', this.pageSize, this.pageIndex)
       .then(res => {
-        this.logs = res.rows;
+        this.logs = res.data.rows;
       })
       .catch(err => {
         messager.error(err.message || 'Get logs info failed.');

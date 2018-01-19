@@ -1,7 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { AuthService } from './auth.service';
 import { CusHttpService } from './custom-http.service';
-import { SystemConfigService } from './system-config.service';
 
 declare let _: any;
 declare let ConfAddress: any;
@@ -17,12 +16,7 @@ export class UserService {
 
   constructor(
     private _http: CusHttpService,
-    private _authService: AuthService,
-    private _systemConfigService: SystemConfigService) {
-
-    this._systemConfigService.ConfigSubject.forEach(data => {
-      this.systemConfig = data;
-    })
+    private _authService: AuthService) {
   }
 
   getCurrentUser(): Promise<any> {

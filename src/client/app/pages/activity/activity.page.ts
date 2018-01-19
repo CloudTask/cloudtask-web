@@ -68,7 +68,7 @@ export class ActivityPage {
     let type = this.selectedType ? (this.selectedType === 'All' ? '' : this.selectedType) : '';
     this._logService.getActiveLog(location, group, type, this.pageSize, pageIndex)
       .then(res => {
-        let resData = res.rows;
+        let resData = res.data.rows;
         // this.logs = resData.sort((a: any, b: any) => {
         //   a.indate > b.indate ? -1 : 1;
         // })

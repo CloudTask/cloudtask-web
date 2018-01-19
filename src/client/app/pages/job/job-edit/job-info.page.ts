@@ -2,7 +2,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { animate, trigger, state, style, transition } from '@angular/animations';
 import { ActivatedRoute, Router, NavigationEnd, RoutesRecognized } from '@angular/router';
-import { AuthService, JobService, LocationService, GroupService, DfisUploader } from './../../../services';
+import { AuthService, JobService, LocationService, GroupService, LogService, DfisUploader } from './../../../services';
 
 declare let moment: any;
 declare let messager: any;
@@ -121,6 +121,7 @@ export class JobInfoPage {
     private _router: Router,
     private _authService: AuthService,
     private _jobService: JobService,
+    private _logService: LogService,
     private _groupService: GroupService,
     private _locationServie: LocationService,
     private _dfisUploader: DfisUploader,
@@ -579,7 +580,7 @@ export class JobInfoPage {
         let currentDate = Date.now();
         this.activityData.content = `Delete job ${this.serverForm.value.JobName} on ${this.groupName} on ${this.location}`;
         this.activityData.indate = currentDate;
-        // this._jobService.postActivity(this.activityData);
+        this._logService.postActivity(this.activityData);
         this._jobService.clear();
         this._router.navigate(['/task', this.location, this.groupId, 'overview']);
       })
@@ -694,7 +695,7 @@ export class JobInfoPage {
           let currentDate = Date.now();
           this.activityData.content = `Add job ${this.serverForm.value.JobName} on ${this.groupNewName} on ${this.location}`;
           this.activityData.indate = currentDate;
-          // this._jobService.postActivity(this.activityData);
+          this._logService.postActivity(this.activityData);
           this._jobService.clear();
           this._router.navigate(['/task', this.location, this.groupId, 'overview']);
         })
@@ -714,7 +715,7 @@ export class JobInfoPage {
             this.activityData.content = `Update job ${this.serverForm.value.JobName} on ${this.groupName} on ${this.location}`;
           }
           this.activityData.indate = currentDate;
-          // this._jobService.postActivity(this.activityData);
+          this._logService.postActivity(this.activityData);
           this._jobService.clear();
           this._router.navigate(['/task', this.location, this.groupId, 'detail', this.jobId]);
         })

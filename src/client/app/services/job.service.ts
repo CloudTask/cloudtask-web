@@ -1,7 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { AuthService } from './auth.service';
 import { CusHttpService } from './custom-http.service';
-import { SystemConfigService } from './system-config.service';
 
 declare let _: any;
 declare let ConfAddress: any;
@@ -17,13 +16,9 @@ export class JobService {
 
   constructor(
     private _http: CusHttpService,
-    private _authService: AuthService,
-    private _systemConfigService: SystemConfigService) {
+    private _authService: AuthService) {
     this.activityUrl = `${ConfAddress}/cloudtask/v2/activitys`
     this.baseUrl = `${ConfAddress}/cloudtask/v2/jobs`;
-    this._systemConfigService.ConfigSubject.forEach(data => {
-      this.systemConfig = data;
-    })
   }
 
   get(nocache: boolean = false, type: string = 'normal'): Promise<any> {
@@ -221,24 +216,6 @@ export class JobService {
         .then(res => {
           this.notifyCenter(id, 'remove');
           resolve(res.json ? res.json() : res.text());
-        })
-        .catch(err => {
-          reject(err.json ? err.json() : err);
-        });
-    })
-  }
-
-  postActivity(data: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // this._http.post(`${ConfAddress}/cloudtask/v2/activitys`, data)
-      this._http.post(`api/activitys`, data)
-        .then(res => {
-          let result = res.json ? res.json() : res;
-          let resData = result.data;
-          return this._http.post(`${ConfAddress}/datastore/v1/cloudtask_v2/sys_activitys`, resData)
-        })
-        .then(res => {
-          resolve(res.json ? JSON.parse(JSON.stringify(res)) : res.text());
         })
         .catch(err => {
           reject(err.json ? err.json() : err);

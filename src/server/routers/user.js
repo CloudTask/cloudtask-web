@@ -1,7 +1,7 @@
 const express = require('express');
 const userCtrl = require('./../controllers/user');
 const userValidator = require('./../validators/user');
-const sysCtrl = require('./../controllers/sysconfig');
+// const sysCtrl = require('./../controllers/sysconfig');
 const envValidator = require('./../validators/env');
 
 let router = express.Router();

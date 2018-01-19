@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef, Renderer } from '@angular/core';
 import { Router } from '@angular/router';
 import { CusHttpService } from '../../services/custom-http.service';
-import { AuthService, EventNotifyService, SystemConfigService, EventType } from './../../services';
+import { AuthService, EventNotifyService, EventType } from './../../services';
 
 declare let $: any;
 declare let messager: any;
@@ -39,17 +39,12 @@ export class SideBarComponent {
     private _router: Router,
     private _renderer: Renderer,
     private _authService: AuthService,
-    private _eventNotifyService: EventNotifyService,
-    private _systemConfigService: SystemConfigService) {
+    private _eventNotifyService: EventNotifyService) {
 
   }
 
   ngOnInit() {
     this.config = {};
-    let configSubscriber = this._systemConfigService.ConfigSubject.subscribe(data => {
-      this.config = data;
-    });
-    this.subscribers.push(configSubscriber);
 
     this.userInfo = this._authService.getUserInfoFromCache();
     this._eventNotifyService.subscribe(EventType.SidebarMini, (state: any) => {
@@ -92,7 +87,7 @@ export class SideBarComponent {
   }
 
   ngOnDestroy() {
-    this.subscribers.forEach((item: any) => item.unsubscribe());
+
   }
 
   ngAfterViewInit() {

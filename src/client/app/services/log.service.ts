@@ -52,19 +52,50 @@ export class LogService {
     });
   }
 
+  public addActivityLog(content: string, type: string, group: string = "", server: string = ""): void {
+    let log = {
+      Group: group,
+      Server: server,
+      Type: type,
+      Content: content
+    };
+    this.http.post(this.baseUrl, log, { disableLoading: true })
+      .then(res => {
+
+      })
+      .catch(err => {
+
+      });
+  }
+
+  public postActivity(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // this._http.post(`${ConfAddress}/cloudtask/v2/activitys`, data)
+      this.http.post(`api/log/activity`, data)
+        .then(res => {
+          let result = res.json ? res.json() : res;
+          let resData = result.data;
+          resolve(res.json ? JSON.parse(JSON.stringify(resData)) : res.text());
+        })
+        .catch(err => {
+          reject(err.json ? err.json() : err);
+        });
+    })
+  }
+
   public getActiveLog(location: any, group: string, type: string, pageSize: any, pageIndex: any): Promise<any> {
     let query: any;
     query = `pageSize=${pageSize}&pageIndex=${pageIndex}&sortField=indate&sort=desc`;
     if(location){
-      query = `f_location=${location}&${query}`;
+      query = `location=${location}&${query}`;
     }
     if(group){
-      query = `f_group=${group}&${query}`;
+      query = `group=${group}&${query}`;
     }
     if(type){
-      query = `f_type=${type}&${query}`;
+      query = `type=${type}&${query}`;
     }
-    let url = `${ConfAddress}/datastore/v1/cloudtask_v2/sys_activitys?${query}`;
+    let url = `api/log/activity?${query}`;
     return new Promise((resolve, reject) => {
       this.http.get(url)
         .then(res => {

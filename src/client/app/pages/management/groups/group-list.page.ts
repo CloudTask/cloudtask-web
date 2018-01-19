@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GroupService, AuthService } from './../../../services';
+import { GroupService, AuthService, LogService } from './../../../services';
 
 declare let messager: any;
 declare let Config: any;
@@ -58,6 +58,7 @@ export class GroupListPage {
     private _route: ActivatedRoute,
     private _router: Router,
     private _groupService: GroupService,
+    private _logService: LogService,
     private _authService: AuthService,
     private _fb: FormBuilder) {
   }
@@ -325,7 +326,7 @@ export class GroupListPage {
           let currentDate = Date.now();
           this.activityData.content = `Add group ${this.groupForm.value.groupName} on ${this.groupForm.value.groupLocation}`;
           this.activityData.indate = currentDate;
-          // this._groupService.postActivity(this.activityData);
+          this._logService.postActivity(this.activityData);
           return this._groupService.get(true);
         })
         .then(data => {
@@ -348,7 +349,7 @@ export class GroupListPage {
           let currentDate = Date.now();
           this.activityData.content = `Update group ${this.groupForm.value.groupName} on ${this.currentGroupLocation}`;
           this.activityData.indate = currentDate;
-          // this._groupService.postActivity(this.activityData);
+          this._logService.postActivity(this.activityData);
           return this._groupService.get(true);
         })
         .then(data => {
@@ -388,7 +389,7 @@ export class GroupListPage {
         let currentDate = Date.now();
         this.activityData.content = `Delete group ${this.currentGroupName} on ${this.currentGroupLocation}`;
         this.activityData.indate = currentDate;
-        // this._groupService.postActivity(this.activityData);
+        this._logService.postActivity(this.activityData);
         return this._groupService.get(true);
       })
       .then(data => {

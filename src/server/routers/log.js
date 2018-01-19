@@ -1,12 +1,17 @@
 const express = require('express');
-const activityCtrl = require('./../controllers/activity');
+const logCtrl = require('./../controllers/log');
 const envValidator = require('./../validators/env');
 
 let router = express.Router();
 
-router.post('/',
+router.get('/activity',
   envValidator.getCurrentEnv,
-  activityCtrl.post
+  logCtrl.getActivity
+);
+
+router.post('/activity',
+  envValidator.getCurrentEnv,
+  logCtrl.postActivity
 );
 
 module.exports = router;

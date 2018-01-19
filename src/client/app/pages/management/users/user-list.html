@@ -95,13 +95,13 @@
         </div>
       </div>
       <div class="form-group row">
-        <div class="checkbox">
+        <div class="checkbox" style="padding-left:16.66666667%">
           <label>
-            <input class="col-md-2" type="checkbox" name="isAdmin" formControlName="IsAdmin">
+            <input type="checkbox" name="isAdmin" formControlName="IsAdmin">
+            <span>
+              Own administrator privileges
+            </span>
           </label>
-          <div class="col-md-5">
-            Own administrator privileges
-          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -114,7 +114,7 @@
   </hb-modal>
   <hb-modal [options]="deleteGroupModalOptions">
     <h4>
-      Are you sure?
+      Are you sure you want to delete user <span style="color:red">{{ currentUserId }}</span>?
     </h4>
     <div class="modal-footer">
       <hb-modal-footer>

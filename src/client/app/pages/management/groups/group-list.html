@@ -64,7 +64,7 @@
       <div class="form-group row" [class.has-error]="submitted && !groupForm.controls.groupLocation.value">
         <label class="col-md-1 control-label text-right">Runtime</label>
         <div class="col-md-5">
-          <select id="runtimeInput" formControlName="groupLocation" type="text" class="form-control">
+          <select id="runtimeInput" formControlName="groupLocation" type="text" class="form-control" required>
               <option value="">Select Runtime</option>
               <option [value]="group.location" *ngFor="let group of groups">{{ group.location }}</option>
           </select>

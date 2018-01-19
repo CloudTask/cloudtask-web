@@ -154,7 +154,7 @@ export class TaskMonitorPage {
         } else {
           this.activityData.content = `enabled job ${name} on ${this.groupName} on ${this.location}`;
         }
-        this._jobService.postActivity(this.activityData);
+        this._logService.postActivity(this.activityData);
         this._router.navigate(['/task', this.location, this.groupId, 'overview']);
       })
       .catch((err: any) => {
@@ -175,7 +175,7 @@ export class TaskMonitorPage {
             } else {
               this.activityData.content = `Start job ${name} on ${this.groupName} on ${this.location}`;
             }
-            this._jobService.postActivity(this.activityData);
+            this._logService.postActivity(this.activityData);
           }, 100)
         }
       })

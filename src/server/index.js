@@ -71,14 +71,13 @@ let startServer = () => {
   });
 
   app.use('/', express.static('dist/client'));
-  app.use('/api/sysconfig', require('./routers/sysconfig'));
   app.use('/api/users', require('./routers/user'));
   app.use('/api/transferEnv', require('./routers/transferEnv'))
   app.use('/api/dashboard', require('./routers/dashboard'));
   app.use('/api/group', require('./routers/group'));
   app.use('/api/location', require('./routers/location'));
   app.use('/api/job', require('./routers/job'));
-  app.use('/api/activitys', require('./routers/activity'));
+  app.use('/api/log', require('./routers/log'));
 
   // console.debug('Init system...');
   // user.initAdmin()

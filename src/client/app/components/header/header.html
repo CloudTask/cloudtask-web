@@ -1,8 +1,12 @@
 <section>
   <header class="main-header">
     <a [routerLink]="['/']" class="logo">
-      <span class="logo-mini"><b>CT</b></span>
-      <span class="logo-lg"><b>CloudTask</b></span>
+      <span class="logo-mini">
+        <b>CT</b>
+      </span>
+      <span class="logo-lg">
+        <b>CloudTask</b>
+      </span>
     </a>
     <nav class="navbar navbar-static-top">
       <a href="javascript:void(0)" class="sidebar-toggle" data-toggle="offcanvas" role="button" (click)="toggleSidebar()">
@@ -28,6 +32,9 @@
                 </p>
               </li>
               <li class="user-footer">
+                <div class="pull-left">
+                  <a [routerLink]="['/account', 'profile']" class="btn btn-default btn-flat">Profile</a>
+                </div>
                 <div class="pull-right">
                   <a href="javascript:void(0)" class="btn btn-default btn-flat" (click)="showLogoutModal()">Sign out</a>
                 </div>

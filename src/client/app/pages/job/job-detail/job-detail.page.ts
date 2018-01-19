@@ -217,7 +217,7 @@ export class JobDetailPage {
             } else {
               this.activityData.content = `Start job ${name} on ${this.groupName} on ${this.location}`;
             }
-            this._jobService.postActivity(this.activityData);
+            this._logService.postActivity(this.activityData);
             this.getJob();
             this._logService.getLog(false, this.jobId, this.fromdate, this.todate, this.pageIndex, this.pageSize)
             .then(res => {
@@ -251,7 +251,7 @@ export class JobDetailPage {
         } else {
           this.activityData.content = `enabled job ${this.jobInfor.name} on ${this.groupName} on ${this.location}`;
         }
-        this._jobService.postActivity(this.activityData);
+        this._logService.postActivity(this.activityData);
         this.getJob();
       })
       .catch((err: any) => {
