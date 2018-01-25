@@ -5,7 +5,6 @@ import { GroupService, AuthService, UserService } from './../../../services';
 
 declare let messager: any;
 declare let Config: any;
-declare let ConfAddress: any;
 
 @Component({
   selector: 'ct-user-list',

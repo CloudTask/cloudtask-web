@@ -4,7 +4,10 @@ const jobstat = require('./models/jobstatus');
 const moment = require('moment');
 const util = require('./../common/util');
 const requestHelper = require('./request/requestHelper');
-const config = require('../common/config');
+const config = require('../config');
+const dbFactory = require('./../db/dbFactory').factory;
+
+let collectionName = config.dbConfigs.jobCollection.name;
 
 /*
 JobInfo {
@@ -34,26 +37,21 @@ JobInfo {
 */
 
 exports.get = (req, res, next) => {
-  let db = req.db;
-  let collectionLocation = db.collection('sys_jobs');
-  collectionLocation.find({ }).toArray((err, resultJob) => {
+  dbFactory.getCollection(collectionName).find({ }).toArray((err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
     }
     res.json(resultJob);
-    db.close();
   })
 }
 
 exports.createJob = (req, res, next) => {
-  let db = req.db;
   let envConfig = req.envConfig;
   let postJob = req.body;
   let groupId = postJob.groupid;
 
-  let collectionLocation = db.collection('sys_jobs');
-  collectionLocation.find({ 'groupid': groupId }).toArray((err, resultJob) => {
+  dbFactory.getCollection(collectionName).find({ 'groupid': groupId }).toArray((err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
@@ -75,7 +73,7 @@ exports.createJob = (req, res, next) => {
         postJob.jobid = util.getRandomId();
         postJob.files = [];                                            //files为[]
         postJob.stat = jobstat.jobstatus.STATE_REALLOC;                //等待分配状态
-        collectionLocation.insert(postJob, (err, result) => {
+        dbFactory.getCollection(collectionName).insert(postJob, (err, result) => {
           if (err) {
             console.log('Error:' + err);
             return;
@@ -83,7 +81,6 @@ exports.createJob = (req, res, next) => {
           console.log('insert succeed.');
           let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, postJob);
           res.json(resultData);
-          db.close();
           // let time =  Date.now();
           //   let dataObj = {
           //     msgname: 'SystemEvent',
@@ -100,8 +97,8 @@ exports.createJob = (req, res, next) => {
   })
 }
 
-exports.changeInfo = (res, postJob, collectionLocation, db, envConfig) => {
-  collectionLocation.find({ 'jobid': postJob.jobid }).toArray((err, resultJob) => {
+exports.changeInfo = (res, postJob, envConfig) => {
+  dbFactory.getCollection(collectionName).find({ 'jobid': postJob.jobid }).toArray((err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
@@ -151,7 +148,7 @@ exports.changeInfo = (res, postJob, collectionLocation, db, envConfig) => {
       postJob.nextat = '0001-01-01T00:00:00.000Z';
       postJob.stat = jobstat.jobstatus.STATE_STOPED     //停止状态
     }
-    collectionLocation.update({ 'jobid': postJob.jobid }, { $set: {
+    dbFactory.getCollection(collectionName).update({ 'jobid': postJob.jobid }, { $set: {
       'name': postJob.name,
       'editat': postJob.editat,
       'edituser': postJob.edituser,
@@ -174,10 +171,8 @@ exports.changeInfo = (res, postJob, collectionLocation, db, envConfig) => {
         console.log('Error:' + err);
         return;
       }
-      console.log('=====');
       let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, postJob);
       res.json(resultData);
-      db.close();
       // let time =  Date.now();
       // let dataObj = {
       //   msgname: 'SystemEvent',
@@ -194,7 +189,6 @@ exports.changeInfo = (res, postJob, collectionLocation, db, envConfig) => {
 }
 
 exports.updateJob = (req, res, next) => {
-  let db = req.db;
   let envConfig = req.envConfig;
   let postJob = req.body;
   let groupId = postJob.groupid;
@@ -202,8 +196,7 @@ exports.updateJob = (req, res, next) => {
   let job = {};
   let jobLocation = '';
 
-  let collectionLocation = db.collection('sys_jobs');
-  collectionLocation.find({ 'groupid': groupId }).toArray((err, resultJob) => {
+  dbFactory.getCollection(collectionName).find({ 'groupid': groupId }).toArray((err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
@@ -216,50 +209,42 @@ exports.updateJob = (req, res, next) => {
       res.status(409);
       res.json(resultData);
     }
-    this.changeInfo(res, postJob, collectionLocation, db, envConfig);
+    this.changeInfo(res, postJob, envConfig);
   })
 }
 
 exports.getGroupJobs = (req, res, next) => {
-  let db = req.db;
   let groupId = req.params.groupId;
-  let collectionLocation = db.collection('sys_jobs');
-  collectionLocation.find({'groupid': groupId}).toArray((err, resultJob) => {
+  dbFactory.getCollection(collectionName).find({'groupid': groupId}).toArray((err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
     }
     res.json(resultJob);
-    db.close();
   })
 }
 
 exports.getById = (req, res, next) => {
-  let db = req.db;
   let jobId = req.params.jobId;
 
-  let collectionLocation = db.collection('sys_jobs');
-  collectionLocation.find({'jobid': jobId}).toArray((err, resultJob) => {
+  dbFactory.getCollection(collectionName).find({'jobid': jobId}).toArray((err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
     }
     res.json(resultJob[0]);
-    db.close();
   })
 }
 
 exports.updatefiles = (req, res, next) => {
   let newJob = {};
-  let db = req.db;
   let envConfig = req.envConfig;
   let postJobs = req.body;
   let jobLocation = postJobs.location;
   let newFileName = postJobs.jobs[0].filename;
   let jobids = postJobs.jobs.map(item => item.jobid);
   postJobs.jobs.forEach(item => {
-    let collectionLocation = db.collection('sys_jobs');
-    collectionLocation.finOne({ 'jobid': item.jobid }, (err, resultJob) => {
+    dbFactory.getCollection(collectionName).finOne({ 'jobid': item.jobid }, (err, resultJob) => {
       if (err) {
         console.log('Error:' + err);
         return;
@@ -286,13 +271,13 @@ exports.updatefiles = (req, res, next) => {
       newJob.jobid = item.jobid;
       newJob.filename = newFileName;
       newJob.files = files;
-      this.changeFiles(res, next, collectionLocation, envConfig, newJob, jobids, jobLocation);
+      this.changeFiles(res, next, envConfig, newJob, jobids, jobLocation);
     })
   })
 }
 
-exports.changeFiles = (res, next, collectionLocation, envConfig, newJob, jobids, jobLocation) => {
-  collectionLocation.update({'jobid': newJob.jobid}, {$set: {'filename': newJob.filename, 'files': newJob.files}}, (err, resultJob) => {
+exports.changeFiles = (res, next, envConfig, newJob, jobids, jobLocation) => {
+  dbFactory.getCollection(collectionName).update({'jobid': newJob.jobid}, {$set: {'filename': newJob.filename, 'files': newJob.files}}, (err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
@@ -337,25 +322,23 @@ exports.changeFiles = (res, next, collectionLocation, envConfig, newJob, jobids,
 }
 
 exports.removeJob = (req, res, next) => {
-  let db = req.db;
   let envConfig = req.envConfig;
   let jobId = req.params.jobId;
   let jobLocation = '';
-  let collectionLocation = db.collection('sys_jobs');
-  collectionLocation.find({ 'jobid': jobId }).toArray((err, resultJob) => {
+
+  dbFactory.getCollection(collectionName).find({ 'jobid': jobId }).toArray((err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
     }
     jobLocation = resultJob.location;
-    collectionLocation.remove({ 'jobid': jobId  }, (err, result) => {
+    dbFactory.getCollection(collectionName).remove({ 'jobid': jobId  }, (err, result) => {
       if (err) {
         console.log('Error:' + err);
         return;
       }
       let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
       res.json(resultData);
-      db.close();
       // let time =  Date.now();
       // let dataObj = {
       //   msgname: 'SystemEvent',

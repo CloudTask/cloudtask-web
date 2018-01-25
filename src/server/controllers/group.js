@@ -3,26 +3,25 @@ const request = require('./request/request');
 const moment = require('moment');
 const util = require('./../common/util');
 const requestHelper = require('./request/requestHelper');
-const config = require('../common/config');
+const config = require('../config');
+const dbFactory = require('./../db/dbFactory').factory;
+
+let collectionLocation = config.dbConfigs.locationCollection.name;
+let collectionJob = config.dbConfigs.jobCollection.name;
 
 exports.getLocation = (req, res, next) => {
-  let db = req.db;
-  let collectionLocation = db.collection('sys_locations');
-  collectionLocation.find({}).toArray((err, resultLocation) => {
+  dbFactory.getCollection(collectionLocation).find({}).toArray((err, resultLocation) => {
     if (err) {
       console.log('Error:' + err);
       return;
     }
     res.json(resultLocation);
-    db.close();
   })
 }
 
 exports.getById = (req, res, next) => {
-  let db = req.db;
   let groupId = req.params.groupId;
-  let collectionLocation = db.collection('sys_locations');
-  collectionLocation.find({}).toArray((err, resultJob) => {
+  dbFactory.getCollection(collectionLocation).find({}).toArray((err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
@@ -40,29 +39,23 @@ exports.getById = (req, res, next) => {
     })
     let filtegroup = allGroups.filter(item => item.id == groupId)[0];
     res.json(filtegroup);
-    db.close();
   })
 }
 
 exports.getJobsById = (req, res, next) => {
-  let db = req.db;
   let groupId = req.params.groupId;
-  let collectionLocation = db.collection('sys_jobs');
-  collectionLocation.find({}).toArray((err, resultJob) => {
+  dbFactory.getCollection(collectionJob).find({}).toArray((err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
     }
     let resdata = resultJob.filter(item => groupId == item.groupid);
     res.json(resdata);
-    db.close();
   })
 }
 
 exports.getLocationServer = (req, res, next) => {
-  let db = req.db;
-  let collectionLocation = db.collection('sys_locations');
-  collectionLocation.find({ }).toArray((err, resultLocation) => {
+  dbFactory.getCollection(collectionLocation).find({ }).toArray((err, resultLocation) => {
     if (err) {
       console.log('Error:' + err);
       return;
@@ -71,18 +64,27 @@ exports.getLocationServer = (req, res, next) => {
     let filteLocation = resultLocation.filter(item => item.location == locationName)[0];
     let serverInfo = filteLocation.server;
     res.json(serverInfo);
-    db.close();
+  })
+}
+
+exports.getLocationGroup = (req, res, next) => {
+  let locationName = req.params.name;
+  dbFactory.getCollection(collectionLocation).findOne({ location: locationName }, (err, resultLocation) => {
+    if (err) {
+      console.log('Error:' + err);
+      return;
+    }
+    let locationGroup = resultLocation.group;
+    res.json(locationGroup);
   })
 }
 
 exports.createGroup = (req, res, next) => {
-  let db = req.db;
   let envConfig = req.envConfig;
   let envValue = req.envValue;
   let postGroup = req.body;
   // let cluster = '';
-  let collectionLocation = db.collection('sys_locations');
-  collectionLocation.find({ 'location': postGroup.location }).toArray((err, resultLocation) => {
+  dbFactory.getCollection(collectionLocation).find({ 'location': postGroup.location }).toArray((err, resultLocation) => {
     if (err) {
       console.log('Error:' + err);
       return;
@@ -104,28 +106,25 @@ exports.createGroup = (req, res, next) => {
       newGroup.edituser = postGroup.createuser;    //修改人
       newGroup.editat = createat;                  //修改时间
 
-      collectionLocation.update({ 'location': resultLocation[0].location }, { $push: { 'group': newGroup } }, (err, result) => {
+      dbFactory.getCollection(collectionLocation).update({ 'location': resultLocation[0].location }, { $push: { 'group': newGroup } }, (err, result) => {
         if (err) {
           console.log('Error:' + err);
           return;
         }
         let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, postGroup);
         res.json(resultData);
-        db.close();
       })
     }
   })
 }
 
 exports.updateGroup = (req, res, next) => {
-  let db = req.db;
   let envConfig = req.envConfig;
   let envValue = req.envValue;
   let postGroup = req.body;
   let newGroup = {};
   let cluster = '';
-  let collectionLocation = db.collection('sys_locations');
-  collectionLocation.find({ 'location': postGroup.location }).toArray((err, resultLocation) => {
+  dbFactory.getCollection(collectionLocation).find({ 'location': postGroup.location }).toArray((err, resultLocation) => {
     if (err) {
       console.log('Error:' + err);
       return;
@@ -155,21 +154,19 @@ exports.updateGroup = (req, res, next) => {
       newGroup.name = postGroup.name;
       locationGroups[groupIndex] = newGroup;
 
-      collectionLocation.update({ 'location': locations, 'group.id': postGroup.groupid }, { $set: { 'group.$':  newGroup} }, (err, result) => {
+      dbFactory.getCollection(collectionLocation).update({ 'location': locations, 'group.id': postGroup.groupid }, { $set: { 'group.$':  newGroup} }, (err, result) => {
         if (err) {
           console.log('Error:' + err);
           return;
         }
         let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, newGroup);
         res.json(resultData);
-        db.close();
       })
     }
   })
 }
 
 exports.removeGroup = (req, res, next) => {
-  let db = req.db;
   let envConfig = req.envConfig;
   let groupId = req.params.groupId;
   let location = req.params.location;
@@ -177,19 +174,17 @@ exports.removeGroup = (req, res, next) => {
   let targetIndex = 0;
   let jobids = [];
   let promiseAll = [];
-  let collectionJob = db.collection('sys_jobs');
-  collectionJob.find({ 'groupid': groupId }).toArray((err, resultJobs) => {
+  dbFactory.getCollection(collectionJob).find({ 'groupid': groupId }).toArray((err, resultJobs) => {
       if (err) {
         console.log('Error:' + err);
         return;
       }
-      removeGroupJobs(collectionJob, resultJobs)
+      removeGroupJobs(resultJobs)
       .then((resdata) => {
         if (!resdata.isDone) {
           return next(new Error('Remove jobs failed.'));
         } else {
-          let collectionLocation = db.collection('sys_locations');
-          collectionLocation.update({'location': location, 'group.id': groupId}, {$pull: {'group': {'id': groupId}}}, (err, result) => {
+          dbFactory.getCollection(collectionLocation).update({'location': location, 'group.id': groupId}, {$pull: {'group': {'id': groupId}}}, (err, result) => {
             if (err) {
               console.log('Error:' + err);
               return;
@@ -202,11 +197,11 @@ exports.removeGroup = (req, res, next) => {
     })
 }
 
-let removeGroupJobs = (collectionJob, resultJobs) => {
+let removeGroupJobs = (resultJobs) => {
   return new Promise((resolve, reject) => {
     resultJobs.forEach((job) => {
       // return db.delete("sys_jobs", job);
-      collectionJob.remove({ 'jobid': job.jobid  }, (err, result) => {
+      dbFactory.getCollection(collectionJob).remove({ 'jobid': job.jobid  }, (err, result) => {
         if (err) return reject(err);
         resolve({isDone: true})
       })

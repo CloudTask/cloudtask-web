@@ -8,7 +8,6 @@ let router = express.Router();
 
 router.get('/',
   // transferEnvCtrl.transfer,
-  envValidator.getCurrentEnv,
   dashboardCtrl.get
 );
 

@@ -5,7 +5,6 @@ import { EventNotifyService, EventType } from './event-notify.service';
 import { CusHttpService } from './custom-http.service';
 import { IUserLogin } from './../interfaces';
 
-declare let ConfAddress: any;
 declare let Config: any;
 declare let messager: any;
 

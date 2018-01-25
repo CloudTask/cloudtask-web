@@ -64,26 +64,6 @@ export class SideBarComponent {
     } else if (currentUrl.startsWith('/manage')) {
       this.activeSubMenu = 'manage';
     }
-
-    this.http.get('/api/transferEnv')
-      .then(res => {
-        let resData = res.json() ? res.json() : res;
-        if (resData.CurrentEnvValue) {
-          this.envValue = resData.CurrentEnvValue;
-        } else {
-          this.envValue = 'GDEV';
-        }
-      })
-    // if (localStorage.getItem('ConfEnvValue')) {
-    //   this.envValue = localStorage.getItem('ConfEnvValue');
-    // } else {
-    //   this.envValue = 'GDEV';
-    // }
-    $(document).on('click', (event: any) => {
-      if($('#selectdrop').hasClass('active')){
-        this._renderer.setElementClass(this.el.nativeElement, 'active', false);
-      }
-    });
   }
 
   ngOnDestroy() {
@@ -96,42 +76,6 @@ export class SideBarComponent {
       this.fixSidebar();
     });
     this.fixSidebar();
-  }
-
-  private selectEnv(value: any) {
-    switch (value) {
-      // case 'DEV':
-      //   ConfAddress = `${Config.Dev}`;
-      //   break;
-      case 'GDEV':
-        ConfAddress = `${Config.Gdev}`;
-        DfisAddr = `${Config.DfisAddress}`;
-        break;
-      case 'GQC':
-        ConfAddress = `${Config.Gqc}`;
-        DfisAddr = `${Config.DfisAddress}`;
-        break;
-      case 'PRD':
-        ConfAddress = `${Config.Prd}`;
-        DfisAddr = `${Config.DfisAddressPrd}`;
-        break;
-    }
-    sessionStorage.clear();
-    let postAddress = JSON.stringify({ CurrentEnvValue: value, CurrentAddress: ConfAddress })
-    this.http.post('/api/transferEnv', postAddress)
-      .then(res => {
-        let resData = res.json() ? res.json() : res;
-        if (resData.code !== 0) {
-          return messager.error('change env failed');
-        }
-        if (this._router.url == '/') {
-          this._router.navigateByUrl('/activity/transfer');
-        } else {
-          this._router.navigateByUrl('/');
-        }
-      });
-    // localStorage.setItem('ConfAddress', ConfAddress);
-    // localStorage.setItem('ConfEnvValue', value);
   }
 
   private fixSidebar() {
@@ -151,17 +95,6 @@ export class SideBarComponent {
     }
     let isActive = element.classList.contains('active');
     this._renderer.setElementClass(element, 'active', !isActive);
-  }
-
-  private toggleShow(event: any, element: HTMLElement) {
-    event.stopPropagation();
-    let isActive = element.classList.contains('active');
-    this._renderer.setElementClass(element, 'active', !isActive);
-  }
-
-  private changeEnv(value: any){
-    this.envValue = value;
-    this.selectEnv(this.envValue);
   }
 
   private removeTaskpageSession(){

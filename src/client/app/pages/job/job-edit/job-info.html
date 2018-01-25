@@ -5,9 +5,6 @@
   </section>
   <section class="content">
     <form novalidate (ngSubmit)="save()" [formGroup]="serverForm" *ngIf="serverForm">
-      <div *ngIf="isImport">
-        <ct-import-job [options]="importModalOptions" (selectedImportJob)="onImportJob($event)"></ct-import-job>
-      </div>
       <div class="page-content">
         <div class="form-group" [class.has-error]="submitted && serverForm.controls.JobName.invalid">
           <label class="control-label">Job Name</label>

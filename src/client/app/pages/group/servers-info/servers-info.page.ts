@@ -6,7 +6,6 @@ import { JobService } from './../../../services';
 declare let $: any;
 declare let _: any;
 declare let messager: any;
-declare let ConfAddress: any;
 
 @Component({
   selector: 'hb-servers-info',

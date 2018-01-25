@@ -4,7 +4,6 @@ import { ModalComponent, ModalHeaderComponent, ModalFooterComponent } from './mo
 import { PaginationComponent } from './pagination/pagination.component';
 import { TagsInputComponent } from './tags-input/tags-input.component';
 import { ScheduleComponent } from './schedule/schedule.component';
-import { ImportJobComponent } from './import-job/import-job.component';
 
 let Components: Array<any> = [
   HeaderComponent,
@@ -15,7 +14,6 @@ let Components: Array<any> = [
   PaginationComponent,
   TagsInputComponent,
   ScheduleComponent,
-  ImportJobComponent
 ]
 
 export {
@@ -27,7 +25,6 @@ export {
   PaginationComponent,
   TagsInputComponent,
   ScheduleComponent,
-  ImportJobComponent
 }
 
 export const COMPONENTS = Components;

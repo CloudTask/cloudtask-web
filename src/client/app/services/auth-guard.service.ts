@@ -4,7 +4,6 @@ import { AuthService } from './auth.service';
 import { GroupService } from './group.service';
 import { CusHttpService } from './custom-http.service';
 
-declare let ConfAddress: any;
 declare let Config: any;
 
 @Injectable()

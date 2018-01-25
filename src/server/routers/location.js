@@ -4,11 +4,6 @@ const envValidator = require('./../validators/env');
 
 let router = express.Router();
 
-router.post('/modifyLocation/:oldLocation',
-  envValidator.getCurrentEnv,
-  locationCtrl.modifyLocation
-);
-
 router.post('/add',
   envValidator.getCurrentEnv,
   locationCtrl.add

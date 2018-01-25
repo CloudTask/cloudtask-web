@@ -5,13 +5,13 @@ let getConfig = () => {
     isDebugMode: true,
     listenPort: process.env.HUMPBACK_LISTEN_PORT || 8100,
     dbConfigs: {
-      runtimeCollection: { name: 'RuntimeInfo' },
-      jobCollection: { name: 'JobInfo' },
-      userCollection: { name: 'UserInfo' },
+      locationCollection: { name: 'sys_locations' },
+      jobCollection: { name: 'sys_jobs' },
+      userCollection: { name: 'sys_users' },
       logCollection: { name: 'LogInfo', ttl: 30 * 24 * 60 * 60 },
       sessionCollection: { name: 'SessionInfo', ignoreLoad: true },
-      systemConfigCollection: { name: 'ActivityInfo' },
-      dashboardCollection: { name: 'Dashboard' }
+      activityCollection: { name: 'sys_activitys' },
+      logCollection: { name: 'sys_logs' }
     },
     encryptKey: 'cloudtask@123'
   };

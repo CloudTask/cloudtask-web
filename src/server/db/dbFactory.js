@@ -1,47 +1,36 @@
-const path = require('path');
-const fs = require('fs');
-const Datastore = require('nedb');
-const config = require('./../config');
+var MongoClient = require('mongodb').MongoClient;
+var DB_CONN_STR = 'mongodb://10.16.75.22:29017,10.16.75.23:29017,10.16.75.25:29017/cloudtask_data?replicaSet=NeweggCloud';
+
 
 class DBFactory {
   constructor() {
-    this.dbs = {};
     this.connectDB();
   }
 
   getCollection(collectionName) {
-    if (!this.dbs) {
-      this.connectDB();
+    if (!this.database) {
+      this.connectDB()
+        .then((db) => {
+          let col = db.collection('sys_jobs');
+          return col;
+        });
+    } else {
+      let col = this.database.collection(collectionName);
+      return col;
     }
-    let col = this.dbs[collectionName];
-    return col;
   }
 
   connectDB() {
-    let dbFilesPath = path.join(__dirname, `./../dbFiles`);
-    if (!fs.existsSync(dbFilesPath)) {
-      fs.mkdirSync(dbFilesPath);
-    }
-    for (let key in config.dbConfigs) {
-      let item = config.dbConfigs[key];
-      if (item.ignoreLoad) continue;
-      let option = {
-        filename: path.join(dbFilesPath, `${item.name}.db`),
-        autoload: true
-      };
-      if (item.ttl) {
-        option.timestampData = true;
-      }
-      let db = new Datastore(option);
-      if (item.ttl) {
-        db.ensureIndex({ fieldName: 'createdAt', expireAfterSeconds: item.ttl }, function (err) {
-          if (err) console.log(err);
-        });
-      }
-      db.persistence.setAutocompactionInterval(1 * 60 * 60 * 1000);
-      this.dbs[item.name] = db;
-    }
+    return new Promise((resolve, reject) => {
+      MongoClient.connect(DB_CONN_STR, (err, database) => {
+        if (err) reject(err);
+        this.database = database;
+        resolve(this.database);
+      });
+    })
   }
 }
 
 exports.factory = new DBFactory();
+
+

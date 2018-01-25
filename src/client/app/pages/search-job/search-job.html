@@ -5,7 +5,7 @@
   <section class="content">
     <div class="search-panel">
         <form method="get" class="search-input" novalidate="">
-          <input type="text" class="form-control" name="keyword" autocomplete="off" placeholder="Search job by name" required="" [(ngModel)]="inputValue">
+          <input type="text" class="form-control" name="keyword" autocomplete="off" placeholder="Search job by name or complete job id" required="" [(ngModel)]="inputValue">
           <button type="submit" class="btn btn-success btn-flat" (click)="validateDocSearch(inputValue)">
             <i class="fa fa-search"></i> Search
           </button>

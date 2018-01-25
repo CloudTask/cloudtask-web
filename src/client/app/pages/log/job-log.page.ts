@@ -5,7 +5,6 @@ import { GroupService, JobService, LogService } from './../../services';
 
 declare let messager: any;
 declare let moment: any;
-declare let ConfAddress: any;
 
 @Component({
   selector: 'hb-job-log',

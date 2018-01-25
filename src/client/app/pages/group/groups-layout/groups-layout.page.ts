@@ -6,7 +6,6 @@ import { GroupService, AuthService, EventNotifyService, EventType } from './../.
 declare let $: any;
 declare let _: any;
 declare let messager: any;
-declare let ConfAddress: any;
 
 @Component({
   selector: 'ct-groups-layout',

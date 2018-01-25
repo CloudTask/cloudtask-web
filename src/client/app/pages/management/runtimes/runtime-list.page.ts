@@ -6,7 +6,6 @@ import { GroupService, LocationService, AuthService } from './../../../services'
 
 declare let messager: any;
 declare let Config: any;
-declare let ConfAddress: any;
 
 @Component({
   selector: 'hb-runtime-list',
@@ -25,7 +24,6 @@ export class RuntimeListPage {
   private filterCondition: string;
   private groups: Array<any> = [];
   private runtimes: Array<any> = [];
-  private isNewRuntime: boolean = true;
   private locationGroup: Array<any> = [];
   private locationServer: Array<any> = [];
   private runtimeInfoModal: any = {};
@@ -72,7 +70,7 @@ export class RuntimeListPage {
     this.buildForm();
   }
 
-  private getLocations(){
+  private getLocations() {
     this.runtimes = this.groups;
     this.search();
   }
@@ -125,21 +123,7 @@ export class RuntimeListPage {
     }, 100);
   }
 
-  private modifyRuntime(index: any) {
-    this.isNewRuntime = false;
-    this.runtimeInfoModal.show = true;
-    setTimeout(() => {
-      this.runtimeSelected = {
-        location: this.groups[index].location || '',
-      }
-      this.locationGroup = this.groups[index].group;
-      this.locationServer = this.groups[index].server
-      this.buildForm();
-    });
-  }
-
   private addNewRuntime(e: any) {
-    this.isNewRuntime = true;
     e.stopPropagation();
     e.preventDefault();
     this.runtimeInfoModal.show = true;
@@ -152,28 +136,31 @@ export class RuntimeListPage {
     });
   }
 
-  private deleteRuntime(index: any){
+  private deleteRuntime(index: any) {
     this.deleteLocationModalOptions.show = true;
-    this.runtimeSelected = {
-      location: this.groups[index].location || '',
-      groups: this.groups[index].location || '',
-    }
+    this._locationService.getLocationGroup(this.groups[index].location)
+    .then(data => {
+      this.runtimeSelected = {
+        location: this.groups[index].location || '',
+        groups: data || [],
+      }
+    })
   }
 
-  private confirmDelete(location: any){
+  private confirmDelete(location: any) {
     this._locationService.remove(location)
-    .then(data => {
-      messager.success('Delete Succeed.');
-      this.deleteLocationModalOptions.show = false;
-      return this._groupService.get(true);
-    })
-    .then(data => {
-      this.groups = data;
-      this.getLocations();
-    })
-    .catch((err) => {
-      messager.error(err || 'Delete failed');
-    })
+      .then(data => {
+        messager.success('Delete Succeed.');
+        this.deleteLocationModalOptions.show = false;
+        return this._groupService.get(true);
+      })
+      .then(data => {
+        this.groups = data;
+        this.getLocations();
+      })
+      .catch((err) => {
+        messager.error(err || 'Delete failed');
+      })
   }
 
   private save() {
@@ -183,8 +170,7 @@ export class RuntimeListPage {
       group: this.locationGroup,
       server: this.locationServer
     }
-    if (this.isNewRuntime) {
-      this._locationService.add(postData)
+    this._locationService.add(postData)
       .then((data) => {
         messager.success('Add Succeed.');
         this.runtimeInfoModal.show = false;
@@ -197,20 +183,5 @@ export class RuntimeListPage {
       .catch((err) => {
         messager.error(err || 'Add failed');
       })
-    } else {
-      this._locationService.modifyLocation(this.runtimeSelected.location, postData)
-        .then((data) => {
-          messager.success('Update Succeed.');
-          this.runtimeInfoModal.show = false;
-          return this._groupService.get(true);
-        })
-        .then(data => {
-          this.groups = data;
-          this.getLocations();
-        })
-        .catch((err) => {
-          messager.error(err || 'Update failed');
-        })
-    }
   }
 }

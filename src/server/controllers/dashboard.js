@@ -2,11 +2,13 @@ const negCloudData = require('neg-cloud-data');
 const result = require('./response/response');
 const request = require('./request/request');
 const transferEnv = require('./transferEnv');
+const config = require('../config');
+const dbFactory = require('./../db/dbFactory').factory;
+
 
 exports.get = (req, res, next) => {
-  let db = req.db;
-  let collectionLocation = db.collection('sys_locations');
-  let collectionJob = db.collection('sys_jobs');
+  let collectionLocation = config.dbConfigs.locationCollection.name;
+  let collectionJob = config.dbConfigs.jobCollection.name;  
   // Promise.all([
   //   db.get("sys_locations", { pageSize: 10000 }),
   //   db.get("sys_jobs", { pageSize: 10000 })
@@ -46,7 +48,7 @@ exports.get = (req, res, next) => {
   //     res.json(resultData);
   //   })
   //   .catch(err => next(err));
-  collectionLocation.find({}).toArray((err, resultLocation) => {
+  dbFactory.getCollection(collectionLocation).find({}).toArray((err, resultLocation) => {
     let resData = {};
     if (err) {
       console.log('Error:' + err);
@@ -65,7 +67,7 @@ exports.get = (req, res, next) => {
         }
       }
     });
-    collectionJob.find({}).toArray((err, resultJob) => {
+    dbFactory.getCollection(collectionJob).find({}).toArray((err, resultJob) => {
       if (err) {
         console.log('Error:' + err);
         return;

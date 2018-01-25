@@ -35,9 +35,6 @@
           <tr *ngFor="let item of currentRuntimes;let i = index">
             <td>{{ item.location }}</td>
             <td class="text-center">
-              <a href="javascript:void(0)" (click)="modifyRuntime(i)" class="margin-right-10">
-                <i class="fa fa-pencil"></i>
-              </a>
               <a href="javascript:void(0)" (click)="deleteRuntime(i)">
                 <i class="fa fa-close text-danger"></i>
               </a>

@@ -1,32 +1,6 @@
 <aside class="main-sidebar" #mainSidebar>
   <section class="sidebar">
     <ul class="sidebar-menu">
-      <li class="header">ENVIRONMENT</li>
-      <li class="select-hide">
-        <!-- <select class="form-select" style="padding-left:15px;" #selectVar (change)="selectEnv(selectVar.value)" (change)="activeSubMenu = ''"
-          [(ngModel)]="envValue">
-          <option value="DEV">DEV</option>
-          <option value="GDEV">GDEV</option>
-          <option value="GQC">GQC</option>
-          <option value="PRD">PRD</option>
-        </select> -->
-        <div class="ct-select" (click)="toggleShow($event,selectdrop)">
-          <input autocomplete="off" [(ngModel)]="envValue" size="" readonly type="text" rows="2" class="input-inner">
-            <span class="select-arror">
-              <i class="fa fa-caret-down pull-right" style="margin-right: 10px"></i><!---->
-            </span>
-        </div>
-        <div #selectdrop id="selectdrop" class="selectdrop">
-          <div class="select-drop select-poper">
-            <ul class="select-drop-list">
-              <li class="select-item" (click)="changeEnv('GDEV')">GDEV</li>
-              <li class="select-item" (click)="changeEnv('GQC')">GQC</li>
-              <li class="select-item" (click)="changeEnv('PRD')">PRD</li>
-            </ul>
-            <div class="popper-arrow" style="left: 112.5px;"></div>
-          </div>
-        </div>
-      </li>
       <li class="header">BASIC NAVIGATION</li>
       <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" [class.hide-border]="activeSubMenu">
         <a [routerLink]="['/']" (click)="activeSubMenu = ''">

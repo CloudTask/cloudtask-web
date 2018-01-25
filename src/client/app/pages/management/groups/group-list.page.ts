@@ -5,7 +5,6 @@ import { GroupService, AuthService, LogService } from './../../../services';
 
 declare let messager: any;
 declare let Config: any;
-declare let ConfAddress: any;
 
 @Component({
   selector: 'ct-group-list',

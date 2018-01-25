@@ -28,7 +28,6 @@ let routes: Routes = [
       { path: '', component: DashboardPage },
       { path: 'dashboard', redirectTo: '/' },
       { path: 'activity', component: ActivityPage },
-      { path: 'activity/:transfer', component: ActivityPage },
       {
         path: 'task', component: GroupsLayoutPage,
         resolve: { groups: GroupResolve },

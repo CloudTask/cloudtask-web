@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { LogService, LocationService } from './../../services';
 
 declare let messager: any;
-declare let ConfAddress: any;
 
 @Component({
   selector: 'dashboard',

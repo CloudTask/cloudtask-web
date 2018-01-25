@@ -30,7 +30,6 @@ export class JobInfoPage {
   private isNew: boolean;
   private isClone: boolean;
   private isEdit: boolean;
-  private isImport: boolean;
   private location: any;
   private groupId: any;
   private jobId: any;
@@ -93,7 +92,6 @@ export class JobInfoPage {
   private subscriber: any;
   private envModalOptions: any = {};
   private deleteJobModalOptions: any = {};
-  private importModalOptions: any = {};
   private note: any = {
     selectTypeName: '',
     weekdayNote: '',
@@ -130,9 +128,9 @@ export class JobInfoPage {
 
   ngOnInit() {
     this.userInfo = this._authService.getUserInfoFromCache();
-    this.userName = this.userInfo.UserName;
-    this.userFullName = this.userInfo.FullName;
-    this.userEmail = this.userInfo.EmailAddress;
+    this.userName = this.userInfo.userid;
+    this.userFullName = this.userInfo.fullname;
+    this.userEmail = this.userInfo.email;
 
     this.groupInfo.notifysetting.succeed.to = this.userEmail;
     this.groupInfo.notifysetting.failed.to = this.userEmail;
@@ -143,7 +141,6 @@ export class JobInfoPage {
         this.groupLocations = this.locations.map((item: any) => item.location);
         this.isNew = !!this._route.snapshot.data['IsNew'];
         this.isClone = !!this._route.snapshot.data['IsClone'];
-        this.isImport = !!this._route.snapshot.data['IsImport'];
         this.isEdit = !!this._route.snapshot.data['IsEdit'];
         this.subscriber = this._route.params.subscribe(params => {
           this.location = params['location'];
@@ -214,13 +211,6 @@ export class JobInfoPage {
         this.deleteJobModalOptions = {
           show: false,
           title: "Warn",
-          hideCloseBtn: true,
-          hideFooter: true
-        }
-
-        this.importModalOptions = {
-          show: true,
-          title: "Import From JobConsole",
           hideCloseBtn: true,
           hideFooter: true
         }
@@ -428,7 +418,7 @@ export class JobInfoPage {
       if (this.groups.length) {
         this.ownerGroups = this.groups.filter((group: any) => group.owners && group.owners.indexOf(this.userName) > -1)
       }
-      if (this.userInfo && this.userInfo.IsAdmin) {
+      if (this.userInfo && this.userInfo.isadmin) {
         this.ownerGroups = this.groups;
       }
     }
@@ -507,45 +497,6 @@ export class JobInfoPage {
   private removeFile() {
     this.serverForm.controls['CurrentFile'].setValue('');
     // this.currentFile = '';
-  }
-
-  private onImportJob(e: any) {
-    if (e) {
-      this.groupInfo = e;
-      this.scheduleArr = [];
-      let schedule = this.groupInfo.schedule;
-      if (schedule) {
-        if (schedule.startdate) {
-          schedule.startdate = moment(schedule.startdate).format('MM/DD/YYYY');
-        }
-        if (schedule.enddate) {
-          schedule.enddate = moment(schedule.enddate).format('MM/DD/YYYY');
-        }
-        if (schedule.starttime) {
-          schedule.starttime = moment(new Date("2016/01/01 " + schedule.starttime)).format("HH:mm");
-        }
-        if (schedule.endtime) {
-          schedule.endtime = moment(new Date("2016/01/01 " + schedule.endtime)).format("HH:mm");
-        }else{
-          schedule.endtime = "";
-        }
-        schedule.selectat = schedule.selectat || "";
-        schedule.enabled = 1;
-        if(schedule.turnmode === 6){
-          schedule.monthlyof = {
-            day: schedule.interval,
-            week: schedule.RunOnDayOfWeek || '1:1'
-          }
-        }else{
-          schedule.monthlyof = {
-            day: 1,
-            week: schedule.RunOnDayOfWeek || ''
-          }
-        }
-      }
-      this.scheduleArr.push(this.groupInfo.schedule);
-      this.buildForm();
-    }
   }
 
   private showAddSchedule() {
@@ -687,7 +638,7 @@ export class JobInfoPage {
       }
     };
 
-    if (this.isNew || this.isClone || this.isImport) {
+    if (this.isNew || this.isClone) {
       postData.createuser = this.userName;
       this._jobService.add(postData)
         .then(data => {
@@ -751,7 +702,7 @@ export class JobInfoPage {
           this.saveJobInfo();
         })
         .catch(err => {
-          messager.err(err.message || 'Upload file failed');
+          messager.error(err.message || 'Upload file failed');
         })
     } else {
       this.saveJobInfo();

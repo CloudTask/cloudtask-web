@@ -1,16 +1,17 @@
 const express = require('express');
 const logCtrl = require('./../controllers/log');
-const envValidator = require('./../validators/env');
 
 let router = express.Router();
 
 router.get('/activity',
-  envValidator.getCurrentEnv,
   logCtrl.getActivity
 );
 
+router.get('/log',
+  logCtrl.getLog
+);
+
 router.post('/activity',
-  envValidator.getCurrentEnv,
   logCtrl.postActivity
 );
 

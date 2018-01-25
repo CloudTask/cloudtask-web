@@ -40,12 +40,6 @@ export class ActivityPage {
   }
 
   ngOnInit() {
-    this.subscriber = this._route.params.subscribe(params => {
-      this.transfer = params['transfer'];
-      if (this.transfer == 'transfer') {
-        this._router.navigateByUrl('/');
-      }
-    });
     this.pageOptions = {
       "boundaryLinks": false,
       "directionLinks": true,
@@ -115,6 +109,6 @@ export class ActivityPage {
   }
 
   ngOnDestroy() {
-    this.subscriber.unsubscribe();
+
   }
 }
