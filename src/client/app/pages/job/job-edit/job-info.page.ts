@@ -697,7 +697,7 @@ export class JobInfoPage {
       } else {
         DfisAddr = `${Config.DfisAddress}`;
       }
-      this._dfisUploader.upload(`${DfisAddr}/cloudtask/jobs/${this.inputFile}`, this.inputValue)
+      this._dfisUploader.upload(`api/file/upload/${this.inputFile}`, this.inputValue)
         .then((res: any) => {
           this.saveJobInfo();
         })

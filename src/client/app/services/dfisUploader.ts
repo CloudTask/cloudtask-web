@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
+import { CusHttpService } from './custom-http.service';
 
 @Injectable()
 export class DfisUploader {
 
-  constructor() { }
+  constructor(
+    private _http: CusHttpService,
+  ) { }
 
   /**
    * 上传文件到dfis
@@ -14,7 +17,7 @@ export class DfisUploader {
     return new Promise((resolve, reject) => {
       let xhr = new XMLHttpRequest();
       xhr.open('POST', dfisUrl);
-      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
       xhr.addEventListener('readystatechange', (evt) => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           if (xhr.status !== 200) {
@@ -26,7 +29,22 @@ export class DfisUploader {
       xhr.addEventListener('error', (err) => {
         reject(err);
       });
-      xhr.send(file);
+      var formData = new FormData();
+      formData.append("jobFile", file);
+      xhr.send(formData);
+      // let postJob = {
+      //   name: '111'
+      // };
+      // console.log(postJob);
+      // let a = 'joballocator-2016-12-07_16-48-43-2018-01-26_11-39-50.tar.gz';
+      // this._http.post(`api/file/upload/${a}`, postJob)
+      //   .then(res => {
+      //     let data = res.json ? res.json() : res;
+      //     resolve(data);
+      //   })
+      //   .catch(err => {
+      //     reject(err.json ? err.json() : err);
+      //   });
     });
   }
 }

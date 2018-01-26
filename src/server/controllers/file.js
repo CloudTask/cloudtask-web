@@ -1,16 +1,20 @@
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+const mkdirp = require('mkdirp');
 const config = require('./../config');
-const util = require('./../common/util');
-const db = require('./../common/db');
+const commonConfig = require('./../common/config');
+const util = require('./../common/util').util;
+const dbFactory = require('./../db/dbFactory').factory;
 
-const imageExts = ['.jpg', '.png', '.jpeg', '.bmp'];
+let collectionName = config.dbConfigs.fileCollection.name;
+
+const imageExts = ['.tar.gz'];
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     let store = req.body.store || 'default';
-    let folderPath = path.join(config.uploadFolder, store);
+    let folderPath = path.join(commonConfig.uploadFolder, store);
     file.store = store;
     util.ensureDirExists(folderPath);
     cb(null, folderPath);
@@ -23,29 +27,31 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // 确保文件目录存在
-util.ensureDirExists(config.uploadFolder);
+// util.ensureDirExists(commonConfig.uploadFolder);
 
 module.exports = {
   preUpload(req, res, next) {
     let aliasName = req.params.filename || '';
-    let p = Promise.resolve();
     if (aliasName) {
-      p = db.findFile(aliasName);
+      dbFactory.getCollection(collectionName).findOne({ filename: aliasName }, (err, resultFile) => {
+        if (err) {
+          console.log('Error:' + err);
+          return;
+        }
+        if (resultFile) {
+          return res.status(409).send('alias name exits.');
+        }
+        next();
+      })
     }
-    p.then(data => {
-      if (data) {
-        return res.status(409).send('alias name exits.');
-      }
-      next();
-    }).catch(next);
   },
-  upload: upload.single('file'),
+  upload: upload.single('jobFile'),
   postUpload(req, res, next) {
     let file = req.file;
     if (!file) {
-      return res.send('No file upload.');
+      return res.status(409).send('No file upload.');
     }
-    db.writeFileInfo({
+    dbFactory.getCollection(collectionName).insert({
       store: file.store,
       originalname: file.originalname,
       mimeType: file.mimetype,
@@ -53,24 +59,28 @@ module.exports = {
       filename: file.filename,
       size: file.size,
       aliasName: req.params.filename || ''
-    }).then(doc => {
+    }, (err, result) => {
+      if (err) {
+        console.log('Error:' + err);
+        return;
+      }
       res.send(`/${file.store}/${file.filename}`);
-    }).catch(next);
+    })
   },
   getFileName(req, res, next) {
     let aliasName = req.params.aliasName;
     if (aliasName) {
-      db.findFile(aliasName)
+      dbFactory.getCollection(collectionName).findOne({aliasName: aliasName})
         .then(file => {
           if (!file) {
             return res.status(404).end();
           }
-          res.locals.filepath = path.join(config.uploadFolder, file.store, file.filename);
+          res.locals.filepath = path.join(commonConfig.uploadFolder, file.store, file.filename);
           next();
         })
         .catch(next);
     } else {
-      res.locals.filepath = path.join(config.uploadFolder, req.params.store, req.params.filepath);
+      res.locals.filepath = path.join(commonConfig.uploadFolder, req.params.store, req.params.filepath);
       next();
     }
   },
@@ -84,7 +94,7 @@ module.exports = {
   processImage(req, res, next) {
     let filepath = res.locals.filepath;
     let extName = path.extname(filepath);
-    // 不是图片格式，直接跳过
+    // 不是.tar.gz格式，直接跳过
     if (!imageExts.includes(extName)) {
       return next();
     }

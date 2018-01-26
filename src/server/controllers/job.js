@@ -104,8 +104,15 @@ exports.changeInfo = (res, postJob, envConfig) => {
       return;
     }
     let data = resultJob[0];
+    postJob.createat = data.createat;
+    postJob.createuser = data.createuser;
+    postJob.stat = data.stat;
     let editat = moment().format();;
     postJob.editat = editat;
+    postJob.files = data.files;
+    postJob.execat = data.execat;
+    postJob.nextat = data.nextat;
+    postJob.execerr = data.execerr;
     if(postJob.nextat == ""){
       postJob.nextat = '0001-01-01T00:00:00.000Z';
     }
@@ -128,6 +135,7 @@ exports.changeInfo = (res, postJob, envConfig) => {
         let fileIndex = data.files.findIndex(item => item.name == postJob.filename);
         postJob.files.splice(fileIndex, 1)
       }
+      console.log(postJob.files)
       if (postJob.files.length > 0) {                 //排序
         postJob.files.sort((a, b) => {
           return a.createat < b.createat ? 1 : -1;

@@ -1,21 +1,25 @@
 const express = require('express');
+const fileCtrl = require('./../controllers/file');
 
-router.post('/upload/:filename?',
-  routeBiz.preUpload,
-  routeBiz.upload,
-  routeBiz.postUpload
+let router = express.Router();
+router.post('/upload/:filename',
+  fileCtrl.preUpload,
+  fileCtrl.upload,
+  fileCtrl.postUpload
 );
 
-router.get('/:store/:filepath',
-  routeBiz.getFileName,
-  routeBiz.ensureFileExists,
-  routeBiz.processImage,
-  routeBiz.sendFile
+router.get('/:store/:aliasName',
+  fileCtrl.getFileName,
+  fileCtrl.ensureFileExists,
+  fileCtrl.processImage,
+  fileCtrl.sendFile
 );
 
-router.get('/:aliasName',
-  routeBiz.getFileName,
-  routeBiz.ensureFileExists,
-  routeBiz.processImage,
-  routeBiz.sendFile
+router.get('/default/:aliasName',
+  fileCtrl.getFileName,
+  fileCtrl.ensureFileExists,
+  fileCtrl.processImage,
+  fileCtrl.sendFile
 );
+
+module.exports = router;

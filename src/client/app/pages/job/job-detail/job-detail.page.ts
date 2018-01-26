@@ -193,7 +193,9 @@ export class JobDetailPage {
     } else {
       DfisAddr = `${Config.DfisAddress}`;
     }
-    let url = `${DfisAddr}/cloudtask/jobs/${this.jobInfor.filename}`;
+    // let fileAddr = 'uploads/default';
+    // let url = `api/file/${fileAddr}/${this.jobInfor.filename}`;
+    let url = `api/file/default/${this.jobInfor.filename}`;
     window.open(url, "_blank");
   }
 

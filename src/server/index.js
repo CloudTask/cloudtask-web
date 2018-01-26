@@ -77,6 +77,7 @@ let startServer = () => {
   app.use('/api/group', require('./routers/group'));
   app.use('/api/location', require('./routers/location'));
   app.use('/api/job', require('./routers/job'));
+  app.use('/api/file', require('./routers/file'));
   app.use('/api/log', require('./routers/log'));
 
   // console.debug('Init system...');

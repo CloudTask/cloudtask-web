@@ -89,7 +89,7 @@
                 <label class="exampleInputFile">Upload :</label>
                 <div class="row">
                   <div class="col-md-12">
-                    <input (change)="selectedFileOnChanged($event)" type="file" value="" name="jobFile" accept="application/gzip, .gz" style="display: inline-block"
+                    <input (change)="selectedFileOnChanged($event)" type="file" enctype="multipart/form-data" value="" name="jobFile" accept="application/gzip, .gz" style="display: inline-block"
                       formControlName="InputFile" style="width:100%;">
                     <p class="text-danger margin-top-5" style="margin-bottom: 0">
                       Please compress your folder as <strong>tar.gz</strong> archive and make sure the size is less than
