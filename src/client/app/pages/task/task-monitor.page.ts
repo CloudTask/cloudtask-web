@@ -281,7 +281,7 @@ export class TaskMonitorPage {
       } else {
         DfisAddr = `${Config.DfisAddress}`;
       }
-      this._dfisUploader.upload(`${DfisAddr}/cloudtask/jobs/${this.fileName}`, this.inputValue)
+      this._dfisUploader.upload(`${DfisAddr}/cloudtask/jobs/${this.fileName}`, this.inputValue, { disableLoading: false })
         .then((data: any) => {
           let putData = {
             location: this.location,

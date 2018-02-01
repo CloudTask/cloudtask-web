@@ -40,6 +40,8 @@ export class JobInfoPage {
   private inputValue: any;
 
   private locations: Array<any> = [];
+  private commandFormedValue: Array<any> = [];
+  private isCommandRaw: boolean = true;
   private groupLocations: Array<any> = [];
   private submitted: boolean;
   private envSubmitted: boolean;
@@ -235,6 +237,51 @@ export class JobInfoPage {
     }
   }
 
+  private changeCommandForm(value: any) {
+    if (value == 'raw') {
+      this.isCommandRaw = true;
+    }
+    if (value == 'form') {
+      this.isCommandRaw = false;
+    }
+  }
+
+  private onChangeCommand() {
+    let temp = this.serverForm.value.Command.split(' ');
+    let Ctrl = <FormArray>this.serverForm.controls['CommandFormedValue'];
+    Ctrl.reset();
+    Ctrl.value.forEach((item: any, index: any) => {
+      Ctrl.removeAt(0);
+    });
+    setTimeout(() => {
+      temp.forEach((item: any) => {
+        Ctrl.push(this._fb.group({
+          Value: item
+        }));
+      });
+    });
+  }
+
+  private changeFormedCommand(index: any, event?: any) {
+    let temp = this.serverForm.controls.CommandFormedValue.value.map((data: any) => data.Value);
+    let changeCommand = temp.join(' ').replace(/(^\s*)|(\s*$)/g, "");
+    changeCommand.replace(/\s{2,}/g, ' ');
+    this.serverForm.controls['Command'].setValue(changeCommand);
+  }
+
+  private addCommandLine() {
+    let control = <FormArray>this.serverForm.controls['CommandFormedValue'];
+    control.push(this._fb.group({
+      Value: [''],
+    }));
+  }
+
+  private removeCommandLine(index: any) {
+    let control = <FormArray>this.serverForm.controls['CommandFormedValue'];
+    control.removeAt(index);
+    this.changeFormedCommand(index);
+  }
+
   private downloadFile() {
     if (`${ConfAddress}` == `${Config.Prd}`) {
       DfisAddr = `${Config.DfisAddressPrd}`;
@@ -344,6 +391,7 @@ export class JobInfoPage {
       Description: data.description || '',
       TargetServer: data.targetServer || '',
       Command: data.cmd || '',
+      CommandFormedValue: this._fb.array([]),
       Runtime: [{ value: (data.location ? data.location : ''), disabled: (this.isEdit) }],
       GroupId: data.groupid || '',
       CurrentFile: data.filename || '',
@@ -364,6 +412,15 @@ export class JobInfoPage {
       EnableJobRun: data.enabled === 1 ? 1 : 0,
       SelectFile: data.selectFile || '',
     });
+
+    if (data.cmd) {
+      let commandFormedCtrl = <FormArray>this.serverForm.controls['CommandFormedValue'];
+      data.cmd.split(' ').forEach((item: any) => {
+        commandFormedCtrl.push(this._fb.group({
+          Value: item,
+        }));
+      });
+    }
     // if (!this.isImport) {
     setTimeout(() => {
       this.updateGroup(this.serverForm.controls.Runtime.value);
@@ -697,7 +754,7 @@ export class JobInfoPage {
       } else {
         DfisAddr = `${Config.DfisAddress}`;
       }
-      this._dfisUploader.upload(`api/file/upload/${this.inputFile}`, this.inputValue)
+      this._dfisUploader.upload(`api/file/upload/${this.jobId}/${this.inputFile}`, this.inputValue, { disableLoading: false })
         .then((res: any) => {
           this.saveJobInfo();
         })

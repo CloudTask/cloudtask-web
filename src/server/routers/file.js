@@ -2,7 +2,7 @@ const express = require('express');
 const fileCtrl = require('./../controllers/file');
 
 let router = express.Router();
-router.post('/upload/:filename',
+router.post('/upload/:store/:filename',
   fileCtrl.preUpload,
   fileCtrl.upload,
   fileCtrl.postUpload
@@ -11,14 +11,14 @@ router.post('/upload/:filename',
 router.get('/:store/:aliasName',
   fileCtrl.getFileName,
   fileCtrl.ensureFileExists,
-  fileCtrl.processImage,
+  // fileCtrl.processFile,
   fileCtrl.sendFile
 );
 
 router.get('/default/:aliasName',
   fileCtrl.getFileName,
   fileCtrl.ensureFileExists,
-  fileCtrl.processImage,
+  // fileCtrl.processFile,
   fileCtrl.sendFile
 );
 

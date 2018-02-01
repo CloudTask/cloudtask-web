@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { CusHttpService } from './custom-http.service';
+import { GlobalLoadingService } from './global-loading.service';
 
 @Injectable()
 export class DfisUploader {
 
   constructor(
     private _http: CusHttpService,
+    private _globalLoading: GlobalLoadingService
   ) { }
 
   /**
@@ -13,8 +15,11 @@ export class DfisUploader {
    * @param  {string} dfisUrl - 要上传的地址（Dfis完整上传地址）
    * @param  {Blob|File} file - 要上传的内容
    */
-  upload(dfisUrl: string, file: File): Promise<any> {
+  upload(dfisUrl: string, file: File, options: any): Promise<any> {
     return new Promise((resolve, reject) => {
+      if (!options.disableLoading) {
+        this._globalLoading.add();
+      }
       let xhr = new XMLHttpRequest();
       xhr.open('POST', dfisUrl);
       // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');

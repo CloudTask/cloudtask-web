@@ -2,13 +2,13 @@ const request = require('request');
 const config = require('../../common/config');
 
 
-const requestMQ = (envConfig, data, config) => {
+const requestMQ = (data, config) => {
   let options = {
     headers: {
       'accept': 'application/json',
       'content-type': 'application/json',
     },
-    uri: `${envConfig}/framework/v1/enterprise-messaging/message`,
+    uri: `framework/v1/enterprise-messaging/message`,
     method: config.method,
     forever: true
   };
@@ -16,15 +16,7 @@ const requestMQ = (envConfig, data, config) => {
   if (data) {
     messageBody = typeof data === 'string' ? data : JSON.stringify(data);
   }
-  let body = {
-    "MessageName": "cloudtask_v2",
-    "Password": "123456abc",
-    "MessageBody": messageBody,
-    "ContentType": "application/json",
-    "CallbackURI": "",
-    "InvokeType": "Message"
-  }
-  options.body = JSON.stringify(body);
+  options.body = JSON.stringify(messageBody);
   return new Promise((resolve, reject) => {
     request(options, (err, res, body) => {
       if (err) {

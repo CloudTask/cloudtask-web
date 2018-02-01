@@ -46,7 +46,7 @@ const util = {
       mkdirp(dir);
     }
   },
-  getImageSize(imgPath) {
+  getFileSize(imgPath) {
     return new Promise((resolve, reject) => {
       // gm(imgPath)
       //   .size(imgPath, (err, size) => {

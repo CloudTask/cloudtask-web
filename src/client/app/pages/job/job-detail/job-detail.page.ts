@@ -195,7 +195,7 @@ export class JobDetailPage {
     }
     // let fileAddr = 'uploads/default';
     // let url = `api/file/${fileAddr}/${this.jobInfor.filename}`;
-    let url = `api/file/default/${this.jobInfor.filename}`;
+    let url = `api/file/${this.jobId}/${this.jobInfor.filename}`;
     window.open(url, "_blank");
   }
 

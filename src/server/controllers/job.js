@@ -47,7 +47,6 @@ exports.get = (req, res, next) => {
 }
 
 exports.createJob = (req, res, next) => {
-  let envConfig = req.envConfig;
   let postJob = req.body;
   let groupId = postJob.groupid;
 
@@ -91,13 +90,13 @@ exports.createJob = (req, res, next) => {
           //     runtime: postJob.location,
           //     timestamp: time
           //   }
-          //   return requestHelper.requestMQ(envConfig, dataObj, { method: 'post' });
+          // requestHelper.requestMQ(dataObj, { method: 'post' });
         })
       }
   })
 }
 
-exports.changeInfo = (res, postJob, envConfig) => {
+exports.changeInfo = (res, postJob) => {
   dbFactory.getCollection(collectionName).find({ 'jobid': postJob.jobid }).toArray((err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
@@ -191,13 +190,12 @@ exports.changeInfo = (res, postJob, envConfig) => {
       //   runtime: jobLocation,
       //   timestamp: time
       // }
-      // return requestHelper.requestMQ(envConfig, dataObj, { method: 'post' })
+      // requestHelper.requestMQ(dataObj, { method: 'post' })
     })
   })
 }
 
 exports.updateJob = (req, res, next) => {
-  let envConfig = req.envConfig;
   let postJob = req.body;
   let groupId = postJob.groupid;
   let jobId = postJob.jobid;
@@ -217,7 +215,7 @@ exports.updateJob = (req, res, next) => {
       res.status(409);
       res.json(resultData);
     }
-    this.changeInfo(res, postJob, envConfig);
+    this.changeInfo(res, postJob);
   })
 }
 
@@ -246,7 +244,6 @@ exports.getById = (req, res, next) => {
 
 exports.updatefiles = (req, res, next) => {
   let newJob = {};
-  let envConfig = req.envConfig;
   let postJobs = req.body;
   let jobLocation = postJobs.location;
   let newFileName = postJobs.jobs[0].filename;
@@ -279,12 +276,12 @@ exports.updatefiles = (req, res, next) => {
       newJob.jobid = item.jobid;
       newJob.filename = newFileName;
       newJob.files = files;
-      this.changeFiles(res, next, envConfig, newJob, jobids, jobLocation);
+      this.changeFiles(res, next, newJob, jobids, jobLocation);
     })
   })
 }
 
-exports.changeFiles = (res, next, envConfig, newJob, jobids, jobLocation) => {
+exports.changeFiles = (res, next, newJob, jobids, jobLocation) => {
   dbFactory.getCollection(collectionName).update({'jobid': newJob.jobid}, {$set: {'filename': newJob.filename, 'files': newJob.files}}, (err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
@@ -292,45 +289,21 @@ exports.changeFiles = (res, next, envConfig, newJob, jobids, jobLocation) => {
     }
     let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
     res.json(resultData);
+  // let time =  Date.now();
+  // let dataObj = {
+  // msgname: 'SystemEvent',
+  // msgid: '',
+  // event: "change_jobsfile",
+  // jobids: jobids,
+  // groupids: [],
+  // runtime: jobLocation,
+  // timestamp: time
+  // }
+  // requestHelper.requestMQ(dataObj, { method: 'post' })
   })
-  // db.update('sys_jobs', newJob)
-  //   .then((data) => {
-  //     if (data) {
-  //       let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
-  //       res.json(resultData);
-  //       return { done: false }
-  //     } else {
-  //       let resultData = response.setResult(request.requestResultCode.RequestNotFound, request.requestResultErr.ErrRequestNotFound, {});
-  //       res.json(resultData);
-  //       return { done: true }
-  //     }
-  //   })
-  //   .then(data => {
-  //     if (!data.done) {
-  //       let time =  Date.now();
-  //       let dataObj = {
-  //         msgname: 'SystemEvent',
-  //         msgid: '',
-  //         event: "change_jobsfile",
-  //         jobids: jobids,
-  //         groupids: [],
-  //         runtime: jobLocation,
-  //         timestamp: time
-  //       }
-  //       requestHelper.requestMQ(envConfig, dataObj, { method: 'post' })
-  //       .then(data => {
-  //         if (!data) {
-  //           return Promise.reject({ message: 'Failed' });
-  //         }
-  //       })
-  //         .catch(err => next(err))
-  //     }
-  //   })
-  //   .catch(err => next(err))
 }
 
 exports.removeJob = (req, res, next) => {
-  let envConfig = req.envConfig;
   let jobId = req.params.jobId;
   let jobLocation = '';
 
@@ -357,7 +330,7 @@ exports.removeJob = (req, res, next) => {
       //   event: "remove_job",
       //   timestamp: time
       // }
-      // return requestHelper.requestMQ(envConfig, dataObj, { method: 'post' });
+      // requestHelper.requestMQ(dataObj, { method: 'post' });
     })
   })
 }

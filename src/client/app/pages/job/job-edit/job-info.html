@@ -57,8 +57,33 @@
           </select>
         </div>
         <div class="form-group" [class.has-error]="submitted && serverForm.controls.Command.invalid">
-          <label class="control-label">Command</label>
-          <input type="text" class="form-control" name="command" value="" formControlName="Command" required>
+          <div class="command-group" #commandEdit>
+            <label class="control-label" style="line-height: 34px;">Command</label>
+            <div class="btn-group" style="position: absolute; right: 0;">
+                <button type="button" class="btn btn-default" [class.active]="isCommandRaw" (focus)="changeCommandForm('raw')">Raw</button>
+                <button type="button" class="btn btn-default" [class.active]="!isCommandRaw" (focus)="changeCommandForm('form')">Form</button>
+            </div>
+          </div>
+          <input *ngIf="isCommandRaw" type="text" class="form-control" name="command" value="" formControlName="Command" required (change)="onChangeCommand()">
+          <div *ngIf="!isCommandRaw" formArrayName="CommandFormedValue" class="command-input-group box no-border">
+            <div class="well-sm">
+              <div class="equal-fields" *ngFor="let volume of serverForm.controls.CommandFormedValue.controls; let i = index;" [formGroupName]="i">
+                <div class="form-group">
+                  <input type="text" class="form-control" formControlName="Value" (change)="changeFormedCommand(i, $event)">
+                </div>
+                <div class="form-group">
+                  <button class="btn btn-default btn-flat" type="button" (click)="removeCommandLine(i)">
+                    <i class="fa fa-close"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="form-group no-margin">
+                  <button class="btn btn-default btn-flat btn-sm" type="button" (click)="addCommandLine()">
+                    <i class="fa fa-plus"></i> Add Command Args
+                  </button>
+                </div>
+              </div>
+          </div>
           <div *ngIf="submitted && serverForm.controls.Command.invalid">
             <span class="help-block" *ngIf="serverForm.controls.Command.errors?.required">Command cannot be empty.</span>
           </div>

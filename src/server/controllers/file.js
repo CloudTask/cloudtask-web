@@ -9,11 +9,11 @@ const dbFactory = require('./../db/dbFactory').factory;
 
 let collectionName = config.dbConfigs.fileCollection.name;
 
-const imageExts = ['.tar.gz'];
+// const imageExts = ['.tar.gz'];
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    let store = req.body.store || 'default';
+    let store = req.params.store || 'default';
     let folderPath = path.join(commonConfig.uploadFolder, store);
     file.store = store;
     util.ensureDirExists(folderPath);
@@ -27,7 +27,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // 确保文件目录存在
-// util.ensureDirExists(commonConfig.uploadFolder);
+util.ensureDirExists(commonConfig.uploadFolder);
 
 module.exports = {
   preUpload(req, res, next) {
@@ -91,36 +91,36 @@ module.exports = {
     }
     next();
   },
-  processImage(req, res, next) {
-    let filepath = res.locals.filepath;
-    let extName = path.extname(filepath);
-    // 不是.tar.gz格式，直接跳过
-    if (!imageExts.includes(extName)) {
-      return next();
-    }
-    let w = +req.query.w;
-    let h = +req.query.h;
-    let p = Promise.resolve();
-    if (w || h) {
-      p = util.getImageSize(filepath)
-        .then(size => {
-          if (!w) {
-            w = size.width;
-          } else if (!h) {
-            h = size.height;
-          }
-        })
-        .then(() => {
-          let targetFilepath = filepath.replace(new RegExp(extName + '$'), `_${w}_${h}${extName}`);
-          return util.resizeImage(filepath, targetFilepath, w, h);
-        })
-    }
-    p.then(targetFilepath => {
-      targetFilepath && (res.locals.filepath = targetFilepath);
-      next();
-    })
-      .catch(next);
-  },
+  // processFile(req, res, next) {
+  //   let filepath = res.locals.filepath;
+  //   let extName = path.extname(filepath);
+  //   // 不是.tar.gz格式，直接跳过
+  //   if (!imageExts.includes(extName)) {
+  //     return next();
+  //   }
+  //   let w = +req.query.w;
+  //   let h = +req.query.h;
+  //   let p = Promise.resolve();
+  //   if (w || h) {
+  //     p = util.getFileSize(filepath)
+  //       .then(size => {
+  //         if (!w) {
+  //           w = size.width;
+  //         } else if (!h) {
+  //           h = size.height;
+  //         }
+  //       })
+  //       .then(() => {
+  //         let targetFilepath = filepath.replace(new RegExp(extName + '$'), `_${w}_${h}${extName}`);
+  //         return util.resizeImage(filepath, targetFilepath, w, h);
+  //       })
+  //   }
+  //   p.then(targetFilepath => {
+  //     targetFilepath && (res.locals.filepath = targetFilepath);
+  //     next();
+  //   })
+  //     .catch(next);
+  // },
   sendFile(req, res, next) {
     let filepath = res.locals.filepath;
     res.sendFile(filepath);

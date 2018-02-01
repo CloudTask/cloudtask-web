@@ -6,3 +6,14 @@
 .form-group .form-control{
     height: auto;
 }
+
+.command-group{
+  position: relative;
+  height: 34px;
+  margin-bottom: 10px;
+}
+
+.command-input-group{
+  max-height: 248px;
+  overflow-y: auto;
+}
