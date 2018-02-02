@@ -115,6 +115,7 @@ export class JobInfoPage {
   private selectTargetSer: Array<any> = [];
   private targetServer: Array<any> = [];
   private serverArr: Array<any> = [];
+  private adminSelect2Options: any;
 
   constructor(
     private _route: ActivatedRoute,
@@ -177,6 +178,14 @@ export class JobInfoPage {
             this.buildForm();
           }
           // this.currentFile = this.groupInfo.filename;
+
+          // this.adminSelect2Options = {
+          //   multiple: true,
+          //   closeOnSelect: true,
+          //   placeholder: 'Select Server',
+          //   dropdownAutoWidth: true,
+          //   tags: true,
+          // };
           this._groupService.getById(this.groupId)
             .then(res => {
               this.groupName = res.name;

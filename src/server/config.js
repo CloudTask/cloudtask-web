@@ -8,10 +8,10 @@ let getConfig = () => {
       locationCollection: { name: 'sys_locations' },
       jobCollection: { name: 'sys_jobs' },
       userCollection: { name: 'sys_users' },
-      logCollection: { name: 'LogInfo', ttl: 30 * 24 * 60 * 60 },
+      // logCollection: { name: 'LogInfo', ttl: 30 * 24 * 60 * 60 },
       sessionCollection: { name: 'SessionInfo', ignoreLoad: true },
       activityCollection: { name: 'sys_activitys' },
-      logCollection: { name: 'sys_logs' },
+      logCollection: { name: 'logs' },
       fileCollection: { name: 'sys_files' }
     },
     encryptKey: 'cloudtask@123'

@@ -80,17 +80,17 @@ exports.createJob = (req, res, next) => {
           console.log('insert succeed.');
           let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, postJob);
           res.json(resultData);
-          // let time =  Date.now();
-          //   let dataObj = {
-          //     msgname: 'SystemEvent',
-          //     msgid: '',
-          //     event: "create_job",
-          //     jobids: [postJob.jobid],
-          //     groupids: [],
-          //     runtime: postJob.location,
-          //     timestamp: time
-          //   }
-          // requestHelper.requestMQ(dataObj, { method: 'post' });
+          let time =  Date.now();
+            let dataObj = {
+              msgname: 'SystemEvent',
+              msgid: '',
+              event: "create_job",
+              jobids: [postJob.jobid],
+              groupids: [],
+              runtime: postJob.location,
+              timestamp: time
+            }
+          requestHelper.requestMQ(dataObj, { method: 'post' });
         })
       }
   })
@@ -103,12 +103,13 @@ exports.changeInfo = (res, postJob) => {
       return;
     }
     let data = resultJob[0];
+    jobLocation = data.location;
     postJob.createat = data.createat;
     postJob.createuser = data.createuser;
     postJob.stat = data.stat;
     let editat = moment().format();;
     postJob.editat = editat;
-    postJob.files = data.files;
+    postJob.files = data.files || [];
     postJob.execat = data.execat;
     postJob.nextat = data.nextat;
     postJob.execerr = data.execerr;
@@ -129,12 +130,12 @@ exports.changeInfo = (res, postJob) => {
           postJob.files.push(fileObj);
         }
       }
+      if(!data.files) data.files = [];
       let currentFileExist = data.files.some(item => item.name == postJob.filename);
       if(currentFileExist) {
         let fileIndex = data.files.findIndex(item => item.name == postJob.filename);
         postJob.files.splice(fileIndex, 1)
       }
-      console.log(postJob.files)
       if (postJob.files.length > 0) {                 //排序
         postJob.files.sort((a, b) => {
           return a.createat < b.createat ? 1 : -1;
@@ -180,17 +181,17 @@ exports.changeInfo = (res, postJob) => {
       }
       let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, postJob);
       res.json(resultData);
-      // let time =  Date.now();
-      // let dataObj = {
-      //   msgname: 'SystemEvent',
-      //   msgid: '',
-      //   jobids: [postJob.jobid],
-      //   groupids: [],
-      //   event: "change_job",
-      //   runtime: jobLocation,
-      //   timestamp: time
-      // }
-      // requestHelper.requestMQ(dataObj, { method: 'post' })
+      let time =  Date.now();
+      let dataObj = {
+        msgname: 'SystemEvent',
+        msgid: '',
+        jobids: [postJob.jobid],
+        groupids: [],
+        event: "change_job",
+        runtime: jobLocation,
+        timestamp: time
+      }
+      requestHelper.requestMQ(dataObj, { method: 'post' })
     })
   })
 }
@@ -289,17 +290,17 @@ exports.changeFiles = (res, next, newJob, jobids, jobLocation) => {
     }
     let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
     res.json(resultData);
-  // let time =  Date.now();
-  // let dataObj = {
-  // msgname: 'SystemEvent',
-  // msgid: '',
-  // event: "change_jobsfile",
-  // jobids: jobids,
-  // groupids: [],
-  // runtime: jobLocation,
-  // timestamp: time
-  // }
-  // requestHelper.requestMQ(dataObj, { method: 'post' })
+  let time =  Date.now();
+  let dataObj = {
+  msgname: 'SystemEvent',
+  msgid: '',
+  event: "change_jobsfile",
+  jobids: jobids,
+  groupids: [],
+  runtime: jobLocation,
+  timestamp: time
+  }
+  requestHelper.requestMQ(dataObj, { method: 'post' })
   })
 }
 
@@ -320,17 +321,17 @@ exports.removeJob = (req, res, next) => {
       }
       let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
       res.json(resultData);
-      // let time =  Date.now();
-      // let dataObj = {
-      //   msgname: 'SystemEvent',
-      //   msgid: '',
-      //   runtime: jobLocation,
-      //   jobids: [jobId],
-      //   groupids: [],
-      //   event: "remove_job",
-      //   timestamp: time
-      // }
-      // requestHelper.requestMQ(dataObj, { method: 'post' });
+      let time =  Date.now();
+      let dataObj = {
+        msgname: 'SystemEvent',
+        msgid: '',
+        runtime: jobLocation,
+        jobids: [jobId],
+        groupids: [],
+        event: "remove_job",
+        timestamp: time
+      }
+      requestHelper.requestMQ(dataObj, { method: 'post' });
     })
   })
 }

@@ -21,13 +21,13 @@ exports.add = (req, res, next) => {
           }
           let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
           res.json(result);
-          // let time =  Date.now();
-          // let dataObj = {
-          //   runtime: postLocation.location,
-          //   event: "create_location",
-          //   timestamp: time
-          // }
-          // requestHelper.requestMQ(dataObj, { method: 'post' });
+          let time =  Date.now();
+          let dataObj = {
+            runtime: postLocation.location,
+            event: "create_location",
+            timestamp: time
+          }
+          requestHelper.requestMQ(dataObj, { method: 'post' });
         })
       }
     })
@@ -49,13 +49,13 @@ exports.remove = (req, res, next) => {
           }
           let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
           res.json(resultData);
-          // let time =  Date.now();
-          // let dataObj = {
-          //   runtime: location,
-          //   event: "remove_location",
-          //   timestamp: time
-          // }
-          // requestHelper.requestMQ(dataObj, { method: 'post' });
+          let time =  Date.now();
+          let dataObj = {
+            runtime: location,
+            event: "remove_location",
+            timestamp: time
+          }
+          requestHelper.requestMQ(dataObj, { method: 'post' });
         })
       }
     })

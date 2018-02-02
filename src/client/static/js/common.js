@@ -51,5 +51,5 @@ var config = {
   DfisAddressPrd: 'http://neg-app-dfis-c4',
 };
 window.Config = config;
-window.ConfAddress = config.Gdev;
+window.ConfAddress = 'http://10.16.85.173:8985';
 window.DfisAddr = config.DfisAddress;

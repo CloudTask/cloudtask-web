@@ -8,7 +8,7 @@ const requestMQ = (data, config) => {
       'accept': 'application/json',
       'content-type': 'application/json',
     },
-    uri: `framework/v1/enterprise-messaging/message`,
+    uri: `http://10.16.85.173:8985/cloudtask/v2/messages`,
     method: config.method,
     forever: true
   };
@@ -16,13 +16,12 @@ const requestMQ = (data, config) => {
   if (data) {
     messageBody = typeof data === 'string' ? data : JSON.stringify(data);
   }
-  options.body = JSON.stringify(messageBody);
+  options.body = messageBody;
   return new Promise((resolve, reject) => {
     request(options, (err, res, body) => {
       if (err) {
         return reject(err);
       }
-
       if (res.statusCode < 200 || res.statusCode >= 300) {
         return reject({
           statusCode: res.statusCode,

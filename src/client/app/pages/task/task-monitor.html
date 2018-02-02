@@ -146,7 +146,7 @@
                       </a>
                     </li>
                     <li *ngIf="job.filename">
-                      <a href="javascript:void(0)" (click)="downloadFile(job.filename)">
+                      <a href="javascript:void(0)" (click)="downloadFile(job.jobid, job.filename)">
                         <span>
                           <i class="fa fa-download"></i> Download file
                         </span>

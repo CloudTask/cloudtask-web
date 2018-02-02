@@ -7,7 +7,7 @@ router.get('/activity',
   logCtrl.getActivity
 );
 
-router.get('/log',
+router.get('/logs',
   logCtrl.getLog
 );
 

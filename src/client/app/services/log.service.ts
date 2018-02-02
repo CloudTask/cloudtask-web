@@ -35,16 +35,16 @@ export class LogService {
   public getLog(selectedType: any, jobId: string, fromDate: string, toDate: string, currentPage: any, pageSize: any): Promise<any> {
     let query: any;
     if (selectedType) {
-      query = `f_jobid=${jobId}&f_createat={"$gte": ${fromDate}, "$lte": ${toDate}}&f_stat=${selectedType}&sortField=createat&sort=desc&pageIndex=${currentPage}&pageSize=${pageSize}`;
+      query = `jobid=${jobId}&createat={"$gte": ${fromDate}, "$lte": ${toDate}}&stat=${selectedType}&sortField=createat&sort=desc&pageIndex=${currentPage}&pageSize=${pageSize}`;
     } else {
-      query = `f_jobid=${jobId}&f_createat={"$gte": ${fromDate}, "$lte": ${toDate}}&sortField=createat&sort=desc&pageIndex=${currentPage}&pageSize=${pageSize}`;
+      query = `jobid=${jobId}&createat={"$gte": ${fromDate}, "$lte": ${toDate}}&sortField=createat&sort=desc&pageIndex=${currentPage}&pageSize=${pageSize}`;
     }
-    let url = `${ConfAddress}/datastore/v1/cloudtask_v2/logs?${query}`;
+    let url = `api/log/logs?${query}`;
     return new Promise((resolve, reject) => {
       this.http.get(url)
         .then(res => {
-          var logs = res.json();
-          resolve(logs);
+          var logs = res.json ? res.json() : res;
+          resolve(logs.data);
         })
         .catch(err => {
           reject(err.json ? err.json() : err);

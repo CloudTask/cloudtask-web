@@ -5,6 +5,7 @@ const config = require('../config');
 const dbFactory = require('./../db/dbFactory').factory;
 
 let collectionName = config.dbConfigs.activityCollection.name;
+let collectionLog = config.dbConfigs.logCollection.name;
 
 exports.getActivity = (req, res, next) => {
   let pageSize = +(req.query.pageSize || 10);
@@ -50,19 +51,19 @@ exports.getLog = (req, res, next) => {
     queryOption.jobid = req.query.jobid;
   }
   if (req.query.createat) {
-    queryOption.createat = req.query.createat;
+    let createat = JSON.parse(req.query.createat);
+    queryOption.createat = {$gte: createat.$gte, $lte: createat.$lte};
   }
   if (req.query.stat) {
-    queryOption.stat = req.query.stat;
+    queryOption.stat = Number(req.query.stat);
   }
-
   let skiped = pageSize * (pageIndex - 1);
-  dbFactory.getCollection(collectionName).find(queryOption).sort({ createat: sort }).skip(skiped).limit(pageSize).toArray((err, docs) => {
+  dbFactory.getCollection(collectionLog).find(queryOption).sort({ createat: sort }).skip(skiped).limit(pageSize).toArray((err, docs) => {
     if (err) {
       console.log('Error:' + err);
       return;
     }
-    dbFactory.getCollection(collectionName).count(queryOption, (err, count) => {
+    dbFactory.getCollection(collectionLog).count(queryOption, (err, count) => {
       if (err) return next(err);
       let data = {
         pageIndex: pageIndex,

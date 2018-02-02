@@ -55,6 +55,8 @@
           <select class="form-control" id="selectServers" multiple="multiple" formControlName="TargetServer" [value]="targetServer">
               <option value="{{ipaddr}}" *ngFor="let ipaddr of ipaddrs" >{{ipaddr}}</option>
           </select>
+          <!-- <select2 [data]="targetServer" [value]="targetServer" (valueChanged)="refreshSelectedUser($event)" [cssImport]="false"
+        [width]="'100%'" [options]="adminSelect2Options"></select2> -->
         </div>
         <div class="form-group" [class.has-error]="submitted && serverForm.controls.Command.invalid">
           <div class="command-group" #commandEdit>

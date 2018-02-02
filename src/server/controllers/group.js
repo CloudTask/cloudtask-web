@@ -111,17 +111,17 @@ exports.createGroup = (req, res, next) => {
         }
         let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, postGroup);
         res.json(resultData);
-        // let time = Date.now();
-        // let dataObj = {
-        //   msgname: 'SystemEvent',
-        //   msgid: '',
-        //   runtime: postGroup.location,
-        //   event: "create_group",
-        //   jobids: [],
-        //   groupids: [newGroup.id],
-        //   timestamp: time
-        // }
-        // requestHelper.requestMQ(dataObj, { method: 'post' });
+        let time = Date.now();
+        let dataObj = {
+          msgname: 'SystemEvent',
+          msgid: '',
+          runtime: postGroup.location,
+          event: "create_group",
+          jobids: [],
+          groupids: [newGroup.id],
+          timestamp: time
+        }
+        requestHelper.requestMQ(dataObj, { method: 'post' });
       })
     }
   })
@@ -168,17 +168,17 @@ exports.updateGroup = (req, res, next) => {
         }
         let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, newGroup);
         res.json(resultData);
-        // let time = Date.now();
-        // let dataObj = {
-        //   msgname: 'SystemEvent',
-        //   msgid: '',
-        //   runtime: postGroup.location,
-        //   jobids: [],
-        //   groupids: [postGroup.groupid],
-        //   event: "change_group",
-        //   timestamp: time
-        // }
-        // requestHelper.requestMQ(dataObj, { method: 'post' });
+        let time = Date.now();
+        let dataObj = {
+          msgname: 'SystemEvent',
+          msgid: '',
+          runtime: postGroup.location,
+          jobids: [],
+          groupids: [postGroup.groupid],
+          event: "change_group",
+          timestamp: time
+        }
+        requestHelper.requestMQ(dataObj, { method: 'post' });
       })
     }
   })
@@ -208,17 +208,17 @@ exports.removeGroup = (req, res, next) => {
             }
             let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
             res.json(resultData);
-            // let time = Date.now();
-            // let dataObj = {
-            //   msgname: 'SystemEvent',
-            //   msgid: '',
-            //   runtime: currentLocation.location,
-            //   jobids: jobids,
-            //   groupids: [groupId],
-            //   event: "remove_group",
-            //   timestamp: time
-            // }
-            // requestHelper.requestMQ(dataObj, { method: 'post' });
+            let time = Date.now();
+            let dataObj = {
+              msgname: 'SystemEvent',
+              msgid: '',
+              runtime: currentLocation.location,
+              jobids: jobids,
+              groupids: [groupId],
+              event: "remove_group",
+              timestamp: time
+            }
+            requestHelper.requestMQ(dataObj, { method: 'post' });
           })
         }
       })

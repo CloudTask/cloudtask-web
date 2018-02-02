@@ -376,13 +376,13 @@ export class TaskMonitorPage {
     }
   }
 
-  private downloadFile(value: any) {
+  private downloadFile(jobid:any, value: any) {
     if (`${ConfAddress}` == `${Config.Prd}`) {
       DfisAddr = `${Config.DfisAddressPrd}`;
     } else {
       DfisAddr = `${Config.DfisAddress}`;
     }
-    let url = `${DfisAddr}/cloudtask/jobs/${value}`;
+    let url = `api/file/${jobid}/${value}`;
     window.open(url, "_blank");
   }
 
