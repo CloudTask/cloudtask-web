@@ -250,20 +250,20 @@ exports.updatefiles = (req, res, next) => {
   let newFileName = postJobs.jobs[0].filename;
   let jobids = postJobs.jobs.map(item => item.jobid);
   postJobs.jobs.forEach(item => {
-    dbFactory.getCollection(collectionName).finOne({ 'jobid': item.jobid }, (err, resultJob) => {
+    dbFactory.getCollection(collectionName).findOne({ 'jobid': item.jobid }, (err, resultJob) => {
       if (err) {
         console.log('Error:' + err);
         return;
       }
       newJob = resultJob;
       let postJob = req.body;
-      let files = data.files;
-      if (data.filename !== newFileName) {                      //修改了filename
-        if (data.filename) {
-          let fileIsExist = data.files.some(item => item.name == data.filename);
+      let files = resultJob.files;
+      if (resultJob.filename !== newFileName) {                      //修改了filename
+        if (resultJob.filename) {
+          let fileIsExist = resultJob.files.some(item => item.name == resultJob.filename);
           if (!fileIsExist) {
             let fileObj = {
-              name: data.filename,
+              name: resultJob.filename,
               createat: Date.now(),
             }
             files.push(fileObj);

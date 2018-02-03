@@ -4,7 +4,7 @@
         <b>CloudTask</b>
       </div>
       <div class="login-box-body">
-        <p class="login-box-msg">Sign in to start your docker's travel</p>
+        <p class="login-box-msg">Sign in to start managing your jobs.</p>
         <form novalidate #form="ngForm" (ngSubmit)="login(form)">
           <fieldset [attr.disabled]="isLogin ? 'disabled' : null">
             <div class="form-group has-feedback" [ngClass]="{'has-error': form.submitted && userId.invalid }">

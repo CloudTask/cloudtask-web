@@ -25,7 +25,7 @@ gulp.task('client:dev-build', () => {
   compiler.watch(200, (err, stats) => {
     showWebpackError(err, stats);
     notifier.notify({
-      title: 'Humpback-Client',
+      title: 'Cloudtask-Client',
       message: 'Client build succeed.'
     });
     lightReload.reload();
@@ -33,7 +33,7 @@ gulp.task('client:dev-build', () => {
 });
 
 gulp.task('clean', () => {
-  return del(['dist/*', '!dist/dbFiles', '!dist/node_modules'], { force: true });
+  return del(['dist/*', '!dist/uploads', '!dist/node_modules'], { force: true });
 });
 
 gulp.task('server:clean', (callback) => {
