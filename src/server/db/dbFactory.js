@@ -4,6 +4,7 @@ var DB_CONN_STR = 'mongodb://10.16.75.22:29017,10.16.75.23:29017,10.16.75.25:290
 
 class DBFactory {
   constructor() {
+    this.database = {};
     this.connectDB();
   }
 
@@ -11,7 +12,7 @@ class DBFactory {
     if (!this.database) {
       this.connectDB()
         .then((db) => {
-          let col = db.collection('sys_jobs');
+          let col = db.collection('collectionName');
           return col;
         });
     } else {
@@ -28,6 +29,13 @@ class DBFactory {
         resolve(this.database);
       });
     })
+  }
+
+  getCurrentEnv(req, res, next) {
+    MongoClient.connect(DB_CONN_STR, (err, database) => {
+      req.db = database;
+      next();
+    });
   }
 }
 

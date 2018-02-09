@@ -5,9 +5,13 @@ const response = require('./response/response');
 const result = require('./request/request');
 const moment = require('moment');
 const util = require('./../common/util');
-// const dbFactory = require('./../validators/env');
 var MongoClient = require('mongodb').MongoClient;
 var DB_CONN_STR = 'mongodb://10.16.75.22:29017,10.16.75.23:29017,10.16.75.25:29017/cloudtask_data?replicaSet=NeweggCloud';
+
+const config = require('../config');
+const dbFactory = require('./../db/dbFactory').factory;
+
+let collectionName = config.dbConfigs.userCollection.name;
 
 /*
 UserInfo {
@@ -25,22 +29,17 @@ UserInfo {
 }
 */
 exports.getAll = (req, res, next) => {
-  let db = req.db;
-  let collectionLocation = db.collection('sys_users');
-  collectionLocation.find({}).toArray((err, resultUsers) => {
+  dbFactory.getCollection(collectionName).find({}).toArray((err, resultUsers) => {
     res.json(resultUsers);
-    db.close();
   })
 }
 
 exports.createUser = (req, res, next) => {
-  let db = req.db;
   let envConfig = req.envConfig;
   let postUser = JSON.parse(JSON.stringify(req.body));
   let password = util.md5Crypto(postUser.password);
 
-  let collectionLocation = db.collection('sys_users');
-  isExists(collectionLocation, postUser.userid)
+  isExists(dbFactory.getCollection(collectionName), postUser.userid)
     .then(resdata => {
       if (resdata) {
         return next(new Error('UserID is exists.'))
@@ -51,7 +50,7 @@ exports.createUser = (req, res, next) => {
         postUser.password = password;
         postUser.isadmin = !!req.body.isadmin;
         // postUser.userid = util.getRandomId();
-        collectionLocation.insert(postUser, (err, data) => {
+        dbFactory.getCollection(collectionName).insert(postUser, (err, data) => {
           if (err) {
             console.log('Error:' + err);
             return;
@@ -59,19 +58,16 @@ exports.createUser = (req, res, next) => {
           console.log('insert succeed.');
           let resultData = response.setResult(result.requestResultCode.RequestSuccessed, result.requestResultErr.ErrRequestSuccessed, postUser);
           res.json(resultData);
-          db.close();
         })
       }
     })
 }
 
 exports.updateUser = (req, res, next) => {
-  let db = req.db;
   let envConfig = req.envConfig;
   let postUser = req.body;
   let reqUser = req.session.currentUser;
 
-  let collectionLocation = db.collection('sys_users');
   let updateOpt = {
     $set: {
       fullname: req.body.fullname,
@@ -85,12 +81,12 @@ exports.updateUser = (req, res, next) => {
     updateOpt['$set'].isadmin = req.body.isadmin;
   }
   let userId = postUser.userid.toLowerCase();
-  isExists(collectionLocation, userId)
+  isExists(dbFactory.getCollection(collectionName), userId)
     .then(resdata => {
       if (!resdata) {
         return next(new Error('UserID is not exists.'));
       } else {
-        collectionLocation.update({ 'userid': userId }, updateOpt, (err, data) => {
+        dbFactory.getCollection(collectionName).update({ 'userid': userId }, updateOpt, (err, data) => {
           if (err) {
             console.log('Error:' + err);
             return;
@@ -98,7 +94,6 @@ exports.updateUser = (req, res, next) => {
           console.log('update succeed.');
           let resultData = response.setResult(result.requestResultCode.RequestSuccessed, result.requestResultErr.ErrRequestSuccessed, postUser);
           res.json(resultData);
-          db.close();
         })
       }
     })
@@ -106,23 +101,20 @@ exports.updateUser = (req, res, next) => {
 }
 
 exports.removeUser = (req, res, next) => {
-  let db = req.db;
   let userId = req.params.userId;
 
-  let collectionLocation = db.collection('sys_users');
-  collectionLocation.find({ 'userid': userId }).toArray((err, resultUser) => {
+  dbFactory.getCollection(collectionName).find({ 'userid': userId }).toArray((err, resultUser) => {
     if (err) {
       console.log('Error:' + err);
       return;
     }
-    collectionLocation.remove({ 'userid': userId }, (err, data) => {
+    dbFactory.getCollection(collectionName).remove({ 'userid': userId }, (err, data) => {
       if (err) {
         console.log('Error:' + err);
         return;
       }
       let resultData = response.setResult(result.requestResultCode.RequestSuccessed, result.requestResultErr.ErrRequestSuccessed, {});
       res.json(resultData);
-      db.close();
     })
   })
 }
@@ -138,9 +130,8 @@ exports.getToken = (req, res, next) => {
 }
 
 exports.login = (req, res, next) => {
-  let db = req.db;
   let password = util.md5Crypto(req.body.password);
-  login(db, req.body.userid, password, false)
+  login(req.body.userid, password, false)
     .then(userInfo => {
       req.session.currentUser = userInfo;
       if (!!req.body.rememberMe) {
@@ -181,58 +172,55 @@ exports.login = (req, res, next) => {
 }
 
 exports.isLogin = (req, res, next) => {
-  let db = req.db;
   let result = {
     IsLogin: false
   };
   if (req.session.currentUser && req.session.currentUser.userid) {
     result.IsLogin = true;
-    getUserById(db, req.session.currentUser.userid)
+    getUserById(req.session.currentUser.userid)
       .then(userInfo => {
         result.userInfo = userInfo;
         res.json(result);
-        db.close();
       })
       .catch(err => next(err));
   } else {
     res.json(result);
-    db.close();
   }
 }
 
 exports.initAdmin = () => {
   return new Promise((resolve, reject) => {
-    MongoClient.connect(DB_CONN_STR, (err, database) => {
-      let collectionLocation = database.collection('sys_users');
-      collectionLocation.findOne({ user: 'admin' }, (err, doc) => {
-        if (err) return reject(err);
-        if (doc) {
-          return resolve(true);
-        } else {
-          let password = util.md5Crypto('123456');
-          let user = {
-            _id: 'admin111',
-            userid: 'admin111',
-            password: password,
-            isadmin: true,
-            fullname: 'Admin',
-            avatar: '/public/avatar/default.png',
-            department: '',
-            email: '',
-            indate: new Date().valueOf(),
-            inuser: 'system',
-            editat: new Date().valueOf(),
-            edituser: 'system'
-          }
-          collectionLocation.insert(user, (err, newDoc) => {
-            if (err) {
-              return reject(err);
+    dbFactory.connectDB()
+    .then(() => {
+        dbFactory.getCollection(collectionName).findOne({ userid: 'admin' }, (err, doc) => {
+          if (err) return reject(err);
+          if (doc) {
+            return resolve(true);
+          } else {
+            let password = util.md5Crypto('123456');
+            let user = {
+              _id: 'admin',
+              userid: 'admin',
+              password: password,
+              isadmin: true,
+              fullname: 'Admin',
+              avatar: '/public/avatar/default.png',
+              department: '',
+              email: '',
+              indate: new Date().valueOf(),
+              inuser: 'system',
+              editat: new Date().valueOf(),
+              edituser: 'system'
             }
-            resolve(true);
-          });
-        }
-      });
-    });
+            dbFactory.getCollection(collectionName).insert(user, (err, newDoc) => {
+              if (err) {
+                return reject(err);
+              }
+              resolve(true);
+            });
+          }
+        });
+    })
   });
 }
 
@@ -251,12 +239,10 @@ exports.logout = (req, res, next) => {
 }
 
 exports.getCurrentUser = (req, res, next) => {
-  let db = req.db;
   let userId = req.session.currentUser.userid;
-  getUserById(db, userId)
+  getUserById(userId)
     .then(userInfo => {
       res.json(userInfo);
-      db.close();
     })
     .catch(err => next(err));
 }
@@ -281,34 +267,29 @@ exports.getAvatar = (req, res, next) => {
 }
 
 exports.changePassword = (req, res, next) => {
-  let db = req.db;
-  let collectionLocation = db.collection('sys_users');
   let oldPassword = util.md5Crypto(req.body.oldPassword);
   let query = {
     'userid': req.body.userId,
     'password': oldPassword
   };
-  collectionLocation.findOne(query, (err, userInfo) => {
+  dbFactory.getCollection(collectionName).findOne(query, (err, userInfo) => {
     if (err) return next(err);
     if (!userInfo) {
       let err = new Error('OldPassword is not correct.');
       return next(err);
     }
     let newPassword = util.md5Crypto(req.body.newPassword);
-    collectionLocation.update({ 'userid': req.body.userId }, { $set: { 'password': newPassword } }, {}, (err, numReplaced) => {
+    dbFactory.getCollection(collectionName).update({ 'userid': req.body.userId }, { $set: { 'password': newPassword } }, {}, (err, numReplaced) => {
       if (err) return next(err);
       req.session.password = newPassword;
       res.json({
         result: true
       });
-      db.close();
     });
   });
 }
 
 exports.search = (req, res, next) => {
-  let db = req.db;
-  let collectionLocation = db.collection('sys_users');
   let q = req.query.q;
   if (!q) {
     return res.json([]);
@@ -320,7 +301,7 @@ exports.search = (req, res, next) => {
       { 'fullname': { $regex: new RegExp(regStr) } }
     ]
   };
-  collectionLocation.find(queryOption, { 'userid': 1, 'fullname': 1 }).sort({ 'userid': 1 }).toArray((err, docs) => {
+  dbFactory.getCollection(collectionName).find(queryOption, { 'userid': 1, 'fullname': 1 }).sort({ 'userid': 1 }).toArray((err, docs) => {
     if (err) return next(err);
     console.log(docs);
     res.json(docs);
@@ -338,7 +319,7 @@ let getRole = (adminUser, userId) => {
   });
 }
 
-let login = (db, useid, password, needCrypto) => {
+let login = (useid, password, needCrypto) => {
   if (needCrypto) {
     password = util.md5Crypto(password);
   }
@@ -348,8 +329,7 @@ let login = (db, useid, password, needCrypto) => {
     password: password
   };
   return new Promise((resolve, reject) => {
-    let collectionLocation = db.collection('sys_users');
-    collectionLocation.findOne(query, (err, userInfo) => {
+    dbFactory.getCollection(collectionName).findOne(query, (err, userInfo) => {
       if (err) return next(err);
       if (!userInfo) {
         let err = new Error('UserID or Password is not correct.');
@@ -371,10 +351,10 @@ let isExists = (collectionLocation, userId) => {
   })
 }
 
-let getUserById = (db, userId) => {
+let getUserById = (userId) => {
   return new Promise((resolve, reject) => {
-    let collectionLocation = db.collection('sys_users');
-    collectionLocation.findOne({ userid: userId }, (err, userInfo) => {
+    console.log(dbFactory);
+    dbFactory.getCollection(collectionName).findOne({ userid: userId }, (err, userInfo) => {
       if (err) return next(err);
       if (!userInfo) {
         let err = new Error('User is not exists.');

@@ -276,12 +276,7 @@ export class TaskMonitorPage {
       return;
     }
     if (this.fileName && this.inputValue) {
-      if (`${ConfAddress}` == `${Config.Prd}`) {
-        DfisAddr = `${Config.DfisAddressPrd}`;
-      } else {
-        DfisAddr = `${Config.DfisAddress}`;
-      }
-      this._dfisUploader.upload(`${DfisAddr}/cloudtask/jobs/${this.fileName}`, this.inputValue, { disableLoading: false })
+      this._dfisUploader.upload(`api/file/upload/${this.fileName}`, this.inputValue, { disableLoading: false })
         .then((data: any) => {
           let putData = {
             location: this.location,
@@ -377,12 +372,7 @@ export class TaskMonitorPage {
   }
 
   private downloadFile(jobid:any, value: any) {
-    if (`${ConfAddress}` == `${Config.Prd}`) {
-      DfisAddr = `${Config.DfisAddressPrd}`;
-    } else {
-      DfisAddr = `${Config.DfisAddress}`;
-    }
-    let url = `api/file/${jobid}/${value}`;
+    let url = `api/file/${value}`;
     window.open(url, "_blank");
   }
 

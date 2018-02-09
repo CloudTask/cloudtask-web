@@ -292,12 +292,7 @@ export class JobInfoPage {
   }
 
   private downloadFile() {
-    if (`${ConfAddress}` == `${Config.Prd}`) {
-      DfisAddr = `${Config.DfisAddressPrd}`;
-    } else {
-      DfisAddr = `${Config.DfisAddress}`;
-    }
-    let url = `${DfisAddr}/cloudtask/jobs/${this.serverForm.value.SelectFile}`;
+    let url = `api/file/${this.serverForm.value.SelectFile}`;
     window.open(url, "_blank");
   }
 
@@ -763,7 +758,7 @@ export class JobInfoPage {
       } else {
         DfisAddr = `${Config.DfisAddress}`;
       }
-      this._dfisUploader.upload(`api/file/upload/${this.jobId}/${this.inputFile}`, this.inputValue, { disableLoading: false })
+      this._dfisUploader.upload(`api/file/upload/${this.inputFile}`, this.inputValue, { disableLoading: false })
         .then((res: any) => {
           this.saveJobInfo();
         })

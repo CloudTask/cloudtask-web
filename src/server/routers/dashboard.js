@@ -1,6 +1,5 @@
 const express = require('express');
 const dashboardCtrl = require('./../controllers/dashboard');
-const envValidator = require('./../validators/env');
 const transferEnvCtrl = require('./../controllers/transferEnv');
 
 

@@ -188,14 +188,9 @@ export class JobDetailPage {
   }
 
   private downloadFile() {
-    if (`${ConfAddress}` == `${Config.Prd}`) {
-      DfisAddr = `${Config.DfisAddressPrd}`;
-    } else {
-      DfisAddr = `${Config.DfisAddress}`;
-    }
     // let fileAddr = 'uploads/default';
     // let url = `api/file/${fileAddr}/${this.jobInfor.filename}`;
-    let url = `api/file/${this.jobId}/${this.jobInfor.filename}`;
+    let url = `api/file/${this.jobInfor.filename}`;
     window.open(url, "_blank");
   }
 

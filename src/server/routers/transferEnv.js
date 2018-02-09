@@ -1,6 +1,6 @@
 const express = require('express');
 const transferEnvCtrl = require('./../controllers/transferEnv');
-const envValidator = require('./../validators/env');
+// const envValidator = require('./../validators/env');
 
 let router = express.Router();
 
@@ -9,8 +9,8 @@ router.get('/',
 );
 
 router.post('/',
-  transferEnvCtrl.transfer,
-  envValidator.setCunrretEnv
+  transferEnvCtrl.transfer
+  // envValidator.setCunrretEnv
 );
 
 module.exports = router;

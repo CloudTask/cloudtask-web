@@ -1,6 +1,5 @@
 const express = require('express');
 const groupCtrl = require('./../controllers/group');
-const envValidator = require('./../validators/env');
 
 let router = express.Router();
 
