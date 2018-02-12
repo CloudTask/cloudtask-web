@@ -77,6 +77,11 @@
               <i class="fa fa-circle-o"></i> Users
             </a>
           </li>
+          <li routerLinkActive="active" *ngIf="userInfo?.isadmin">
+            <a [routerLink]="['/manage', 'system-config']">
+              <i class="fa fa-gear"></i> System Config
+            </a>
+          </li>
         </ul>
       </li>
     </ul>

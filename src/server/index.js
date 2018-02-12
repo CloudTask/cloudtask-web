@@ -80,6 +80,7 @@ app.use('/api/location', require('./routers/location'));
 app.use('/api/job', require('./routers/job'));
 app.use('/api/file', require('./routers/file'));
 app.use('/api/log', require('./routers/log'));
+// app.use('/api/sysconfig', require('./routers/sysconfig'));
 
 errorHandler.title = `Cloudtask WebSite`;
 app.use(errorHandler({ log: false }));

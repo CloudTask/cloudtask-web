@@ -12,6 +12,7 @@ let getConfig = () => {
       sessionCollection: { name: 'SessionInfo', ignoreLoad: true },
       activityCollection: { name: 'sys_activitys' },
       logCollection: { name: 'logs' },
+      sysconfigCollection: {name: 'sys_config'},
       fileCollection: { name: 'sys_files' }
     },
     encryptKey: 'cloudtask@123'

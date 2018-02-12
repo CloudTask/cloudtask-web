@@ -16,6 +16,7 @@ import {
   LoginPage,
   ServersInfoPage, GroupsLayoutPage,
   JobLogPage,
+  SystemConfigPage,
   UserProfilePage, ChangePasswordPage,
   NotFoundPage, UnAuthorizedPage
 } from './pages';
@@ -49,6 +50,7 @@ let routes: Routes = [
       { path: 'manage/runtimes', component: RuntimeListPage, resolve: { groups: GroupResolve }, data: { Admin: true } },
       { path: 'manage/groups', component: GroupListPage, resolve: { groups: GroupResolve } },
       { path: 'manage/users', component: UserListPage,  resolve: { users: UserResolve }, data: { Admin: true } },
+      { path: 'manage/system-config', component: SystemConfigPage, data: { Admin: true } },
 
       { path: 'account/profile', component: UserProfilePage },
       { path: 'account/change-password', component: ChangePasswordPage },
