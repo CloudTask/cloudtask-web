@@ -110,9 +110,18 @@ Runtime
 
 管理Group, Group的`owners`可编辑、删除对应group，管理员可编辑、删除所有group。其余用户只能查看group相关信息，无法创建、删除和编辑，只有管理员能新建group，如需创建Group请联系 BTS Team
 
-System Config
----
-展示Cloudtask的管理员名，只有管理员能查看该页面并对管理员进行操作，如需获取管理员权限请联系 BTS Team
+# System Config
+
+![System Config](_media/system_config.png)
+
+> Description
+有`DB Address`和`Center Address`两个配置项
+- `Database`: The name of db
+- `Host&Port`: The link address of db
+- `Auth`: The infomation of auth
+- `Options`: The options of moogodb 
+
+- `Center Address`: The IP address of cloudtask center
 
 # Group List
 
