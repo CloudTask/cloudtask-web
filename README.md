@@ -114,11 +114,56 @@ System Config
 ---
 展示Cloudtask的管理员名，只有管理员能查看该页面并对管理员进行操作，如需获取管理员权限请联系 BTS Team
 
+# Group List
 
-# Edit User
-
-![Edit User](_media/edit-user.png)
+![Group Manage](_media/manage_group.png)
 
 > Description
 
-- User information is consistent with [`adding users`](add-user.md)
+- To add a group, click the `Add Group` button at the top of the page
+- The two icons in the last column of the table are `edit group information`, `delete group '
+
+# Add Group
+
+![Add Group](_media/add_group.png)
+
+> Description
+
+- `Runtime`: Runtime that the group belongs to
+- `Group`: Group name of the group
+- `Owners`: Owners of the group.If an user is owner of the group, this user can edit or delete the group
+
+# Edit Group
+
+![Edit Group](_media/edit_group.png)
+> Description
+
+- Group information is consistent with [`adding group`](add_group.md)
+
+
+# User List
+
+*only **Administrator** can use this function*
+
+![User Manage](_media/manage_user.png)
+
+> Description
+
+- To add a user, click the `Add User` button at the top of the page
+- The two icons in the last column of the table are `edit user information`, `delete user '
+
+# Add User
+
+![Add User](_media/add_user.png)
+
+> Description
+
+- `UserID`: 4-6-bit string for user login, such as zs18
+- `FullName`: Full name of the user.
+- `Department`: Optional
+- `Email`: Optional, contact email
+- `Own administrator privileges`: `administrator 'permissions
+
+# Edit User
+
+![Edit User](_media/edit_user.png)
