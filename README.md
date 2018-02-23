@@ -113,3 +113,12 @@ Runtime
 System Config
 ---
 展示Cloudtask的管理员名，只有管理员能查看该页面并对管理员进行操作，如需获取管理员权限请联系 BTS Team
+
+
+# Edit User
+
+![Edit User](_media/edit-user.png)
+
+> Description
+
+- User information is consistent with [`adding users`](add-user.md)
