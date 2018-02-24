@@ -84,6 +84,19 @@ export class LocationService {
     })
   }
 
+  updateOwners(value: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this._http.post(`api/location/update`, value)
+        .then(res => {
+          let data = res.json();
+          resolve(data);
+        })
+        .catch(err => {
+          reject(err.json ? err.json() : err);
+        });
+    })
+  }
+
   remove(location: any){
     return new Promise((resolve, reject) => {
       this._http.delete(`api/location/remove/${location}`)

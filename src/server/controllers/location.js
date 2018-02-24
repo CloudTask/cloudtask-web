@@ -34,6 +34,29 @@ exports.add = (req, res, next) => {
     .catch(err => next(err));
 }
 
+exports.update = (req, res, next) => {
+  let db = req.db;
+  let postLocation = req.body;
+  isExists(postLocation.location)
+    .then(data => {
+      if (!data) {
+        return next(new Error('Location is not exists.'))
+      } else {
+        dbFactory.getCollection(collectionLocation).update({ 'location': postLocation.location }, { $set: {
+          'owners': postLocation.owners,
+        } }, (err, result) => {
+          if (err) {
+            console.log('Error:' + err);
+            return;
+          }
+          let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
+          res.json(result);
+        })
+      }
+    })
+    .catch(err => next(err));
+}
+
 exports.remove = (req, res, next) => {
   let db = req.db;
   let location = req.params.location;

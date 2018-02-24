@@ -4,7 +4,7 @@
       <div class="flex-display">
         <div class="input-group input-group-sm" style="width: 170px;">
           <span class="input-group-addon">Runtime</span>
-          <select class="form-control" [value]="" [ngModel]="runtimeValue" (ngModelChange)="selectRuntime($event)">
+          <select class="form-control" [value]="" [ngModel]="runtimeValue" (ngModelChange)="chooseRuntime($event)">
               <option [value]="">All</option>
               <option *ngFor="let item of runtimes" [value]="item.location">{{ item.location }}</option>
           </select>
@@ -34,7 +34,10 @@
         <tbody>
           <tr *ngFor="let item of currentRuntimes;let i = index">
             <td>{{ item.location }}</td>
-            <td class="text-center">
+            <td class="text-center" *ngIf="item.isRuntimeOwner || userInfo?.isadmin">
+              <a href="javascript:void(0)" (click)="selectRuntime(i)" class="margin-right-10">
+                <i class="fa fa-pencil"></i>
+              </a>
               <a href="javascript:void(0)" (click)="deleteRuntime(i)">
                 <i class="fa fa-close text-danger"></i>
               </a>
@@ -55,7 +58,18 @@
       <div class="form-group row" [class.has-error]="submitted && !runtimeForm.controls.runtimeLocation.value">
         <label class="col-md-1 control-label text-right">Runtime</label>
         <div class="col-md-5">
-          <input formControlName="runtimeLocation" type="text" class="form-control">
+          <input formControlName="runtimeLocation" type="text" class="form-control" required>
+          <div *ngIf="submitted && runtimeForm.controls.runtimeLocation.invalid">
+              <span class="help-block" *ngIf="runtimeForm.controls.runtimeLocation.errors?.required">Runtime name cannot be empty.</span>
+            </div>
+        </div>
+      </div>
+      <div class="form-group row" [class.has-error]="submitted && !owners?.length">
+        <label class="col-md-1 control-label text-right">Owners</label>
+        <div class="col-md-5">
+            <select2 [data]="owners" [value]="owners" (valueChanged)="refreshSelectedUser($event)" [cssImport]="false"
+            [width]="'100%'" [options]="ownerSelect2Options"></select2>
+          <span class="help-block" *ngIf="submitted && !owners?.length">Owners cannot be empty.</span>
         </div>
       </div>
       <div class="modal-footer">

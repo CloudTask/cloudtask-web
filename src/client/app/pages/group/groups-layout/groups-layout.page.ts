@@ -60,7 +60,7 @@ export class GroupsLayoutPage {
   ngOnInit() {
 
     this.userInfo = this._authService.getUserInfoFromCache();
-    this.userName = this.userInfo.UserName;
+    this.userName = this.userInfo.userid;
     this._groupService.get(true)
       .then((res: any) => {
         this.locations = res;
@@ -68,26 +68,46 @@ export class GroupsLayoutPage {
           return a.location.toLowerCase() > b.location.toLowerCase() ? 1 : -1;
         });
         this.groupArr = this.locations[this.selectedGroupId];
-        this.groups = this.locations.map((item: any) => item.group);
+        this.locations.forEach((item: any, index: any) => {
+          let ownerGroup = {
+            group: [''],
+            isRuntimeOwner: false
+          };
+          ownerGroup.group = [];
+          ownerGroup.group = item.group;
+          if (this.locations[index].owners) {
+            if (this.locations[index].owners.length > 0) {
+              if (this.locations[index].owners.indexOf(this.userName) > -1) {
+                ownerGroup.isRuntimeOwner = true;
+              } else {
+                ownerGroup.isRuntimeOwner = false;
+              }
+            }
+          }
+          this.groups.push(ownerGroup);
+        });
         this.ownerGroups = this.groups;
-        this.ownerGroups.forEach((group: any) => {
-          group.sort((a: any, b: any): any => {
+        this.ownerGroups.forEach((item: any) => {
+          item.group.sort((a: any, b: any): any => {
             return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
           });
         })
         if (this.userInfo && !this.userInfo.isadmin) {
-          this.ownerGroups = this.ownerGroups.map((group: any) => {
-            if (group.length > 0) {
-              return group = group.filter((item: any) => {
-                return item.owners && item.owners.length > 0 && item.owners.indexOf(this.userName) > -1;
-              })
-            } else {
-              return group = [];
+          this.ownerGroups.map((item: any) => {
+            if (!item.isRuntimeOwner) {
+              if (item.group.length > 0) {
+                item.group = item.group.filter((group: any) => {
+                  return group.owners && group.owners.length > 0 && group.owners.indexOf(this.userName) > -1;
+                })
+              } else {
+                item.group = [];
+              }
             }
           })
         }
-        this.locations = this.locations.filter((location: any, index: any) => this.ownerGroups[index] && this.ownerGroups[index].length > 0);
-        this.ownerGroups = this.ownerGroups.filter((group: any) => group && group.length > 0);
+        this.locations = this.locations.filter((location: any, index: any) => this.ownerGroups[index] && this.ownerGroups[index].group.length > 0);
+        this.ownerGroups = this.ownerGroups.filter((item: any) => item.group && item.group.length > 0);
+        this.ownerGroups = this.ownerGroups.map((item: any) => item = item.group);
         if (this.locations.length > 0) {
           this.hasOwnerGroup = true;
         } else {

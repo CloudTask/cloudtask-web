@@ -7,6 +7,10 @@ router.post('/add',
   locationCtrl.add
 );
 
+router.post('/update',
+  locationCtrl.update
+);
+
 router.delete('/remove/:location',
   locationCtrl.remove
 );

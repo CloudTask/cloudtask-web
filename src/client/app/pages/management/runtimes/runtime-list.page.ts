@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GroupService, LocationService, AuthService } from './../../../services';
+import { userInfo } from 'os';
 
 
 declare let messager: any;
@@ -15,6 +16,7 @@ declare let Config: any;
 export class RuntimeListPage {
 
   private userInfo: any;
+  private userName: any;
 
   private locationNames: Array<any> = [];
   private runtimeForm: FormGroup;
@@ -28,13 +30,18 @@ export class RuntimeListPage {
   private locationServer: Array<any> = [];
   private runtimeInfoModal: any = {};
   private deleteLocationModalOptions: any = {};
+  private owners: any = [];
   private runtimeSelected: any = {
     location: '',
+    owners: []
   };
   private pageOptions: any;
   private pageSize: number = 14;
   private pageIndex: any;
   private currentIndex: any = 1;
+  private ownerSelect2Options: any;
+  private isNewRuntime: boolean = true;
+  private submitted: boolean = false;
 
   constructor(
     private _route: ActivatedRoute,
@@ -47,6 +54,7 @@ export class RuntimeListPage {
 
   ngOnInit() {
     this.userInfo = this._authService.getUserInfoFromCache();
+    this.userName = this.userInfo.userid;
 
     this.groups = this._route.snapshot.data['groups'];
     this.getLocations()
@@ -67,22 +75,67 @@ export class RuntimeListPage {
       "directionLinks": true,
       "hidenLabel": true,
     };
+
+    this.ownerSelect2Options = {
+      multiple: true,
+      closeOnSelect: true,
+      minimumInputLength: 2,
+      placeholder: 'Select User',
+      dropdownAutoWidth: true,
+      ajax: {
+        url: "/api/users/search",
+        dataType: 'json',
+        delay: 250,
+        data: function (params: any) {
+          return {
+            q: params.term
+          };
+        },
+        processResults: function (data: any, params: any) {
+          return {
+            results: data.map((item: any) => {
+              return { "text": item.fullname, "id": item.userid };
+            })
+          };
+        },
+        cache: true
+      },
+      formatSelection: function (item: any) {
+        if (!item) return;
+        return `${item.useid} - ${item.fullname}`;
+      }
+    };
+
     this.buildForm();
+
   }
 
   private getLocations() {
     this.runtimes = this.groups;
+    this.runtimes.map((runtime: any) => {
+      if (runtime && runtime.owners && !this.userInfo.isadmin) {
+        if (runtime.owners.length > 0) {
+          if (runtime.owners.indexOf(this.userName) > -1) {
+            runtime.isRuntimeOwner = true;
+          } else {
+            runtime.isRuntimeOwner = false;
+          }
+        }
+      }
+    });
     this.search();
   }
 
   private buildForm() {
+    this.submitted = false;
     let data = this.runtimeSelected || {};
     this.runtimeForm = this._fb.group({
-      runtimeLocation: [{ value: (data.location || ''), disabled: (false) }],
+      runtimeLocation: data.location || '',
+      groupOwners: data.owners || '',
     });
   }
 
-  private selectRuntime(value: any) {
+  private chooseRuntime(value: any) {
     this.groups = this.runtimes;
     this.runtimeValue = value;
     if (value == 'All') {
@@ -127,24 +180,51 @@ export class RuntimeListPage {
     e.stopPropagation();
     e.preventDefault();
     this.runtimeInfoModal.show = true;
-    // this.isNewGroup = true;
+    this.isNewRuntime = true;
     setTimeout(() => {
       this.runtimeSelected = {
         location: '',
+        owners: []
       }
+      this.owners = [];
+      this.owners.push(this.userName);
+      this.runtimeForm.controls['runtimeLocation'].enable();
       this.buildForm();
     });
+  }
+
+  private selectRuntime(index: any) {
+    this.runtimeInfoModal.show = true;
+    setTimeout(() => {
+      this.runtimeSelected = {
+        location: this.currentRuntimes[index].location || '',
+      }
+      this.isNewRuntime = false;
+      this.runtimeForm.controls['runtimeLocation'].disable();
+      this.buildForm();
+
+      let groupOwners = this.currentRuntimes[index].owners;
+      if (groupOwners) {
+        this.owners = groupOwners;
+      } else {
+        this.owners = [];
+      }
+    });
+  }
+
+  private refreshSelectedUser(data: any) {
+    this.owners = data.value || [];
   }
 
   private deleteRuntime(index: any) {
     this.deleteLocationModalOptions.show = true;
     this._locationService.getLocationGroup(this.groups[index].location)
-    .then(data => {
-      this.runtimeSelected = {
-        location: this.groups[index].location || '',
-        groups: data || [],
-      }
-    })
+      .then(data => {
+        this.runtimeSelected = {
+          location: this.groups[index].location || '',
+          groups: data || [],
+        }
+      })
   }
 
   private confirmDelete(location: any) {
@@ -165,14 +245,33 @@ export class RuntimeListPage {
 
   private save() {
     let form = this.runtimeForm;
+    this.submitted = true;
+    if (form.invalid) return;
+    if (!this.owners.length) return;
     let postData = {
       location: form.controls.runtimeLocation.value,
       group: this.locationGroup,
-      server: this.locationServer
+      server: this.locationServer,
+      owners: this.owners
     }
-    this._locationService.add(postData)
+    if (this.isNewRuntime) {
+      this._locationService.add(postData)
+        .then((data) => {
+          messager.success('Add Succeed.');
+          this.runtimeInfoModal.show = false;
+          return this._groupService.get(true);
+        })
+        .then(data => {
+          this.groups = data;
+          this.getLocations();
+        })
+        .catch((err) => {
+          messager.error(err || 'Add failed');
+        })
+    } else {
+      this._locationService.updateOwners(postData)
       .then((data) => {
-        messager.success('Add Succeed.');
+        messager.success('Update Succeed.');
         this.runtimeInfoModal.show = false;
         return this._groupService.get(true);
       })
@@ -181,7 +280,8 @@ export class RuntimeListPage {
         this.getLocations();
       })
       .catch((err) => {
-        messager.error(err || 'Add failed');
+        messager.error(err || 'Update failed');
       })
+    }
   }
 }

@@ -76,10 +76,19 @@ export class GroupListPage {
     data.forEach((dataItem: any, index: any) => {
       this.groupsInfo = this.groupsInfo.concat(dataItem.map((item: any) => {
         item.location = groups[index].location;
+        if (groups[index].owners) {
+          if (groups[index].owners.length > 0) {
+            if (groups[index].owners.indexOf(this.userName) > -1) {
+              item.isRuntimeOwner = true;
+            } else {
+              item.isRuntimeOwner = false;
+            }
+          }
+        }
         return item;
       }));
     })
-    this.groupsInfo.forEach((group: any) => {
+    this.groupsInfo.map((group: any) => {
       if (group && group.owners) {
         if (group.owners.length > 0) {
           if (group.owners.indexOf(this.userName) > -1) {
@@ -271,6 +280,7 @@ export class GroupListPage {
         createuser: this.currentGroups[index].createuser || '',
       }
       this.isNewGroup = false;
+      this.groupForm.controls['groupLocation'].disable();
       this.buildForm();
 
       this.currentGroupLocation = this.currentGroups[index].location;

@@ -40,7 +40,7 @@
             <td>{{ item.name }}</td>
             <td>{{ item.edituser }}</td>
             <td>{{ item.editat | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-            <td *ngIf="item.isOwner || userInfo?.isadmin" class="text-center">
+            <td *ngIf="item.isRuntimeOwner || item.isOwner || userInfo?.isadmin" class="text-center">
               <a href="javascript:void(0)" (click)="selectGroup(i)" class="margin-right-10">
                 <i class="fa fa-pencil"></i>
               </a>
