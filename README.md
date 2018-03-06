@@ -123,6 +123,34 @@ Runtime
 
 - `Center Address`: The IP address of cloudtask center
 
+# Runtime List
+
+![Runtime Manage](_media/manage_runtime.png)
+
+> Description
+
+- To add a runtime, click the `Add Group` button at the top of the page
+- The two icons in the last column of the table are `edit runtime information`, `delete runtime '
+
+# Add Runtime
+
+![Add Group](_media/add_group.png)
+
+> Description
+
+- `Runtime`: Runtime name
+- `Description`: The description of runtime
+- `Owners`: Owners of the runtime.If an user is owner of the runtime, this user can edit or delete the runtime, And can also operate all the groups blong to the runtime.
+
+PS: Only admin users can add runtime.
+
+# Edit Runtime
+
+![Edit Group](_media/edit_group.png)
+> Description
+
+- Group information is consistent with [`adding group`](add_group.md)
+
 # Group List
 
 ![Group Manage](_media/manage_group.png)
