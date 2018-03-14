@@ -28,12 +28,16 @@
         <thead>
           <tr role="row">
             <th>Runtime</th>
+            <th>EditUser</th>
+            <th>EditDate</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let item of currentRuntimes;let i = index">
             <td>{{ item.location }}</td>
+            <td>{{ item.edituser }}</td>
+            <td>{{ item.editat | date:'yyyy-MM-dd HH:mm:ss' }}</td>
             <td class="text-center" *ngIf="item.isRuntimeOwner || userInfo?.isadmin">
               <a href="javascript:void(0)" (click)="selectRuntime(i)" class="margin-right-10">
                 <i class="fa fa-pencil"></i>
@@ -64,12 +68,61 @@
             </div>
         </div>
       </div>
+      <div class="form-group row">
+        <label class="col-md-1 control-label text-right">Description</label>
+        <div class="col-md-5">
+          <textarea formControlName="runtimeDescription" type="text" class="form-control">
+          </textarea>
+        </div>
+      </div>
       <div class="form-group row" [class.has-error]="submitted && !owners?.length">
         <label class="col-md-1 control-label text-right">Owners</label>
         <div class="col-md-5">
             <select2 [data]="owners" [value]="owners" (valueChanged)="refreshSelectedUser($event)" [cssImport]="false"
             [width]="'100%'" [options]="ownerSelect2Options"></select2>
           <span class="help-block" *ngIf="submitted && !owners?.length">Owners cannot be empty.</span>
+        </div>
+      </div>
+      <div class="box server-box">
+        <div class="box-header with-border">Servers</div>
+        <div class="box-body" formArrayName="servers">
+          <div class="row" *ngIf="runtimeForm.controls.servers.controls?.length > 0">
+            <div class="col-md-6" *ngFor="let serverCtrl of runtimeForm.controls.servers.controls; let i = index;">
+              <div [formGroupName]="i" class="flex-display">
+                <div class="flex-1">
+                  <div class="equal-fields">
+                    <div class="form-group" [class.has-error]="submitted && (serverCtrl.controls.name.invalid || (!serverCtrl.controls.name?.value && !serverCtrl.controls.ipaddr?.value))">
+                      <input type="text" class="form-control" placeholder="Server name" pattern="^[0-9a-zA-Z_.-]*$" maxlength="50" formControlName="name" (blur)="serverNameValid()">
+                      <div *ngIf="submitted && serverCtrl.controls.name.invalid">
+                        <span class="help-block" *ngIf="serverCtrl.controls.name.errors.pattern">Invalid server name.</span>
+                        <span class="help-block" *ngIf="serverCtrl.controls.name.errors.maxlength">Server name cannot be more than 50 characters.</span>
+                      </div>
+                    </div>
+                    <div class="form-group" [class.has-error]="submitted && (serverCtrl.controls.ipaddr.invalid || (!serverCtrl.controls.name?.value && !serverCtrl.controls.ipaddr?.value))">
+                      <input type="text" class="form-control" placeholder="IP" maxlength="15" formControlName="ipaddr" validateIP (blur)="serverIPValid()">
+                      <div *ngIf="submitted && serverCtrl.controls.ipaddr.invalid">
+                        <span class="help-block" *ngIf="serverCtrl.controls.ipaddr.errors.ip">Invalide ip address.</span>
+                        <span class="help-block" *ngIf="serverCtrl.controls.ipaddr.errors.maxlength">Invalide ip address.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span style="color: #dd4b39" class="help-block" *ngIf="submitted && (!serverCtrl.controls.name?.value && !serverCtrl.controls.ipaddr?.value)">ServerName or IP cannot be empty at the same time.</span>
+                </div>
+                <div class="form-group">
+                  <button type="button" class="btn btn-default btn-flat" (click)="removeServer(i)">
+                    <i class="fa fa-close"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <span style="color: #dd4b39" class="help-block" *ngIf="invalidServerName">Server name cannot be repeated.</span>
+            <span style="color: #dd4b39" class="help-block" *ngIf="invalidServerIP">Server IP cannot be repeated.</span>
+          <div class="form-group no-margin">
+            <button type="button" class="btn btn-default btn-flat btn-sm" (click)="addServer()">
+              <i class="fa fa-plus"></i> Add Server
+            </button>
+          </div>
         </div>
       </div>
       <div class="modal-footer">

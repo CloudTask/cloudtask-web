@@ -1,7 +1,8 @@
 const response = require('./response/response');
 const request = require('./request/request');
+const moment = require('moment');
 const requestHelper = require('./request/requestHelper');
-const config = require('../config');
+const config = require('../config').getConfig();
 const dbFactory = require('./../db/dbFactory').factory;
 
 let collectionLocation = config.dbConfigs.locationCollection.name;
@@ -14,6 +15,9 @@ exports.add = (req, res, next) => {
       if (data) {
         return next(new Error('Location is exists.'))
       } else {
+        let createat = moment().format();
+        postLocation.createat = createat;                //创建时间
+        postLocation.editat = createat;                  //修改时间
         dbFactory.getCollection(collectionLocation).insert(postLocation, (err, result) => {
           if (err) {
             console.log('Error:' + err);
@@ -42,8 +46,13 @@ exports.update = (req, res, next) => {
       if (!data) {
         return next(new Error('Location is not exists.'))
       } else {
+        postLocation.editat = moment().format();
         dbFactory.getCollection(collectionLocation).update({ 'location': postLocation.location }, { $set: {
+          'description': postLocation.description,
           'owners': postLocation.owners,
+          'server': postLocation.server,
+          'editat': postLocation.editat,
+          'edituser': postLocation.edituser
         } }, (err, result) => {
           if (err) {
             console.log('Error:' + err);
@@ -51,6 +60,15 @@ exports.update = (req, res, next) => {
           }
           let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
           res.json(result);
+          let time =  Date.now();
+          if(data.server !== postLocation.server || data.owners !== postLocation.owners){
+            let dataObj = {
+              runtime: postLocation.location,
+              event: "change_location",
+              timestamp: time
+            }
+            requestHelper.requestMQ(dataObj, { method: 'post' });
+          }
         })
       }
     })

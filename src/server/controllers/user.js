@@ -8,7 +8,7 @@ const util = require('./../common/util');
 var MongoClient = require('mongodb').MongoClient;
 var DB_CONN_STR = 'mongodb://10.16.75.22:29017,10.16.75.23:29017,10.16.75.25:29017/cloudtask_data?replicaSet=NeweggCloud';
 
-const config = require('../config');
+const config = require('../config').getConfig();
 const dbFactory = require('./../db/dbFactory').factory;
 
 let collectionName = config.dbConfigs.userCollection.name;
@@ -226,7 +226,6 @@ exports.initAdmin = () => {
 
 exports.logout = (req, res, next) => {
   let cookies = req.cookies;
-  console.log(cookies);
   for (let prop in cookies) {
     if (!cookies.hasOwnProperty(prop)) {
       continue;
@@ -303,7 +302,6 @@ exports.search = (req, res, next) => {
   };
   dbFactory.getCollection(collectionName).find(queryOption, { 'userid': 1, 'fullname': 1 }).sort({ 'userid': 1 }).toArray((err, docs) => {
     if (err) return next(err);
-    console.log(docs);
     res.json(docs);
   });
 }
@@ -353,7 +351,6 @@ let isExists = (collectionLocation, userId) => {
 
 let getUserById = (userId) => {
   return new Promise((resolve, reject) => {
-    console.log(dbFactory);
     dbFactory.getCollection(collectionName).findOne({ userid: userId }, (err, userInfo) => {
       if (err) return next(err);
       if (!userInfo) {

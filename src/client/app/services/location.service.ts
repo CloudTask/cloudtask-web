@@ -84,7 +84,7 @@ export class LocationService {
     })
   }
 
-  updateOwners(value: any): Promise<any> {
+  update(value: any): Promise<any> {
     return new Promise((resolve, reject) => {
       this._http.post(`api/location/update`, value)
         .then(res => {

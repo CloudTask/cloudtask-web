@@ -1,6 +1,6 @@
 // require("console-stamp")(console, 'yyyy/mm/dd HH:MM:ss.l');
 const path = require('path');
-const negExpressServer = require('neg-express-server');
+// const negExpressServer = require('neg-express-server');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
@@ -80,7 +80,7 @@ app.use('/api/location', require('./routers/location'));
 app.use('/api/job', require('./routers/job'));
 app.use('/api/file', require('./routers/file'));
 app.use('/api/log', require('./routers/log'));
-// app.use('/api/sysconfig', require('./routers/sysconfig'));
+app.use('/api/sysconfig', require('./routers/sysconfig'));
 
 errorHandler.title = `Cloudtask WebSite`;
 app.use(errorHandler({ log: false }));

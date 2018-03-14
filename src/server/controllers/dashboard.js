@@ -2,13 +2,13 @@ const negCloudData = require('neg-cloud-data');
 const result = require('./response/response');
 const request = require('./request/request');
 const transferEnv = require('./transferEnv');
-const config = require('../config');
+const config = require('../config').getConfig();
 const dbFactory = require('./../db/dbFactory').factory;
 
 
 exports.get = (req, res, next) => {
   let collectionLocation = config.dbConfigs.locationCollection.name;
-  let collectionJob = config.dbConfigs.jobCollection.name;  
+  let collectionJob = config.dbConfigs.jobCollection.name;
   // Promise.all([
   //   db.get("sys_locations", { pageSize: 10000 }),
   //   db.get("sys_jobs", { pageSize: 10000 })

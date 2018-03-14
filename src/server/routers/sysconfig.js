@@ -4,7 +4,7 @@ const sysconfigCtrl = require('./../controllers/sysconfig');
 let router = express.Router();
 
 router.get('/',
-sysconfigCtrl.get
+  sysconfigCtrl.get
 );
 
 router.post('/',

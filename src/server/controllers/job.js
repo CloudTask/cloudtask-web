@@ -4,7 +4,7 @@ const jobstat = require('./models/jobstatus');
 const moment = require('moment');
 const util = require('./../common/util');
 const requestHelper = require('./request/requestHelper');
-const config = require('../config');
+const config = require('../config').getConfig();
 const dbFactory = require('./../db/dbFactory').factory;
 
 let collectionName = config.dbConfigs.jobCollection.name;

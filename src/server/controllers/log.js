@@ -1,7 +1,7 @@
 const response = require('./response/response');
 const request = require('./request/request');
 const util = require('./../common/util');
-const config = require('../config');
+const config = require('../config').getConfig();
 const dbFactory = require('./../db/dbFactory').factory;
 
 let collectionName = config.dbConfigs.activityCollection.name;

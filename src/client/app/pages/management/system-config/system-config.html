@@ -2,13 +2,13 @@
   <h1>System Config</h1>
 </section>
 <section class="content">
-  <form novalidate [formGroup]="configForm" (ngSubmit)="save(form)" *ngIf="configForm">
+  <form novalidate [formGroup]="configForm" (ngSubmit)="save()" *ngIf="configForm">
     <div class="form-group">
       <label class="control-label">DB Address</label>
       <div class="box">
         <div class="box-header with-border">Database</div>
-        <div class="form-group">
-          <input type="text" [class.has-error]="submitted && configForm.controls.Database.invalid" class="form-control" formControlName="Database"
+        <div class="form-group" [class.has-error]="submitted && configForm.controls.Database.invalid">
+          <input type="text" class="form-control" formControlName="Database"
             maxlength="30" required pattern="^[0-9a-zA-Z-_.]*$">
           <div *ngIf="submitted && configForm.controls.Database.invalid">
             <span class="help-block" *ngIf="configForm.controls.Database.errors.required">Database is required.</span>
@@ -16,40 +16,43 @@
             <span class="help-block" *ngIf="configForm.controls.Database.errors.pattern">Database cannot contain special characters.</span>
           </div>
         </div>
-        <div class="box-header with-border">Database</div>
-        <div class="form-group">
-          <input type="text" placeholder="e.g. 0.0.0.0:80,0.0.0.0:8080" [class.has-error]="submitted && configForm.controls.HostPort.invalid"
-            class="form-control" formControlName="HostPort" maxlength="30" required pattern="^[0-9a-zA-Z-_.]*$">
+        <div class="box-header with-border">Host</div>
+        <div class="form-group" [class.has-error]="submitted && configForm.controls.HostPort.invalid">
+          <input type="text" placeholder="e.g. 0.0.0.0:80,0.0.0.0:8080"
+            class="form-control" formControlName="HostPort" required pattern="^[0-9a-zA-Z-_.:,]*$">
           <div *ngIf="submitted && configForm.controls.HostPort.invalid">
             <span class="help-block" *ngIf="configForm.controls.HostPort.errors.required">HostPort is required.</span>
-            <span class="help-block" *ngIf="configForm.controls.HostPort.errors.maxlength">HostPort cannot more than 30 characters.</span>
             <span class="help-block" *ngIf="configForm.controls.HostPort.errors.pattern">HostPort cannot contain special characters.</span>
           </div>
         </div>
-        <div class="form-group" [class.has-error]="configForm.submitted && config.isAuthExist">
+        <div class="form-group">
           <div class="checkbox">
             <label>
-              <input type="checkbox" name="auth" formControlName="IsAuthExist">
+              <input type="checkbox" name="auth" formControlName="IsAuthExist" (change)="authOption()">
               <span>Auth</span>
             </label>
           </div>
-          <div class="input-group">
-              <span class="input-group-addon">username</span>
-              <input type="text" class="form-control" name="username"
-                [attr.disabled]="configForm.controls.IsAuthExist.value ? null : 'disabled'" autocomplete="off" required>
-              <div *ngIf="configForm.submitted && configForm.controls.Username.invalid">
-                <span class="help-block" *ngIf="configForm.controls.Username.errors.required">Private registry address is required.</span>
-                <span class="help-block" *ngIf="configForm.controls.Username.errors.pattern">Invalid URL.</span>
-              </div>
-          </div>
-          <div class="input-group" style="margin-top: 10px;">
-              <span class="input-group-addon">password</span>
-              <input type="text" class="form-control" name="password"
-                [attr.disabled]="configForm.controls.IsAuthExist.value ? null : 'disabled'" autocomplete="off" required>
-              <div *ngIf="configForm.submitted && configForm.controls.Password.invalid">
-                <span class="help-block" *ngIf="configForm.controls.Password.errors.required">Private registry address is required.</span>
-                <span class="help-block" *ngIf="configForm.controls.Password.errors.pattern">Invalid URL.</span>
-              </div>
+          <div class="row">
+            <div class="col-sm-6 form-group" [class.has-error]="submitted && configForm.controls.IsAuthExist.value && configForm.controls.Username.invalid">
+              <div class="input-group">
+                  <span class="input-group-addon">user</span>
+                  <input formControlName="Username" type="text" class="form-control" name="username"
+                    [attr.disabled]="configForm.controls.IsAuthExist.value ? null : 'disabled'" autocomplete="off" required>
+                  </div>
+                  <div *ngIf="submitted && configForm.controls.IsAuthExist.value && configForm.controls.Username.invalid">
+                    <span class="help-block" *ngIf="configForm.controls.Username.errors.required">Username is required.</span>
+                  </div>
+            </div>
+            <div class="col-sm-6 form-group" [class.has-error]="submitted && configForm.controls.IsAuthExist.value && configForm.controls.Password.invalid">
+              <div class="input-group">
+                  <span class="input-group-addon">password</span>
+                  <input formControlName="Password" type="text" class="form-control" name="password"
+                    [attr.disabled]="configForm.controls.IsAuthExist.value ? null : 'disabled'" autocomplete="off" required>
+                  </div>
+                  <div *ngIf="submitted && configForm.controls.IsAuthExist.value && configForm.controls.Password.invalid">
+                    <span class="help-block" *ngIf="configForm.controls.Password.errors.required">Password is required.</span>
+                  </div>
+            </div>
           </div>
         </div>
         <div class="box-header with-border">Options</div>
@@ -76,18 +79,30 @@
         </div>
       </div>
     </div>
-    <div class="form-group">
+    <div class="form-group" [class.has-error]="submitted && configForm.controls.CenterAddress.invalid">
       <label>Center Address</label>
       <!-- <div class="box"> -->
-        <input type="text" [class.has-error]="submitted && configForm.controls.CenterAddress.invalid" class="form-control" formControlName="Database"
-          maxlength="30" required pattern="^[0-9a-zA-Z-_.]*$">
+        <input type="text" class="form-control" formControlName="CenterAddress"
+          maxlength="30" required pattern="^[0-9a-zA-Z-_.:]*$">
         <div *ngIf="submitted && configForm.controls.CenterAddress.invalid">
-          <span class="help-block" *ngIf="configForm.controls.CenterAddress.errors.required">Database is required.</span>
-          <span class="help-block" *ngIf="configForm.controls.CenterAddress.errors.maxlength">Database cannot more than 30 characters.</span>
-          <span class="help-block" *ngIf="configForm.controls.CenterAddress.errors.pattern">Database cannot contain special characters.</span>
+          <span class="help-block" *ngIf="configForm.controls.CenterAddress.errors.required">CenterAddress is required.</span>
+          <span class="help-block" *ngIf="configForm.controls.CenterAddress.errors.maxlength">CenterAddress cannot more than 30 characters.</span>
+          <span class="help-block" *ngIf="configForm.controls.CenterAddress.errors.pattern">CenterAddress cannot contain special characters.</span>
         </div>
       <!-- </div> -->
     </div>
+    <div class="form-group" [class.has-error]="submitted && configForm.controls.WebsiteHost.invalid">
+        <label>Website Host</label>
+        <!-- <div class="box"> -->
+          <input type="text" class="form-control" formControlName="WebsiteHost"
+            maxlength="30" required pattern="^[0-9a-zA-Z-_.:]*$">
+          <div *ngIf="submitted && configForm.controls.WebsiteHost.invalid">
+            <span class="help-block" *ngIf="configForm.controls.WebsiteHost.errors.required">WebsiteHost is required.</span>
+            <span class="help-block" *ngIf="configForm.controls.WebsiteHost.errors.maxlength">WebsiteHost cannot more than 30 characters.</span>
+            <span class="help-block" *ngIf="configForm.controls.WebsiteHost.errors.pattern">WebsiteHost cannot contain special characters.</span>
+          </div>
+        <!-- </div> -->
+      </div>
     <div class="form-group">
       <button type="submit" class="btn btn-flat bg-olive">
         <i class="fa fa-save"></i> Save

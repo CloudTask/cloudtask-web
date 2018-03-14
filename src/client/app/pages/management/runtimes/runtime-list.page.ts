@@ -33,7 +33,9 @@ export class RuntimeListPage {
   private owners: any = [];
   private runtimeSelected: any = {
     location: '',
-    owners: []
+    description: '',
+    owners: [],
+    server: []
   };
   private pageOptions: any;
   private pageSize: number = 14;
@@ -42,6 +44,8 @@ export class RuntimeListPage {
   private ownerSelect2Options: any;
   private isNewRuntime: boolean = true;
   private submitted: boolean = false;
+  private invalidServerName: boolean = false;
+  private invalidServerIP: boolean = false;
 
   constructor(
     private _route: ActivatedRoute,
@@ -132,10 +136,18 @@ export class RuntimeListPage {
     this.runtimeForm = this._fb.group({
       runtimeLocation: data.location || '',
       groupOwners: data.owners || '',
+      runtimeDescription: data.description || '',
+      servers: this._fb.array([])
     });
+    if (data.server && data.server.length > 0) {
+      for (let server of data.server) {
+        this.addServer(server.name, server.ipaddr);
+      }
+    }
   }
 
   private chooseRuntime(value: any) {
+    // this.pageIndex = 1;
     this.groups = this.runtimes;
     this.runtimeValue = value;
     if (value == 'All') {
@@ -184,6 +196,7 @@ export class RuntimeListPage {
     setTimeout(() => {
       this.runtimeSelected = {
         location: '',
+        description: '',
         owners: []
       }
       this.owners = [];
@@ -198,7 +211,9 @@ export class RuntimeListPage {
     setTimeout(() => {
       this.runtimeSelected = {
         location: this.currentRuntimes[index].location || '',
-      }
+        description: this.currentRuntimes[index].description || '',
+        server: this.currentRuntimes[index].server || []
+      };
       this.isNewRuntime = false;
       this.runtimeForm.controls['runtimeLocation'].disable();
       this.buildForm();
@@ -243,18 +258,90 @@ export class RuntimeListPage {
       })
   }
 
+  private serverNameValid() {
+    let nameArr = this.runtimeForm.value.servers.map((item: any) => item.name);
+    let isNameRepeated = nameArr.some((item: any, index: any) => item && nameArr.indexOf(item, index + 1) !== -1)
+    if (isNameRepeated) {
+      this.invalidServerName = true;
+    } else {
+      this.invalidServerName = false;
+    }
+}
+
+  private serverIPValid(){
+    let nameArr = this.runtimeForm.value.servers.map((item: any) => item.ipaddr);
+    let isNameRepeated = nameArr.some((item: any, index: any) => item && nameArr.indexOf(item, index + 1) !== -1)
+    if (isNameRepeated) {
+      this.invalidServerIP = true;
+    } else {
+      this.invalidServerIP = false;
+    }
+  }
+
+  private removeServer(index: number) {
+    let control = <FormArray>this.runtimeForm.controls['servers'];
+    control.removeAt(index);
+    this.serverNameValid();
+    this.serverIPValid();
+  }
+
+  private addServer(name?: string, ip?: string) {
+    let control = <FormArray>this.runtimeForm.controls['servers'];
+    let serverCtrl = this._fb.group({
+      "name": name || '',
+      "ipaddr": ip || ''
+    });
+    control.push(serverCtrl);
+  }
+
+  private newRuntime() {
+    this.runtimeSelected = {
+      location: '',
+      owners: [],
+      description: '',
+      server: [],
+    };
+    this.isNewRuntime = true;
+    this.buildForm();
+  }
+
   private save() {
     let form = this.runtimeForm;
+    let serverData = [];
     this.submitted = true;
     if (form.invalid) return;
     if (!this.owners.length) return;
+    let runtimeInfo = form.value;
+    let invalidServers = runtimeInfo.servers.filter((item: any) => {
+      return !item.name && !item.ipaddr;
+    });
+    if (invalidServers.length > 0) return;
+    if (this.invalidServerName || this.invalidServerIP) return;
+    if(form.value.servers.length > 0) {
+      serverData = form.value.servers.map((item: any) => {
+        return {
+          key: "",
+          name: item.name,
+          ipaddr: item.ipaddr,
+          apiaddr: "",
+          os: "",
+          platform: "",
+          status: 0
+        }
+      })
+    }
     let postData = {
       location: form.controls.runtimeLocation.value,
+      description: form.controls.runtimeDescription.value,
       group: this.locationGroup,
-      server: this.locationServer,
-      owners: this.owners
+      owners: this.owners,
+      server: serverData,
+      createuser: '',
+      edituser: '',
     }
     if (this.isNewRuntime) {
+      postData.createuser = this.userName;
+      postData.edituser = this.userName;
       this._locationService.add(postData)
         .then((data) => {
           messager.success('Add Succeed.');
@@ -264,12 +351,16 @@ export class RuntimeListPage {
         .then(data => {
           this.groups = data;
           this.getLocations();
+          this.chooseRuntime('All');
+          this.currentIndex = 1;
+          this.newRuntime();
         })
         .catch((err) => {
           messager.error(err || 'Add failed');
         })
     } else {
-      this._locationService.updateOwners(postData)
+      postData.edituser = this.userName;
+      this._locationService.update(postData)
       .then((data) => {
         messager.success('Update Succeed.');
         this.runtimeInfoModal.show = false;
@@ -278,6 +369,9 @@ export class RuntimeListPage {
       .then(data => {
         this.groups = data;
         this.getLocations();
+        this.chooseRuntime(this.runtimeValue);
+        this.currentIndex = this.pageIndex;
+        this.newRuntime();
       })
       .catch((err) => {
         messager.error(err || 'Update failed');

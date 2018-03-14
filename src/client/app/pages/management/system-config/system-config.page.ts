@@ -40,9 +40,11 @@ export class SystemConfigPage {
   }
 
   ngOnInit() {
-    // this._systemConfig.get(true)
-    // .then(config => this.config = config)
-    this.buildForm();
+    this._systemConfig.get(true)
+      .then(config => {
+        this.configInfo = config;
+        this.buildForm();
+      })
 
   }
 
@@ -50,20 +52,31 @@ export class SystemConfigPage {
     this.submitted = false;
     let data = this.configInfo || {};
     this.configForm = this._fb.group({
-      Database: data.dbAddress.database,
-      HostPort: data.dbAddress.hostPort,
-      IsAuthExist: data.dbAddress.isAuthExist ? true : false,
-      Username: data.dbAddress.auth.username || '',
-      Password: data.dbAddress.auth.password || '',
+      Database: data.storagedriver.mongo.database,
+      HostPort: data.storagedriver.mongo.hosts,
+      Username: data.storagedriver.mongo.auth ? (data.storagedriver.mongo.auth.user || '') : '',
+      Password: data.storagedriver.mongo.auth ? (data.storagedriver.mongo.auth.password || '') : '',
+      IsAuthExist: data.storagedriver.mongo.auth ? (data.storagedriver.mongo.auth.user || data.storagedriver.mongo.auth.password ? true : false) : false,
       Options: this._fb.array([]),
+      CenterAddress: data.centerhost || '',
+      WebsiteHost: data.websitehost || '',
     });
-    if(data.dbAddress.options){
+    if (data.storagedriver.mongo.options) {
       let optionsCtrl = <FormArray>this.configForm.controls['Options'];
-      data.dbAddress.options.forEach((item: any) => {
+      data.storagedriver.mongo.options.forEach((item: any) => {
         optionsCtrl.push(this._fb.group({
           "Value": [item]
         }))
       });
+    }
+  }
+
+  private authOption() {
+    if (!this.configForm.controls.IsAuthExist.value) {
+      this.configForm.controls['Username'].disable();
+      this.configForm.controls['Password'].disable();
+      this.configForm.controls['Username'].setValue('');
+      this.configForm.controls['Password'].setValue('');
     }
   }
 
@@ -79,11 +92,39 @@ export class SystemConfigPage {
     control.removeAt(index);
   }
 
-  private save(form: any) {
-    if (this.config.EnablePrivateRegistry && form.controls.privateRegistry.invalid) return;
-    if (this.config.EnableOnlineImageBuild && form.controls.imageBuildApi.invalid) return;
+  private save() {
+    this.submitted = true;
+    let form = this.configForm;
+    if (form.controls.IsAuthExist.value) {
+      if (form.invalid) return;
+    } else {
+      if(form.controls.Database.invalid || form.controls.HostPort.invalid || form.controls.Options.invalid
+      || form.controls.CenterAddress.invalid || form.controls.WebsiteHost.invalid) return;
+    }
+    if (form.invalid && form.controls.IsAuthExist.value) return;
+    // if (this.config.EnablePrivateRegistry && form.controls.privateRegistry.invalid) return;
+    // if (this.config.EnableOnlineImageBuild && form.controls.imageBuildApi.invalid) return;
+    let data: any = {
+      "websitehost": form.controls.WebsiteHost.value,
+      "centerhost": form.controls.CenterAddress.value,
+      "storagedriver": {
+        "mongo": {
+          "hosts": form.controls.HostPort.value,
+          "database": form.controls.Database.value,
+        }
+      }
+    };
+    let options = form.controls.Options.value.map((item: any) => item.Value)
+    data.storagedriver.mongo.options = options;
+    if (form.controls.Username.value || form.controls.Password.value) {
+      let auth = {
+        "user": form.controls.Username.value,
+        "password": form.controls.Password.value
+      }
+      data.storagedriver.mongo.auth = auth;
+    }
 
-    this._systemConfig.save(this.config)
+    this._systemConfig.save(data)
       .then(res => {
         messager.success('Updated.');
       })

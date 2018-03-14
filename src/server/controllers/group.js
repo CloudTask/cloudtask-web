@@ -3,7 +3,7 @@ const request = require('./request/request');
 const moment = require('moment');
 const util = require('./../common/util');
 const requestHelper = require('./request/requestHelper');
-const config = require('../config');
+const config = require('../config').getConfig();
 const dbFactory = require('./../db/dbFactory').factory;
 
 let collectionLocation = config.dbConfigs.locationCollection.name;
