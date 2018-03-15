@@ -7,8 +7,7 @@ var zookeeper = require('node-zookeeper-client');
 //   password: '',
 //   options: ['replicaSet=NeweggCloud']
 // }
-var DB_CONN_STR = 'mongodb://10.16.75.22:29017,10.16.75.23:29017,10.16.75.25:29017/cloudtask_data?replicaSet=NeweggCloud';
-// var DB_CONN_STR = '';
+// var DB_CONN_STR = 'mongodb://10.16.75.22:29017,10.16.75.23:29017,10.16.75.25:29017/cloudtask_data?replicaSet=NeweggCloud';
 
 
 class DBFactory {
@@ -38,21 +37,19 @@ class DBFactory {
             }
             let mongoData = JSON.parse(data.toString('utf8'));
             let DBAddress = mongoData.storagedriver.mongo;
-            // DB_CONN_STR = `mongodb://${DBAddress.hosts}`;
-            // if (DBAddress.auth.user && DBAddress.auth.password) {
-            //   DB_CONN_STR = `mongodb://${DBAddress.auth.user}:${DBAddress.auth.password}@${DBAddress.hosts}`;
-            // }
-            // if (DBAddress.database) {
-            //   DB_CONN_STR = `${DB_CONN_STR}/${DBAddress.database}`;
-            // }
-            // if (DBAddress.options) {
-            //   let options = DBAddress.options.join('&');
-            //   if (options) {
-            //     DB_CONN_STR = `${DB_CONN_STR}?${options}`;
-            //   }
-            // }
-            // console.log(DB_CONN_STR);
-            DB_CONN_STR = 'mongodb://10.16.75.22:29017,10.16.75.23:29017,10.16.75.25:29017/cloudtask_data?replicaSet=NeweggCloud';
+            let DB_CONN_STR = `mongodb://${DBAddress.hosts}`;
+            if (DBAddress.auth.user && DBAddress.auth.password) {
+              DB_CONN_STR = `mongodb://${DBAddress.auth.user}:${DBAddress.auth.password}@${DBAddress.hosts}`;
+            }
+            if (DBAddress.database) {
+              DB_CONN_STR = `${DB_CONN_STR}/${DBAddress.database}`;
+            }
+            if (DBAddress.options) {
+              let options = DBAddress.options.join('&');
+              if (options) {
+                DB_CONN_STR = `${DB_CONN_STR}?${options}`;
+              }
+            }
             resolve(DB_CONN_STR);
           }
         )
