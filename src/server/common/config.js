@@ -1,10 +1,10 @@
 const path = require('path');
 
-var listenPort = 8911;
+var listenPort = 8091;
 var uploadFolder = path.join(__dirname, '../uploads');
-var zookeeperConfig = '104.225.159.143:2181,104.225.159.143:2182,104.225.159.143:2183';
+var zookeeperConfig = '192.168.2.80:2181,192.168.2.81:2182,192.168.2.82:2183';
 module.exports = {
-  listenPort,
-  uploadFolder,
-  zookeeperConfig
+    listenPort,
+    uploadFolder,
+    zookeeperConfig
 }
