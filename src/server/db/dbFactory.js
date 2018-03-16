@@ -1,13 +1,6 @@
 var MongoClient = require('mongodb').MongoClient;
 var zookeeper = require('node-zookeeper-client');
-// var DBAddress = {
-//   name: 'cloudtask_data',
-//   IPadress: '10.16.75.22:29017,10.16.75.23:29017,10.16.75.25:29017',
-//   username: '',
-//   password: '',
-//   options: ['replicaSet=NeweggCloud']
-// }
-// var DB_CONN_STR = 'mongodb://10.16.75.22:29017,10.16.75.23:29017,10.16.75.25:29017/cloudtask_data?replicaSet=NeweggCloud';
+var zookeeperConfig = require('../common/config').zookeeperConfig;
 
 
 class DBFactory {
@@ -19,14 +12,14 @@ class DBFactory {
 
   getDBAddress() {
     return new Promise((resolve, reject) => {
-      var client = zookeeper.createClient('10.16.75.23:8481,10.16.75.25:8481,10.16.75.26:8481');
+      var client = zookeeper.createClient(zookeeperConfig);
       client.once('connected', function (err) {
         if (err) {
           console.log(err);
           return;
         }
         client.getData(
-          '/cloudtask_config_test/ServerConfig',
+          '/cloudtask/ServerConfig',
           function (error, data, stat) {
             if (error) {
               console.log(

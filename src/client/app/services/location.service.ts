@@ -5,7 +5,6 @@ import { resolve } from 'url';
 
 declare let _: any;
 declare let Config: any;
-declare let ConfAddress: any;
 
 @Injectable()
 export class LocationService {
@@ -30,22 +29,8 @@ export class LocationService {
     })
   }
 
-  getJobconsoleServer(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this._http.get(`${ConfAddress}/framework/v1/jobconsole/server?format=json`)
-        .then(res => {
-          let data = res.json();
-          resolve(data);
-        })
-        .catch(err => {
-          reject(err.json ? err.json() : err);
-        });
-    })
-  }
-
   getServers(value: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      // this._http.get(`${ConfAddress}/cloudtask/v2/locations/${value}/servers`)
       this._http.get(`api/group/${value}/getLocationServer`)
 
         .then(res => {

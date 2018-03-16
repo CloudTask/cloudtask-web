@@ -43,13 +43,5 @@ window.messager = messager;
 
 var config = {
   debug: true,
-  Dev: 'http://10.16.75.22:8989',
-  Gdev: 'http://10.16.75.24:3000',
-  Gqc: 'http://10.1.24.130:3000',
-  Prd: 'http://apis.newegg.org',
-  DfisAddress: 'http://10.1.24.133',
-  DfisAddressPrd: 'http://neg-app-dfis-c4',
 };
 window.Config = config;
-window.ConfAddress = 'http://10.16.85.173:8985';
-window.DfisAddr = config.DfisAddress;

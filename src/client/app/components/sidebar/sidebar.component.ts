@@ -5,9 +5,7 @@ import { AuthService, EventNotifyService, EventType } from './../../services';
 
 declare let $: any;
 declare let messager: any;
-declare let ConfAddress: any;
 declare let Config: any;
-declare let DfisAddr: any;
 declare let AppConfig: any;
 
 @Component({

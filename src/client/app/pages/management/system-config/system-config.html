@@ -83,11 +83,11 @@
       <label>Center Address</label>
       <!-- <div class="box"> -->
         <input type="text" class="form-control" formControlName="CenterAddress"
-          maxlength="30" required pattern="^[0-9a-zA-Z-_.:]*$">
+          maxlength="30" required pattern="^http(s){0,1}://[0-9a-zA-Z-_.:]*$" placeholder="http(s)://10.18.22.45:8985">
         <div *ngIf="submitted && configForm.controls.CenterAddress.invalid">
           <span class="help-block" *ngIf="configForm.controls.CenterAddress.errors.required">CenterAddress is required.</span>
           <span class="help-block" *ngIf="configForm.controls.CenterAddress.errors.maxlength">CenterAddress cannot more than 30 characters.</span>
-          <span class="help-block" *ngIf="configForm.controls.CenterAddress.errors.pattern">CenterAddress cannot contain special characters.</span>
+          <span class="help-block" *ngIf="configForm.controls.CenterAddress.errors.pattern">The value of CenterAddress does not conform to the format.</span>
         </div>
       <!-- </div> -->
     </div>
@@ -95,11 +95,11 @@
         <label>Website Host</label>
         <!-- <div class="box"> -->
           <input type="text" class="form-control" formControlName="WebsiteHost"
-            maxlength="30" required pattern="^[0-9a-zA-Z-_.:]*$">
+            maxlength="30" required pattern="^http(s){0,1}://[0-9a-zA-Z-_.:]*$" placeholder="http(s)://10.18.22.45:8901">
           <div *ngIf="submitted && configForm.controls.WebsiteHost.invalid">
             <span class="help-block" *ngIf="configForm.controls.WebsiteHost.errors.required">WebsiteHost is required.</span>
             <span class="help-block" *ngIf="configForm.controls.WebsiteHost.errors.maxlength">WebsiteHost cannot more than 30 characters.</span>
-            <span class="help-block" *ngIf="configForm.controls.WebsiteHost.errors.pattern">WebsiteHost cannot contain special characters.</span>
+            <span class="help-block" *ngIf="configForm.controls.WebsiteHost.errors.pattern">The value of WebsiteHost does not conform to the format.</span>
           </div>
         <!-- </div> -->
       </div>

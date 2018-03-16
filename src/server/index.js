@@ -88,7 +88,7 @@ app.use(errorHandler({ log: false }));
 user.initAdmin()
   .then(() => {
     app.listen(config.listenPort, () => {
-      console.log(`Humpback Website is started on port ${config.listenPort}`);
+      console.log(`Cloudtask Website is started on port ${config.listenPort}`);
     });
   })
   .catch(err => {

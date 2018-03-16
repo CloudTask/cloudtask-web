@@ -16,8 +16,6 @@ export class SystemConfigPage {
   private config: any = {};
   private submitted: boolean;
   private configForm: FormGroup;
-  // private prdProxyName: any = '';
-  // private prdProxyAddress: any = '';
   private configInfo: any = {
     dbAddress: {
       database: '',
@@ -77,6 +75,9 @@ export class SystemConfigPage {
       this.configForm.controls['Password'].disable();
       this.configForm.controls['Username'].setValue('');
       this.configForm.controls['Password'].setValue('');
+    } else {
+      this.configForm.controls['Username'].enable();
+      this.configForm.controls['Password'].enable();
     }
   }
 
@@ -96,12 +97,12 @@ export class SystemConfigPage {
     this.submitted = true;
     let form = this.configForm;
     if (form.controls.IsAuthExist.value) {
+      console.log(form.controls.Username);
       if (form.invalid) return;
     } else {
-      if(form.controls.Database.invalid || form.controls.HostPort.invalid || form.controls.Options.invalid
-      || form.controls.CenterAddress.invalid || form.controls.WebsiteHost.invalid) return;
+      if (form.controls.Database.invalid || form.controls.HostPort.invalid || form.controls.Options.invalid
+        || form.controls.CenterAddress.invalid || form.controls.WebsiteHost.invalid) return;
     }
-    if (form.invalid && form.controls.IsAuthExist.value) return;
     // if (this.config.EnablePrivateRegistry && form.controls.privateRegistry.invalid) return;
     // if (this.config.EnableOnlineImageBuild && form.controls.imageBuildApi.invalid) return;
     let data: any = {

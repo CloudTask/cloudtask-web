@@ -7,8 +7,6 @@ import { JobService, DfisUploader, GroupService, AuthService } from './../../ser
 declare let moment: any;
 declare let messager: any;
 declare let Config: any;
-declare let ConfAddress: any;
-declare let DfisAddr: any;
 
 @Component({
   selector: 'task',

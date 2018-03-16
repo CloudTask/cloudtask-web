@@ -3,7 +3,6 @@ import { AuthService } from './auth.service';
 import { CusHttpService } from './custom-http.service';
 
 declare let _: any;
-declare let ConfAddress: any;
 declare let Config: any;
 
 @Injectable()
@@ -48,8 +47,6 @@ export class UserService {
 
   add(userInfo: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      // let ConfAddress = 'http://10.16.75.22:8989';
-      // this._http.post(`${ConfAddress}/cloudtask/v2/jobs`, job)
       let postUser = JSON.stringify(userInfo);
       this._http.post('api/users/createUser', postUser)
         .then(res => {
@@ -64,7 +61,6 @@ export class UserService {
 
   update(user: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      // this._http.put(`${ConfAddress}/cloudtask/v2/groups`, group)
       this._http.put(`api/users/updateUser`, user)
         .then(res => {
           resolve(res.json ? res.json() : res.text());
@@ -76,7 +72,6 @@ export class UserService {
   }
 
   remove(userid: string): Promise<any> {
-    // let url = `${ConfAddress}/cloudtask/v2/groups/${id}`;
     let url = `api/users/removeUser/${userid}`
     return new Promise((resolve, reject) => {
       this._http.delete(url)

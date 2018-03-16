@@ -1,14 +1,15 @@
 var zookeeper = require('node-zookeeper-client');
+var zookeeperConfig = require('./common/config').zookeeperConfig;
 exports.getZkConfig = (req) => {
   return new Promise((resolve, reject) => {
-    var client = zookeeper.createClient('10.16.75.23:8481,10.16.75.25:8481,10.16.75.26:8481');
+    var client = zookeeper.createClient(zookeeperConfig);
     client.once('connected', function (err) {
       if (err) {
         console.log(err);
         return;
       }
       client.getData(
-        '/cloudtask_config_test/ServerConfig',
+        '/cloudtask/ServerConfig',
         function (error, data, stat) {
           if (error) {
             console.log(
@@ -18,20 +19,6 @@ exports.getZkConfig = (req) => {
             return;
           }
           let mongoData = JSON.parse(data.toString('utf8'));
-          // let DBAddress = mongoData.storagedriver.mongo;
-          // let DB_CONN_STR = `mongodb://${DBAddress.hosts}`;
-          // if (DBAddress.auth.user && DBAddress.auth.password) {
-          //   DB_CONN_STR = `mongodb://${DBAddress.auth.user}:${DBAddress.auth.password}@${DBAddress.hosts}`;
-          // }
-          // if (DBAddress.database) {
-          //   DB_CONN_STR = `${DB_CONN_STR}/${DBAddress.database}`;
-          // }
-          // if (DBAddress.options) {
-          //   let options = DBAddress.options.join('&');
-          //   if (options) {
-          //     DB_CONN_STR = `${DB_CONN_STR}?${options}`;
-          //   }
-          // }
           resolve(mongoData);
         }
       )
@@ -42,26 +29,7 @@ exports.getZkConfig = (req) => {
 
 exports.setZkConfig = (postData) => {
   return new Promise((resolve, reject) => {
-    var client = zookeeper.createClient('10.16.75.23:8481,10.16.75.25:8481,10.16.75.26:8481');
-    // let data = new Buffer(`{
-    //   "websitehost": "10.16.78.88:8901",
-    //   "centerhost": "10.18.22.45:8985",
-    //   "storagedriver": {
-    //     "mongo": {
-    //       "hosts": "192.168.2.80:27017,192.168.2.81:27017,192.168.2.82:27017",
-    //       "database": "cloudtask",
-    //       "auth": {
-    //         "user": "datastoreAdmin",
-    //         "password": "ds4dev"
-    //       },
-    //       "options": [
-    //         "maxPoolSize=20",
-    //         "replicaSet=mgoCluster",
-    //         "authSource=admin"
-    //       ]
-    //     }
-    //   }
-    // }`);
+    var client = zookeeper.createClient(zookeeperConfig);
     let data = new Buffer(JSON.stringify(postData));
     client.once('connected', function (err) {
       if (err) {
@@ -69,7 +37,7 @@ exports.setZkConfig = (postData) => {
         return;
       }
       client.setData(
-        '/cloudtask_config_test/ServerConfig',
+        '/cloudtask/ServerConfig',
         data,
         function (error, stat) {
           if (error) {
@@ -86,11 +54,9 @@ exports.setZkConfig = (postData) => {
 }
 
 exports.getConfig = () => {
-  let env = process.env.HUMPBACK_ENV || 'gdev';
   let configInfo = {
     version: '1.0.0',
     isDebugMode: true,
-    listenPort: process.env.HUMPBACK_LISTEN_PORT || 8100,
     dbConfigs: {
       locationCollection: { name: 'sys_locations' },
       jobCollection: { name: 'sys_jobs' },

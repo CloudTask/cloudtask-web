@@ -29,7 +29,6 @@ export class SystemConfigService {
       if (this.Config && !nocache) {
         return resolve(this.Config);
       }
-      // this._http.get(`${Config.Prd}/cloudtask/v2/sysconfig`)
       this._http.get('api/sysconfig')
         .then(res => {
           let config = res.json().data;
@@ -44,7 +43,6 @@ export class SystemConfigService {
 
   save(config: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      // this._http.put(`${Config.Prd}/cloudtask/v2/sysconfig`, config)
       this._http.post(`api/sysconfig`, config)
         .then(res => {
           this.Config = _.cloneDeep(config);

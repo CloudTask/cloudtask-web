@@ -5,8 +5,6 @@ import { EventNotifyService, EventType, AuthService, JobService, LogService, Gro
 declare let messager: any;
 declare let moment: any;
 declare let Config: any;
-declare let ConfAddress: any;
-declare let DfisAddr: any;
 
 @Component({
   selector: 'ct-job-detail',

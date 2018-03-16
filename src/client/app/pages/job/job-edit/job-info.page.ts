@@ -6,9 +6,6 @@ import { AuthService, JobService, LocationService, GroupService, LogService, Dfi
 
 declare let moment: any;
 declare let messager: any;
-declare let Config: any;
-declare let ConfAddress: any;
-declare let DfisAddr: any;
 
 @Component({
   selector: 'job-info',
@@ -753,11 +750,6 @@ export class JobInfoPage {
     if (form.controls.NotifyFailChecked.value && (form.controls.FailedSubject.invalid || form.controls.FailedTo.invalid)) return;
     // if (form.invalid) return;
     if (this.inputFile && this.inputValue && form.controls.EnableJobFile.value && this.customSelectFile) {
-      if (`${ConfAddress}` == `${Config.Prd}`) {
-        DfisAddr = `${Config.DfisAddressPrd}`;
-      } else {
-        DfisAddr = `${Config.DfisAddress}`;
-      }
       this._dfisUploader.upload(`api/file/upload/${this.inputFile}`, this.inputValue, { disableLoading: false })
         .then((res: any) => {
           this.saveJobInfo();

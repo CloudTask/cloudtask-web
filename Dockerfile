@@ -1,9 +1,9 @@
 FROM docker.neg/base/nodejs:6.9.2
 MAINTAINER Selena Wu <Selena.X.Wu@newegg.com>
 
-ADD . /cloud-task_new
+ADD . /cloudtask-open-source
 
-WORKDIR /cloud-task_new
+WORKDIR /cloudtask-open-source
 
 EXPOSE 8091
 
