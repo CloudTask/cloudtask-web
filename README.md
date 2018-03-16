@@ -110,6 +110,97 @@ Runtime
 
 管理Group, Group的`owners`可编辑、删除对应group，管理员可编辑、删除所有group。其余用户只能查看group相关信息，无法创建、删除和编辑，只有管理员能新建group，如需创建Group请联系 BTS Team
 
-System Config
----
-展示Cloudtask的管理员名，只有管理员能查看该页面并对管理员进行操作，如需获取管理员权限请联系 BTS Team
+# System Config
+
+![System Config](_media/system_config.png)
+
+> Description
+有`DB Address`和`Center Address`两个配置项
+- `Database`: The name of db
+- `Host&Port`: The link address of db
+- `Auth`: The infomation of auth
+- `Options`: The options of moogodb 
+
+- `Center Address`: The IP address of cloudtask center
+
+# Runtime List
+
+![Runtime Manage](_media/manage_runtime.png)
+
+> Description
+
+- To add a runtime, click the `Add Group` button at the top of the page
+- The two icons in the last column of the table are `edit runtime information`, `delete runtime '
+
+# Add Runtime
+
+![Add Group](_media/add_group.png)
+
+> Description
+
+- `Runtime`: Runtime name
+- `Description`: The description of runtime
+- `Owners`: Owners of the runtime.If an user is owner of the runtime, this user can edit or delete the runtime, And can also operate all the groups blong to the runtime.
+
+PS: Only admin users can add runtime.
+
+# Edit Runtime
+
+![Edit Group](_media/edit_group.png)
+> Description
+
+- Group information is consistent with [`adding group`](add_group.md)
+
+# Group List
+
+![Group Manage](_media/manage_group.png)
+
+> Description
+
+- To add a group, click the `Add Group` button at the top of the page
+- The two icons in the last column of the table are `edit group information`, `delete group '
+
+# Add Group
+
+![Add Group](_media/add_group.png)
+
+> Description
+
+- `Runtime`: Runtime that the group belongs to
+- `Group`: Group name of the group
+- `Owners`: Owners of the group.If an user is owner of the group, this user can edit or delete the group
+
+# Edit Group
+
+![Edit Group](_media/edit_group.png)
+> Description
+
+- Group information is consistent with [`adding group`](add_group.md)
+
+
+# User List
+
+*only **Administrator** can use this function*
+
+![User Manage](_media/manage_user.png)
+
+> Description
+
+- To add a user, click the `Add User` button at the top of the page
+- The two icons in the last column of the table are `edit user information`, `delete user '
+
+# Add User
+
+![Add User](_media/add_user.png)
+
+> Description
+
+- `UserID`: 4-6-bit string for user login, such as zs18
+- `FullName`: Full name of the user.
+- `Department`: Optional
+- `Email`: Optional, contact email
+- `Own administrator privileges`: `administrator 'permissions
+
+# Edit User
+
+![Edit User](_media/edit_user.png)
