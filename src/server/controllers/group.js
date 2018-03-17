@@ -197,6 +197,7 @@ exports.removeGroup = (req, res, next) => {
       return;
     }
     if (resultJobs.length > 0) {
+      jobids = resultJobs.map((job) => job.jobid);
       removeGroupJobs(resultJobs)
         .then((resdata) => {
           if (!resdata.isDone) {
