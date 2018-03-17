@@ -1,11 +1,12 @@
-FROM docker.neg/base/nodejs:6.9.2
+FROM node:8.10-alpine
+
 MAINTAINER Selena Wu <Selena.X.Wu@newegg.com>
 
-ADD . /cloudtask-open-source
+ADD ./dist /cloudtask-web
 
-WORKDIR /cloudtask-open-source
+WORKDIR /cloudtask-web
 
 EXPOSE 8091
 
-CMD ["node", "src/server/index.js"]
+CMD ["node", "server/index.js"]
 
