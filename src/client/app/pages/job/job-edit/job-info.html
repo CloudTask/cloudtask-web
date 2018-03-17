@@ -246,7 +246,7 @@
                 <div class="row form-group" [class.has-error]="submitted && serverForm.controls.SucceedTo.invalid">
                   <span class="col-md-2 control-label">To</span>
                   <div class="col-md-9">
-                    <input class="form-control" type="text" name="notifySucceedTo" formControlName="SucceedTo" value="" maxlength="500" multipleEmails
+                    <input placeholder="eg:example@mail.com" class="form-control" type="text" name="notifySucceedTo" formControlName="SucceedTo" value="" maxlength="500" multipleEmails
                       required>
                     <div *ngIf="submitted && serverForm.controls.SucceedTo.invalid">
                       <span class="help-block" *ngIf="!serverForm.controls.SucceedTo.value">Email address cannot be empty.</span>
@@ -283,7 +283,7 @@
                 <div class="row form-group" [class.has-error]="submitted && serverForm.controls.FailedTo.invalid">
                   <span class="col-md-2 control-label">To</span>
                   <div class="col-md-9">
-                    <input class="form-control" type="text" name="notifyFailedTo" formControlName="FailedTo" maxlength="500" multipleEmails required>
+                    <input placeholder="eg:example@mail.com" class="form-control" type="text" name="notifyFailedTo" formControlName="FailedTo" maxlength="500" multipleEmails required>
                     <div *ngIf="submitted && serverForm.controls.FailedTo.invalid">
                       <span class="help-block" *ngIf="!serverForm.controls.FailedTo.value">Email address cannot be empty.</span>
                       <span class="help-block" *ngIf="serverForm.controls.FailedTo.errors?.maxlength">Contact info cannot more than 500 characters.</span>

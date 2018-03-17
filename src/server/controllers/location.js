@@ -13,7 +13,9 @@ exports.add = (req, res, next) => {
   isExists(postLocation.location)
     .then(data => {
       if (data) {
-        return next(new Error('Location is exists.'))
+        let resultData = response.setResult(request.requestResultCode.RequestConflict, request.requestResultErr.ErrRequestConflict, {});
+        res.status(409).send('Runtime is exists.');
+        return res.json(resultData);
       } else {
         let createat = moment().format();
         postLocation.createat = createat;                //创建时间
@@ -25,10 +27,12 @@ exports.add = (req, res, next) => {
           }
           let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
           res.json(result);
-          let time =  Date.now();
+          let time = Date.now();
           let dataObj = {
+            msgname: 'SystemEvent',
+            msgid: '',
             runtime: postLocation.location,
-            event: "create_location",
+            event: "create_runtime",
             timestamp: time
           }
           requestHelper.requestMQ(dataObj, { method: 'post' });
@@ -44,27 +48,33 @@ exports.update = (req, res, next) => {
   isExists(postLocation.location)
     .then(data => {
       if (!data) {
-        return next(new Error('Location is not exists.'))
+        let resultData = response.setResult(request.requestResultCode.RequestConflict, request.requestResultErr.ErrRequestConflict, {});
+        res.status(409).send('Runtime is not exists.');
+        return res.json(resultData);
       } else {
         postLocation.editat = moment().format();
-        dbFactory.getCollection(collectionLocation).update({ 'location': postLocation.location }, { $set: {
-          'description': postLocation.description,
-          'owners': postLocation.owners,
-          'server': postLocation.server,
-          'editat': postLocation.editat,
-          'edituser': postLocation.edituser
-        } }, (err, result) => {
+        dbFactory.getCollection(collectionLocation).update({ 'location': postLocation.location }, {
+          $set: {
+            'description': postLocation.description,
+            'owners': postLocation.owners,
+            'server': postLocation.server,
+            'editat': postLocation.editat,
+            'edituser': postLocation.edituser
+          }
+        }, (err, result) => {
           if (err) {
             console.log('Error:' + err);
             return;
           }
           let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
           res.json(result);
-          let time =  Date.now();
-          if(data.server !== postLocation.server || data.owners !== postLocation.owners){
+          let time = Date.now();
+          if (JSON.stringify(result.server) !== JSON.stringify(postLocation.server) || result.owners.sort().toString() !== postLocation.owners.sort().toString()) {
             let dataObj = {
+              msgname: 'SystemEvent',
+              msgid: '',
               runtime: postLocation.location,
-              event: "change_location",
+              event: "change_runtime",
               timestamp: time
             }
             requestHelper.requestMQ(dataObj, { method: 'post' });
@@ -81,19 +91,23 @@ exports.remove = (req, res, next) => {
   isExists(location)
     .then(data => {
       if (!data) {
-        return next(new Error('Location is not exists.'));
+        let resultData = response.setResult(request.requestResultCode.RequestConflict, request.requestResultErr.ErrRequestConflict, {});
+        res.status(409).send('Runtime is not exists.');
+        return res.json(resultData);
       } else {
-        dbFactory.getCollection(collectionLocation).remove({location: location}, (err, result) => {
+        dbFactory.getCollection(collectionLocation).remove({ location: location }, (err, result) => {
           if (err) {
             console.log('Error:' + err);
             return;
           }
           let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
           res.json(resultData);
-          let time =  Date.now();
+          let time = Date.now();
           let dataObj = {
+            msgname: 'SystemEvent',
+            msgid: '',
             runtime: location,
-            event: "remove_location",
+            event: "remove_runtime",
             timestamp: time
           }
           requestHelper.requestMQ(dataObj, { method: 'post' });

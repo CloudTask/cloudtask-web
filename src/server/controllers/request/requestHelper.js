@@ -5,8 +5,8 @@ const systemConfig = require('../../config');
 
 const requestMQ = (data, config) => {
   systemConfig.getZkConfig()
-  .then(config => {
-    let centerhost = config.centerhost;
+  .then(res => {
+    let centerhost = res.centerhost;
     let options = {
       headers: {
         'accept': 'application/json',
@@ -40,6 +40,7 @@ const requestMQ = (data, config) => {
       });
     });
   })
+  .catch(err => console.log(err));
 };
 
 module.exports = {

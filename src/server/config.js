@@ -6,6 +6,7 @@ exports.getZkConfig = (req) => {
     client.once('connected', function (err) {
       if (err) {
         console.log(err);
+        reject(err);
         return;
       }
       client.getData(
@@ -34,6 +35,7 @@ exports.setZkConfig = (postData) => {
     client.once('connected', function (err) {
       if (err) {
         console.log(err);
+        reject(err);
         return;
       }
       client.setData(

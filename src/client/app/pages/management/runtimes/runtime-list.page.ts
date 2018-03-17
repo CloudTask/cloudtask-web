@@ -320,13 +320,8 @@ export class RuntimeListPage {
     if(form.value.servers.length > 0) {
       serverData = form.value.servers.map((item: any) => {
         return {
-          key: "",
           name: item.name,
           ipaddr: item.ipaddr,
-          apiaddr: "",
-          os: "",
-          platform: "",
-          status: 0
         }
       })
     }

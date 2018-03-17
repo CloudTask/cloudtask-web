@@ -37,7 +37,7 @@ JobInfo {
 */
 
 exports.get = (req, res, next) => {
-  dbFactory.getCollection(collectionName).find({ }).toArray((err, resultJob) => {
+  dbFactory.getCollection(collectionName).find({}).toArray((err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
@@ -57,42 +57,42 @@ exports.createJob = (req, res, next) => {
     }
     let job = resultJob;
     let isExist = job.some(item => item.name == postJob.name);   //判断当前group是否有job与新建job重名
-      if (isExist) {
-        let resultData = response.setResult(request.requestResultCode.RequestConflict, request.requestResultErr.ErrRequestConflict, {});
-        res.status(409);
-        return res.json(resultData);
-      } else {
-        if (postJob.schedule.length > 0) {
-          postJob.schedule.forEach(item => item.id = Date.now().toString(16));
-        }
-        let createat = moment().format();
-        postJob.createat = createat;
-        postJob.editat = createat;
-        postJob.edituser = postJob.createuser;
-        postJob.jobid = util.getRandomId();
-        postJob.files = [];                                            //files为[]
-        postJob.stat = jobstat.jobstatus.STATE_REALLOC;                //等待分配状态
-        dbFactory.getCollection(collectionName).insert(postJob, (err, result) => {
-          if (err) {
-            console.log('Error:' + err);
-            return;
-          }
-          console.log('insert succeed.');
-          let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, postJob);
-          res.json(resultData);
-          let time =  Date.now();
-            let dataObj = {
-              msgname: 'SystemEvent',
-              msgid: '',
-              event: "create_job",
-              jobids: [postJob.jobid],
-              groupids: [],
-              runtime: postJob.location,
-              timestamp: time
-            }
-          requestHelper.requestMQ(dataObj, { method: 'post' });
-        })
+    if (isExist) {
+      let resultData = response.setResult(request.requestResultCode.RequestConflict, request.requestResultErr.ErrRequestConflict, {});
+      res.status(409);
+      return res.json(resultData);
+    } else {
+      if (postJob.schedule.length > 0) {
+        postJob.schedule.forEach(item => item.id = Date.now().toString(16));
       }
+      let createat = moment().format();
+      postJob.createat = createat;
+      postJob.editat = createat;
+      postJob.edituser = postJob.createuser;
+      postJob.jobid = util.getRandomId();
+      postJob.files = [];                                            //files为[]
+      postJob.stat = jobstat.jobstatus.STATE_REALLOC;                //等待分配状态
+      dbFactory.getCollection(collectionName).insert(postJob, (err, result) => {
+        if (err) {
+          console.log('Error:' + err);
+          return;
+        }
+        console.log('insert succeed.');
+        let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, postJob);
+        res.json(resultData);
+        let time = Date.now();
+        let dataObj = {
+          msgname: 'SystemEvent',
+          msgid: '',
+          event: "create_job",
+          jobids: [postJob.jobid],
+          groupids: [],
+          runtime: postJob.location,
+          timestamp: time
+        }
+        requestHelper.requestMQ(dataObj, { method: 'post' });
+      })
+    }
   })
 }
 
@@ -113,10 +113,10 @@ exports.changeInfo = (res, postJob) => {
     postJob.execat = data.execat;
     postJob.nextat = data.nextat;
     postJob.execerr = data.execerr;
-    if(postJob.nextat == ""){
+    if (postJob.nextat == "") {
       postJob.nextat = '0001-01-01T00:00:00.000Z';
     }
-    if(postJob.execat == ""){
+    if (postJob.execat == "") {
       postJob.execat = '0001-01-01T00:00:00.000Z';
     }
     if (data.filename !== postJob.filename) {         //修改了filename
@@ -130,9 +130,9 @@ exports.changeInfo = (res, postJob) => {
           postJob.files.push(fileObj);
         }
       }
-      if(!data.files) data.files = [];
+      if (!data.files) data.files = [];
       let currentFileExist = data.files.some(item => item.name == postJob.filename);
-      if(currentFileExist) {
+      if (currentFileExist) {
         let fileIndex = data.files.findIndex(item => item.name == postJob.filename);
         postJob.files.splice(fileIndex, 1)
       }
@@ -156,32 +156,34 @@ exports.changeInfo = (res, postJob) => {
       postJob.nextat = '0001-01-01T00:00:00.000Z';
       postJob.stat = jobstat.jobstatus.STATE_STOPED     //停止状态
     }
-    dbFactory.getCollection(collectionName).update({ 'jobid': postJob.jobid }, { $set: {
-      'name': postJob.name,
-      'editat': postJob.editat,
-      'edituser': postJob.edituser,
-      'nextat': postJob.nextat,
-      'files': postJob.files,
-      'filename': postJob.filename,
-      'schedule':  postJob.schedule,
-      'enabled': postJob.enabled,
-      'nextat': postJob.nextat,
-      'stat': postJob.stat,
-      'groupid': postJob.groupid,
-      'env': postJob.env,
-      'description': postJob.description,
-      'cmd': postJob.cmd,
-      'timeout': postJob.timeout,
-      'servers': postJob.servers,
-      'notifysetting': postJob.notifysetting
-    } }, (err, result) => {
+    dbFactory.getCollection(collectionName).update({ 'jobid': postJob.jobid }, {
+      $set: {
+        'name': postJob.name,
+        'editat': postJob.editat,
+        'edituser': postJob.edituser,
+        'nextat': postJob.nextat,
+        'files': postJob.files,
+        'filename': postJob.filename,
+        'schedule': postJob.schedule,
+        'enabled': postJob.enabled,
+        'nextat': postJob.nextat,
+        'stat': postJob.stat,
+        'groupid': postJob.groupid,
+        'env': postJob.env,
+        'description': postJob.description,
+        'cmd': postJob.cmd,
+        'timeout': postJob.timeout,
+        'servers': postJob.servers,
+        'notifysetting': postJob.notifysetting
+      }
+    }, (err, result) => {
       if (err) {
         console.log('Error:' + err);
         return;
       }
       let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, postJob);
       res.json(resultData);
-      let time =  Date.now();
+      let time = Date.now();
       let dataObj = {
         msgname: 'SystemEvent',
         msgid: '',
@@ -222,7 +224,7 @@ exports.updateJob = (req, res, next) => {
 
 exports.getGroupJobs = (req, res, next) => {
   let groupId = req.params.groupId;
-  dbFactory.getCollection(collectionName).find({'groupid': groupId}).toArray((err, resultJob) => {
+  dbFactory.getCollection(collectionName).find({ 'groupid': groupId }).toArray((err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
@@ -234,7 +236,7 @@ exports.getGroupJobs = (req, res, next) => {
 exports.getById = (req, res, next) => {
   let jobId = req.params.jobId;
 
-  dbFactory.getCollection(collectionName).find({'jobid': jobId}).toArray((err, resultJob) => {
+  dbFactory.getCollection(collectionName).find({ 'jobid': jobId }).toArray((err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
@@ -280,27 +282,27 @@ exports.updatefiles = (req, res, next) => {
       this.changeFiles(res, next, newJob, jobids, jobLocation);
     })
   })
+  let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
+  res.json(resultData);
 }
 
 exports.changeFiles = (res, next, newJob, jobids, jobLocation) => {
-  dbFactory.getCollection(collectionName).update({'jobid': newJob.jobid}, {$set: {'filename': newJob.filename, 'files': newJob.files}}, (err, resultJob) => {
+  dbFactory.getCollection(collectionName).update({ 'jobid': newJob.jobid }, { $set: { 'filename': newJob.filename, 'files': newJob.files } }, (err, resultJob) => {
     if (err) {
       console.log('Error:' + err);
       return;
     }
-    let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
-    res.json(resultData);
-  let time =  Date.now();
-  let dataObj = {
-  msgname: 'SystemEvent',
-  msgid: '',
-  event: "change_jobsfile",
-  jobids: jobids,
-  groupids: [],
-  runtime: jobLocation,
-  timestamp: time
-  }
-  requestHelper.requestMQ(dataObj, { method: 'post' })
+    let time = Date.now();
+    let dataObj = {
+      msgname: 'SystemEvent',
+      msgid: '',
+      event: "change_jobsfile",
+      jobids: jobids,
+      groupids: [],
+      runtime: jobLocation,
+      timestamp: time
+    }
+    requestHelper.requestMQ(dataObj, { method: 'post' })
   })
 }
 
@@ -314,14 +316,14 @@ exports.removeJob = (req, res, next) => {
       return;
     }
     jobLocation = resultJob.location;
-    dbFactory.getCollection(collectionName).remove({ 'jobid': jobId  }, (err, result) => {
+    dbFactory.getCollection(collectionName).remove({ 'jobid': jobId }, (err, result) => {
       if (err) {
         console.log('Error:' + err);
         return;
       }
       let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
       res.json(resultData);
-      let time =  Date.now();
+      let time = Date.now();
       let dataObj = {
         msgname: 'SystemEvent',
         msgid: '',

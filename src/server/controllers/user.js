@@ -140,35 +140,6 @@ exports.login = (req, res, next) => {
       res.json(userInfo);
     })
     .catch(err => next(err));
-
-  // let adminUser = req.config;
-  // let ssoToken = req.body.Token;
-  // let oAuthReqOption = {
-  //   method: "POST",
-  //   url: "http://apis.newegg.org/framework/v1/keystone/sso-auth-data",
-  //   headers: {
-  //     Accept: "application/json",
-  //     Authorization: "Bearer JbqOb1s8q60lQOQ5r45bMvxYTclUlJx3gvzQvv3w"
-  //   }
-  // };
-  // let option = JSON.parse(JSON.stringify(oAuthReqOption));
-  // option.body = JSON.stringify({ Token: ssoToken });
-  // request(option, (error, response, resbody) => {
-  //   if ((error != null) || response.statusCode >= 400) {
-  //     error = error || JSON.parse(resbody);
-  //     return next(error)
-  //   }
-  //   let authInfo = JSON.parse(resbody);
-  //   let userInfo = authInfo.UserInfo;
-  //   getRole(adminUser, userInfo.UserID)
-  //     .then(roleName => {
-  //       userInfo.IsAdmin = (roleName !== 'User');
-  //       userInfo.Role = roleName;
-  //       req.session.currentUser = userInfo;
-  //       res.json(userInfo);
-  //     })
-  //     .catch(err => next(err));
-  // });
 }
 
 exports.isLogin = (req, res, next) => {

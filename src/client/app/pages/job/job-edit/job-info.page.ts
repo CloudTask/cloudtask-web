@@ -47,6 +47,7 @@ export class JobInfoPage {
   private groups: Array<any> = [];
   private addScheduleModalOptions: any = {};
   private runtimeError: boolean;
+  private fileError: boolean = false;
   private runtimeHasUpdate: boolean = false;
   private groupHasUpdate: boolean = false;
   private runtime: any;
@@ -232,6 +233,13 @@ export class JobInfoPage {
       if (value.target && value.target.files.length > 0) {
         this.inputValue = value.target.files[0];
       }
+      if (this.inputValue) {
+        this.fileError = false;
+        let allowSize = 50 * 1024 * 1024;
+        if (this.inputValue.size > allowSize) {
+          this.fileError = true;
+        }
+      }
       if (value.target && value.target.value) {
         let arr = value.target.value.split('\\');
         this.inputFile = arr[arr.length - 1];
@@ -289,7 +297,7 @@ export class JobInfoPage {
   }
 
   private downloadFile() {
-    let url = `api/file/${this.serverForm.value.SelectFile}`;
+    let url = `api/file/default/${this.serverForm.value.SelectFile}`;
     window.open(url, "_blank");
   }
 
@@ -484,7 +492,7 @@ export class JobInfoPage {
       this._locationServie.getServers(value)
         .then(res => {
           let servers = res;
-          this.ipaddrs = servers.map((server: any) => server.name);
+          this.ipaddrs = servers.map((server: any) => server.name ? server.name : server.ipaddr);
           this.ipaddrs = this.ipaddrs.concat(this.targetServer);
           this.ipaddrs.sort((a: any, b: any) => {
             return a > b ? 1 : -1;
@@ -749,8 +757,9 @@ export class JobInfoPage {
     if (form.controls.NotifySuccessChecked.value && (form.controls.SucceedSubject.invalid || form.controls.SucceedTo.invalid)) return;
     if (form.controls.NotifyFailChecked.value && (form.controls.FailedSubject.invalid || form.controls.FailedTo.invalid)) return;
     // if (form.invalid) return;
+    if (this.fileError) return;
     if (this.inputFile && this.inputValue && form.controls.EnableJobFile.value && this.customSelectFile) {
-      this._dfisUploader.upload(`api/file/upload/${this.inputFile}`, this.inputValue, { disableLoading: false })
+      this._dfisUploader.upload(`api/file/upload/default/${this.inputFile}`, this.inputValue, { disableLoading: false })
         .then((res: any) => {
           this.saveJobInfo();
         })

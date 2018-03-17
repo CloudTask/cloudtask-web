@@ -188,7 +188,7 @@ export class JobDetailPage {
   private downloadFile() {
     // let fileAddr = 'uploads/default';
     // let url = `api/file/${fileAddr}/${this.jobInfor.filename}`;
-    let url = `api/file/${this.jobInfor.filename}`;
+    let url = `api/file/default/${this.jobInfor.filename}`;
     window.open(url, "_blank");
   }
 

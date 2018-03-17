@@ -49,6 +49,7 @@ export class TaskMonitorPage {
   private allJobNames: Array<any> = [];
   private selectArr: Array<any> = [];
   private isAllJob: boolean = false;
+  private fileError: boolean = false;
 
   private subscriber: any;
   public onChange: any = Function.prototype;
@@ -254,6 +255,13 @@ export class TaskMonitorPage {
       if (value.target && value.target.files.length > 0) {
         this.inputValue = value.target.files[0];
       }
+      if(this.inputValue){
+        this.fileError = false;
+        let allowSize = 50 * 1024 * 1024;
+        if (this.inputValue.size > allowSize) {
+          this.fileError = true;
+        }
+      }
       if (value.target && value.target.value) {
         let arr = value.target.value.split('\\');
         this.fileName = arr[arr.length - 1];
@@ -273,8 +281,9 @@ export class TaskMonitorPage {
       messager.error('Please select one file at least');
       return;
     }
+    if(this.fileError) return;
     if (this.fileName && this.inputValue) {
-      this._dfisUploader.upload(`api/file/upload/${this.fileName}`, this.inputValue, { disableLoading: false })
+      this._dfisUploader.upload(`api/file/upload/default/${this.fileName}`, this.inputValue, { disableLoading: false })
         .then((data: any) => {
           let putData = {
             location: this.location,
@@ -283,7 +292,7 @@ export class TaskMonitorPage {
           }
           this._jobService.updateFiles(putData)
             .then(res => {
-
+              console.log(res)
             })
             .catch(err => messager.error(err.message) || 'Update job file failed');
           this.jobNames = [];
@@ -370,7 +379,7 @@ export class TaskMonitorPage {
   }
 
   private downloadFile(jobid:any, value: any) {
-    let url = `api/file/${value}`;
+    let url = `api/file/default/${value}`;
     window.open(url, "_blank");
   }
 

@@ -36,6 +36,10 @@
         <div class="form-control" style="display:inline-table;">
           <input type="file" accept="application/gzip, .gz" name="" value="" style="outline: none;width: 100%;cursor: pointer;" #fileName
             (change)="fileNameChange($event)">
+            <p class="text-danger margin-top-5" style="margin-bottom: 0">
+              Please compress your folder as <strong>tar.gz</strong> archive and make sure the size is less than
+              <strong>50MB</strong>.
+            </p>
         </div>
       </div>
       <div class="modal-footer">
