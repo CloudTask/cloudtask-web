@@ -56,8 +56,8 @@ export class JobDetailPage {
   ngOnInit() {
 
     this.userInfo = this._authService.getUserInfoFromCache();
-    this.userName = this.userInfo.UserName;
-    this.userFullName = this.userInfo.FullName;
+    this.userName = this.userInfo.userid;
+    this.userFullName = this.userInfo.fullname;
 
     this.subscriber = this._route.params.subscribe(params => {
       this.location = params['location'];

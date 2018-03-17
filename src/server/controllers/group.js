@@ -55,7 +55,7 @@ exports.getJobsById = (req, res, next) => {
 }
 
 exports.getLocationServer = (req, res, next) => {
-  dbFactory.getCollection(collectionLocation).find({ }).toArray((err, resultLocation) => {
+  dbFactory.getCollection(collectionLocation).find({}).toArray((err, resultLocation) => {
     if (err) {
       console.log('Error:' + err);
       return;
@@ -161,7 +161,7 @@ exports.updateGroup = (req, res, next) => {
       newGroup.name = postGroup.name;
       locationGroups[groupIndex] = newGroup;
 
-      dbFactory.getCollection(collectionLocation).update({ 'location': locations, 'group.id': postGroup.groupid }, { $set: { 'group.$':  newGroup} }, (err, result) => {
+      dbFactory.getCollection(collectionLocation).update({ 'location': locations, 'group.id': postGroup.groupid }, { $set: { 'group.$': newGroup } }, (err, result) => {
         if (err) {
           console.log('Error:' + err);
           return;
@@ -192,46 +192,68 @@ exports.removeGroup = (req, res, next) => {
   let jobids = [];
   let promiseAll = [];
   dbFactory.getCollection(collectionJob).find({ 'groupid': groupId }).toArray((err, resultJobs) => {
-      if (err) {
-        console.log('Error:' + err);
-        return;
-      }
+    if (err) {
+      console.log('Error:' + err);
+      return;
+    }
+    if (resultJobs.length > 0) {
       removeGroupJobs(resultJobs)
-      .then((resdata) => {
-        if (!resdata.isDone) {
-          return next(new Error('Remove jobs failed.'));
-        } else {
-          dbFactory.getCollection(collectionLocation).update({'location': location, 'group.id': groupId}, {$pull: {'group': {'id': groupId}}}, (err, result) => {
-            if (err) {
-              console.log('Error:' + err);
-              return;
-            }
-            let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
-            res.json(resultData);
-            let time = Date.now();
-            let dataObj = {
-              msgname: 'SystemEvent',
-              msgid: '',
-              runtime: currentLocation.location,
-              jobids: jobids,
-              groupids: [groupId],
-              event: "remove_group",
-              timestamp: time
-            }
-            requestHelper.requestMQ(dataObj, { method: 'post' });
-          })
+        .then((resdata) => {
+          if (!resdata.isDone) {
+            return next(new Error('Remove jobs failed.'));
+          } else {
+            dbFactory.getCollection(collectionLocation).update({ 'location': location, 'group.id': groupId }, { $pull: { 'group': { 'id': groupId } } }, (err, result) => {
+              if (err) {
+                console.log('Error:' + err);
+                return;
+              }
+              let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
+              res.json(resultData);
+              let time = Date.now();
+              let dataObj = {
+                msgname: 'SystemEvent',
+                msgid: '',
+                runtime: currentLocation.location,
+                jobids: jobids,
+                groupids: [groupId],
+                event: "remove_group",
+                timestamp: time
+              }
+              requestHelper.requestMQ(dataObj, { method: 'post' });
+            })
+          }
+        })
+    } else {
+      dbFactory.getCollection(collectionLocation).update({ 'location': location, 'group.id': groupId }, { $pull: { 'group': { 'id': groupId } } }, (err, result) => {
+        if (err) {
+          console.log('Error:' + err);
+          return;
         }
+        let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
+        res.json(resultData);
+        let time = Date.now();
+        let dataObj = {
+          msgname: 'SystemEvent',
+          msgid: '',
+          runtime: currentLocation.location,
+          jobids: jobids,
+          groupids: [groupId],
+          event: "remove_group",
+          timestamp: time
+        }
+        requestHelper.requestMQ(dataObj, { method: 'post' });
       })
-    })
+    }
+  })
 }
 
 let removeGroupJobs = (resultJobs) => {
   return new Promise((resolve, reject) => {
     resultJobs.forEach((job) => {
       // return db.delete("sys_jobs", job);
-      dbFactory.getCollection(collectionJob).remove({ 'jobid': job.jobid  }, (err, result) => {
+      dbFactory.getCollection(collectionJob).remove({ 'jobid': job.jobid }, (err, result) => {
         if (err) return reject(err);
-        resolve({isDone: true})
+        resolve({ isDone: true })
       })
     })
   })

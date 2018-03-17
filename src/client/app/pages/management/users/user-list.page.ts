@@ -67,8 +67,8 @@ export class UserListPage {
   ngOnInit() {
 
     this.userInfo = this._authService.getUserInfoFromCache();
-    this.userName = this.userInfo.UserName;
-    this.userFullName = this.userInfo.FullName;
+    this.userName = this.userInfo.userid;
+    this.userFullName = this.userInfo.fullname;
 
     this.groups = this._route.snapshot.data['users'];
     this.getUsers(this.groups);

@@ -68,8 +68,8 @@ export class TaskMonitorPage {
   ngOnInit() {
 
     this.userInfo = this._authService.getUserInfoFromCache();
-    this.userName = this.userInfo.UserName;
-    this.userFullName = this.userInfo.FullName;
+    this.userName = this.userInfo.userid;
+    this.userFullName = this.userInfo.fullname;
 
     this.selectedGroupId = 0;
     this.jobPageOption = {
