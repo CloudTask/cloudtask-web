@@ -22,7 +22,7 @@
         <table class="table table-hover" *ngIf="filterJobs?.length > 0">
           <thead>
             <tr>
-              <th>Name</th>
+              <th>Host</th>
               <th>Job Name</th>
               <th>Job ID</th>
               <th>Version</th>
@@ -31,7 +31,8 @@
           </thead>
           <tbody>
             <tr *ngFor="let item of filterJobs;">
-              <td>{{ item.name }}</td>
+              <td *ngIf="item.hasOnlyName" [title]="item.ipaddr || item.hostname">{{ item.hostname || item.ipaddr }}</td>
+              <td *ngIf="!item.hasOnlyName" [title]="item.hostname || item.ipaddr">{{ item.ipaddr || item.hostname }}</td>
               <td>{{ item.jobname }}</td>
               <td>{{ item.jobid }}</td>
               <td>{{ item.version }}</td>
@@ -49,20 +50,23 @@
         <table class="table table-hover">
           <thead>
             <tr>
-              <th>Name</th>
+              <th>Host</th>
               <th>Server Id</th>
-              <th>IP</th>
               <th>OS</th>
               <th>Platform</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of currentGroups;">
-              <td>{{ item.name }}</td>
+              <td [title]="item.name || item.ipaddr">{{ item.ipaddr || item.name }}</td>
               <td>{{ item.key }}</td>
-              <td>{{ item.ipaddr }}</td>
-              <td><i class="fa fa-windows" [class.fa-linux]="item.os == 'linux'"></i> {{ item.os }}</td>
+              <td><i class="fa" [ngClass]="{'fa-windows': item.os == 'windows', 'fa-linux': item.os == 'linux'}"></i> {{ item.os }}</td>
               <td>{{ item.platform }}</td>
+              <td>
+                <span class="label label-success" *ngIf="item.status === 1">Healthy</span>
+                <span class="label label-danger" *ngIf="item.status !== 1">Disconnected</span>
+              </td>
             </tr>
           </tbody>
         </table>

@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { animate, trigger, state, style, transition } from '@angular/animations';
 import { ActivatedRoute, Router, NavigationEnd, RoutesRecognized } from '@angular/router';
-import { JobService } from './../../../services';
+import { JobService, LocationService } from './../../../services';
 
 declare let $: any;
 declare let _: any;
@@ -46,6 +46,7 @@ export class ServersInfoPage {
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
+    private _locationService: LocationService,
     private _jobService: JobService) {
 
   }
@@ -115,13 +116,19 @@ export class ServersInfoPage {
         this.currentJobs = res.data.alloc.data;
         if (this.currentGroups.length > 0 && this.currentJobs.length > 0) {
           let currentServerName = this.currentGroups[0].name;
-          this.currentJobs.forEach(job => {
-            job.name = this.currentGroups.filter(group => job.ipaddr == group.ipaddr)[0].name;
-          });
+          this.currentGroups.forEach(group => {
+            if(group.name && !group.ipaddr){
+              this.currentJobs.forEach(job => {
+                if(job.hostname == group.name){
+                  job.hasOnlyName = true;
+                  this.currentJobs.sort((a: any, b: any) => {
+                    return a.hostname.toLowerCase() > b.hostname.toLowerCase() ? 1 : -1;
+                  });
+                }
+              });
+            }
+          })
         }
-        this.currentJobs.sort((a: any, b: any) => {
-          return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
-        });
         this.search();
       })
       .catch(err => messager.error(err))
@@ -137,5 +144,22 @@ export class ServersInfoPage {
     if (this.currentGroups.length > 0) {
       this.currentGroups.forEach(group => group.location = this.groups[groupId].location);
     }
+    this._locationService.getStatusInfo(this.locationName)
+      .then(data => {
+        this.currentGroups.map((item: any) => {
+          if (data.length > 0) {
+            data.forEach((info: any) => {
+              if (item.ipaddr == info.ipaddr || item.name == info.name) {
+                item.key = info.key;
+                item.apiaddr = info.apiaddr;
+                item.os = info.os;
+                item.platform = info.platform;
+                item.status = info.status;
+              }
+            })
+          }
+        })
+      })
+      .catch(err => messager.error(err))
   }
 }

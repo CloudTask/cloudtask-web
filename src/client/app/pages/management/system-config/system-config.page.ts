@@ -97,7 +97,6 @@ export class SystemConfigPage {
     this.submitted = true;
     let form = this.configForm;
     if (form.controls.IsAuthExist.value) {
-      console.log(form.controls.Username);
       if (form.invalid) return;
     } else {
       if (form.controls.Database.invalid || form.controls.HostPort.invalid || form.controls.Options.invalid

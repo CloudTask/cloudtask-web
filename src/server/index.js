@@ -72,7 +72,7 @@ app.use((req, res, next) => {
 //   }
 // });
 
-app.use('/', express.static('dist/client'));
+app.use('/', express.static(path.join(__dirname, 'client')));
 app.use('/api/users', require('./routers/user'));
 app.use('/api/dashboard', require('./routers/dashboard'));
 app.use('/api/group', require('./routers/group'));

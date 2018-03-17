@@ -31,8 +31,10 @@ class DBFactory {
             let mongoData = JSON.parse(data.toString('utf8'));
             let DBAddress = mongoData.storagedriver.mongo;
             let DB_CONN_STR = `mongodb://${DBAddress.hosts}`;
-            if (DBAddress.auth.user && DBAddress.auth.password) {
-              DB_CONN_STR = `mongodb://${DBAddress.auth.user}:${DBAddress.auth.password}@${DBAddress.hosts}`;
+            if (DBAddress.auth) {
+              if (DBAddress.auth.user && DBAddress.auth.password) {
+                DB_CONN_STR = `mongodb://${DBAddress.auth.user}:${DBAddress.auth.password}@${DBAddress.hosts}`;
+              }
             }
             if (DBAddress.database) {
               DB_CONN_STR = `${DB_CONN_STR}/${DBAddress.database}`;
@@ -59,7 +61,7 @@ class DBFactory {
           return col;
         })
         .catch(err => {
-          if(err){
+          if (err) {
             console.log(err);
             return;
           }
@@ -73,14 +75,14 @@ class DBFactory {
   connectDB() {
     return new Promise((resolve, reject) => {
       this.getDBAddress()
-      .then(address => {
-        MongoClient.connect(address, (err, database) => {
-          if (err) reject(err);
-          this.database = database;
-          resolve(this.database);
-        });
-      })
-      .catch(err => reject(err));
+        .then(address => {
+          MongoClient.connect(address, (err, database) => {
+            if (err) reject(err);
+            this.database = database;
+            resolve(this.database);
+          });
+        })
+        .catch(err => reject(err));
     })
   }
 
