@@ -141,6 +141,7 @@ Runtime
 - `Runtime`: Runtime name
 - `Description`: The description of runtime
 - `Owners`: Owners of the runtime.If an user is owner of the runtime, this user can edit or delete the runtime, And can also operate all the groups blong to the runtime.
+- `Servers`: The servers addresses of runtime.
 
 PS: Only admin users can add runtime.
 
@@ -204,3 +205,14 @@ PS: Only admin users can add runtime.
 # Edit User
 
 ![Edit User](_media/edit_user.png)
+
+# Edit Sysconfig
+
+![Edit Sysconfig](_media/edit_sysconfig.png)
+
+> Description
+> DB Address
+
+- `DB Address`: The config of mongodb.
+- `Center Address`: The address of center address.
+- `Website Address`: The address of website.
