@@ -37,7 +37,7 @@ $ docker run -d --net=host --restart=always -e HUMPBACK_LISTEN_PORT=8012 \
 
 # Sample Page
 #### Login Page
-![image](https://cloud.githubusercontent.com/assets/9428909/22197325/73c2aba4-e18c-11e6-9c9a-c00318abf6f5.png)
+![image](https://github.com/CloudTask/cloudtask-web/blob/master/screenshots/login.png)
 
 #### Job List
 ![image](https://cloud.githubusercontent.com/assets/9428909/22238288/9fc10bc8-e24b-11e6-840a-87699929063f.png)
