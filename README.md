@@ -40,7 +40,7 @@ $ docker run -d --net=host --restart=always -e HUMPBACK_LISTEN_PORT=8012 \
 ![image](https://github.com/CloudTask/cloudtask-web/blob/master/screenshots/login.png)
 
 #### Job List
-![image](https://cloud.githubusercontent.com/assets/9428909/22238288/9fc10bc8-e24b-11e6-840a-87699929063f.png)
+![image](https://github.com/CloudTask/cloudtask-web/blob/master/screenshots/joblist.png)
 
 #### New Job
 ![image](https://cloud.githubusercontent.com/assets/9428909/22238315/b8292790-e24b-11e6-84ba-58e97288a104.png)
