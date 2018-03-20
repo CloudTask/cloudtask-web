@@ -120,7 +120,8 @@ Runtime
 
 - To add a runtime, click the `Add Group` button at the top of the page
 - The two icons in the last column of the table are `edit runtime information`, `delete runtime '
-PS: Only admin users can add runtime.
+PS: Only admin users can add runtime
+Only the owners of the runtime can `edit runtime` and `delete runtime`, and delete the runtime only if the current runtime does not include any groups
 
 中：运行时列表
 
@@ -129,8 +130,9 @@ PS: Only admin users can add runtime.
 > 描述
 
 - 点击页面上方`Add Group`按钮来新建runtime
-- 列表最后两个图标可以`编辑runtime`和`删除runtime`
-PS：只有管理员能新建运行时，并且只有运行时的所有者能`编辑runtime`和`删除runtime`
+- 列表最后两个图标可以`编辑运行时`和`删除运行时`
+PS：只有管理员能新建运行时
+只有运行时的所有者能`编辑运行时`和`删除运行时`，并且只有当当前运行时下不包括任何组时才能`删除运行时`
 
 # Add Runtime
 
@@ -178,6 +180,8 @@ PS：只有管理员能新建运行时，并且只有运行时的所有者能`�
 
 - To add a group, click the `Add Group` button at the top of the page
 - The two icons in the last column of the table are `edit group information`, `delete group '
+PS: Only admin users can add group
+Only the owners of the group or the owners of the runtime which the current group blongs to can `edit group` and `delete group`, and `delete group` will delete all tasks in the current group
 
 中：# 组列表
 
@@ -188,7 +192,8 @@ PS：只有管理员能新建运行时，并且只有运行时的所有者能`�
 - 点击页面上方`Add Group`按钮来添加组
 - 列表最后两个图标可以`编辑组`和`删除组`
 
-PS:只有管理员能添加组，并且只有组的所有者或者当前组所在运行时的所有者能`编辑组`和`删除组`
+PS:只有管理员能添加组
+只有组的所有者或者当前组所在运行时的所有者能`编辑组`和`删除组`，并且`删除组`时会删除在当前组里的所有任务
 
 # Add Group
 
@@ -234,6 +239,18 @@ PS:只有管理员能添加组，并且只有组的所有者或者当前组所�
 - To add a user, click the `Add User` button at the top of the page
 - The two icons in the last column of the table are `edit user information`, `delete user '
 
+中：# 用户列表
+
+*只有 **管理员** 能看到用户的侧边栏选项*
+
+![管理用户](_media/manage_user.png)
+
+> 描述
+
+- 点击页面顶部的`Add User`按钮来新建用户
+- 列表最后两个图标可以`编辑用户`和`删除用户`
+
+
 # Add User
 
 ![Add User](_media/add_user.png)
@@ -246,9 +263,25 @@ PS:只有管理员能添加组，并且只有组的所有者或者当前组所�
 - `Email`: Optional, contact email
 - `Own administrator privileges`: `administrator 'permissions
 
+中：# 新建用户
+
+![新建用户](_media/add_user.png)
+
+> 描述
+
+- `UserID`: 4-6位字符串, 如 zs18
+- `FullName`: 用户的全名
+- `Department`: 可选，部门
+- `Email`: 可选, 邮箱地址
+- `Own administrator privileges`: `管理员 '权限
+
 # Edit User
 
 ![Edit User](_media/edit_user.png)
+
+中：# 编辑用户
+
+![编辑用户](_media/edit_user.png)
 
 # System Config
 
