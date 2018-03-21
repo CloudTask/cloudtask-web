@@ -80,7 +80,7 @@ export class UserListPage {
     this.buildForm();
     this.groupInfoModal = {
       show: false,
-      title: "Group",
+      title: "User",
       hideCloseBtn: true,
       hideFooter: true
     };
