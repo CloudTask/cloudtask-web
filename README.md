@@ -1,8 +1,6 @@
 # Cloudtask Web Introduction
 
-This project is an [cloudtask](https://cloudtask.github.io/cloudtask) website management system, through it can more intuitive operation of various management features.
-
-based on [Angular2](https://github.com/angular/angular) and [AdminLTE](https://github.com/almasaeed2010/AdminLTE) build.
+This project is an [cloudtask](https://cloudtask.github.io/cloudtask) website management system, through it can more intuitive operation of various management features. based on [Angular2](https://github.com/angular/angular) and [AdminLTE](https://github.com/almasaeed2010/AdminLTE) build.
 
 ### Usage
 ```bash
