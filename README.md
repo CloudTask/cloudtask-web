@@ -110,18 +110,7 @@ Runtime
 
 管理Group, Group的`owners`可编辑、删除对应group，管理员可编辑、删除所有group。其余用户只能查看group相关信息，无法创建、删除和编辑，只有管理员能新建group，如需创建Group请联系 BTS Team
 
-# System Config
 
-![System Config](_media/system_config.png)
-
-> Description
-有`DB Address`和`Center Address`两个配置项
-- `Database`: The name of db
-- `Host&Port`: The link address of db
-- `Auth`: The infomation of auth
-- `Options`: The options of moogodb 
-
-- `Center Address`: The IP address of cloudtask center
 
 # Runtime List
 
@@ -131,6 +120,19 @@ Runtime
 
 - To add a runtime, click the `Add Group` button at the top of the page
 - The two icons in the last column of the table are `edit runtime information`, `delete runtime '
+PS: Only admin users can add runtime
+Only the owners of the runtime can `edit runtime` and `delete runtime`, and delete the runtime only if the current runtime does not include any groups
+
+中：运行时列表
+
+![Runtime Manage](_media/manage_runtime.png)
+
+> 描述
+
+- 点击页面上方`Add Group`按钮来新建runtime
+- 列表最后两个图标可以`编辑运行时`和`删除运行时`
+PS：只有管理员能新建运行时
+只有运行时的所有者能`编辑运行时`和`删除运行时`，并且只有当当前运行时下不包括任何组时才能`删除运行时`
 
 # Add Runtime
 
@@ -141,15 +143,34 @@ Runtime
 - `Runtime`: Runtime name
 - `Description`: The description of runtime
 - `Owners`: Owners of the runtime.If an user is owner of the runtime, this user can edit or delete the runtime, And can also operate all the groups blong to the runtime.
+- `Servers`: The servers addresses of runtime.
 
-PS: Only admin users can add runtime.
+中：# 新建运行时
+
+![Add Group](_media/add_group.png)
+
+> 描述
+
+- `Runtime`: 运行时名称
+- `Description`: 运行时的描述
+- `Owners`: 运行时的所有者。如果一个用户是运行时的所有者，那么这个用户就能编辑或者删除这个运行时，并且也能操作属于这个运行时的所有组
+- `Servers`: 运行时的服务器地址
 
 # Edit Runtime
 
-![Edit Group](_media/edit_group.png)
+![Edit Runtime](_media/edit_runtime.png)
+
 > Description
 
-- Group information is consistent with [`adding group`](add_group.md)
+- Runtime information is consistent with [`adding runtime`](add_runtime.md)
+
+中：# 编辑运行时
+
+![Edit Runtime](_media/edit_runtime.png)
+
+> 描述
+
+各属性与[`添加运行时`](add_runtime.md)一致
 
 # Group List
 
@@ -159,6 +180,20 @@ PS: Only admin users can add runtime.
 
 - To add a group, click the `Add Group` button at the top of the page
 - The two icons in the last column of the table are `edit group information`, `delete group '
+PS: Only admin users can add group
+Only the owners of the group or the owners of the runtime which the current group blongs to can `edit group` and `delete group`, and `delete group` will delete all tasks in the current group
+
+中：# 组列表
+
+![管理组](_media/manage_group.png)
+
+> 描述
+
+- 点击页面上方`Add Group`按钮来添加组
+- 列表最后两个图标可以`编辑组`和`删除组`
+
+PS:只有管理员能添加组
+只有组的所有者或者当前组所在运行时的所有者能`编辑组`和`删除组`，并且`删除组`时会删除在当前组里的所有任务
 
 # Add Group
 
@@ -170,6 +205,15 @@ PS: Only admin users can add runtime.
 - `Group`: Group name of the group
 - `Owners`: Owners of the group.If an user is owner of the group, this user can edit or delete the group
 
+中：新建组
+![新建组](_media/add_group.png)
+
+> 描述
+
+- `Runtime`: 组所在的运行时
+- `Group`: 组名
+- `Owners`: 组的所有者。如果一个用户是组的所有者，那么这个用户就能编辑或者删除这个组
+
 # Edit Group
 
 ![Edit Group](_media/edit_group.png)
@@ -177,6 +221,12 @@ PS: Only admin users can add runtime.
 
 - Group information is consistent with [`adding group`](add_group.md)
 
+中：# 编辑组
+
+![编辑组](_media/edit_group.png)
+> 描述
+
+- 各属性与[`添加组`](add_group.md)一致
 
 # User List
 
@@ -188,6 +238,18 @@ PS: Only admin users can add runtime.
 
 - To add a user, click the `Add User` button at the top of the page
 - The two icons in the last column of the table are `edit user information`, `delete user '
+
+中：# 用户列表
+
+*只有 **管理员** 能看到用户的侧边栏选项*
+
+![管理用户](_media/manage_user.png)
+
+> 描述
+
+- 点击页面顶部的`Add User`按钮来新建用户
+- 列表最后两个图标可以`编辑用户`和`删除用户`
+
 
 # Add User
 
@@ -201,6 +263,54 @@ PS: Only admin users can add runtime.
 - `Email`: Optional, contact email
 - `Own administrator privileges`: `administrator 'permissions
 
+中：# 新建用户
+
+![新建用户](_media/add_user.png)
+
+> 描述
+
+- `UserID`: 4-6位字符串, 如 zs18
+- `FullName`: 用户的全名
+- `Department`: 可选，部门
+- `Email`: 可选, 邮箱地址
+- `Own administrator privileges`: `管理员 '权限
+
 # Edit User
 
 ![Edit User](_media/edit_user.png)
+
+中：# 编辑用户
+
+![编辑用户](_media/edit_user.png)
+
+# System Config
+
+![System Config](_media/system_config.png)
+
+> Description
+
+There are three configuration items, `DB Address`, `Center Address` and `Website Address`.
+- `Database`: The name of db
+- `Host`: The link address of db
+- `Auth`: The infomation of auth
+- `Options`: The options of moogodb 
+
+- `Center Address`: The IP address of cloudtask center
+
+- `Website Address`: The address of cloudtask website
+
+中：# 系统配置
+
+![系统配置](_media/system_config.png)
+
+> 描述
+
+有 `DB Address`, `Center Address` 和 `Website Address`三个配置项
+- `Database`: db的名字
+- `Host`: db的地址
+- `Auth`: 作者的相关信息
+- `Options`: mongodb其他配置项
+
+- `Center Address`: cloudtask center的IP地址
+
+- `Website Address`: cloudtask的站点地址
