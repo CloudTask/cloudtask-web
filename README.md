@@ -40,7 +40,7 @@ $ docker run -d --net=host --restart=always \
 ```
 
 # Features
-- System Dashboard, intuitive display of various data.
+- System dashboard, intuitive display of various data.
 - Task groups manage, all tasks can be managed by business grouping.
 - Runtime and servers manage, can add a runtime and join the worker servers.
 - Task jobs manage and view the status and logs of tasks by group.
