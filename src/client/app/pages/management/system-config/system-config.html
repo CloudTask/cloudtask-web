@@ -4,7 +4,7 @@
 <section class="content">
   <form novalidate [formGroup]="configForm" (ngSubmit)="save()" *ngIf="configForm">
     <div class="form-group">
-      <label class="control-label">DB Address</label>
+      <label class="control-label">Mongodb URI</label>
       <div class="box">
         <div class="box-header with-border">Database</div>
         <div class="form-group" [class.has-error]="submitted && configForm.controls.Database.invalid">

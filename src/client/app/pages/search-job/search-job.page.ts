@@ -37,7 +37,7 @@ export class SearchJobPage {
   ngOnInit() {
 
     this.userInfo = this._authService.getUserInfoFromCache();
-    this.userName = this.userInfo.UserName;
+    this.userName = this.userInfo.userid;
 
     this.jobPageOption = {
       "boundaryLinks": false,
@@ -86,11 +86,16 @@ export class SearchJobPage {
           .then((res) => {
             let groups: any = [];
             res.forEach((dataItem: any) => {
+              if(dataItem.owners && dataItem.owners.length > 0 && dataItem.owners.indexOf(this.userName) > -1){
+                if(dataItem.group.length > 0){
+                  dataItem.group.map((item:any) => item.isRuntimeAdmin = true)
+                }
+              }
               dataItem.group.forEach((group: any) => {
                 groups.push(group);
               })
             });
-            this.groupsInfo = groups.filter((group: any) => group.owners && group.owners.length > 0 && group.owners.indexOf(this.userName) > -1)
+            this.groupsInfo = groups.filter((group: any) => (group.owners && group.owners.length > 0 && group.owners.indexOf(this.userName) > -1) || group.isRuntimeAdmin)
             // console.log(data);
             // this.jobs = data.filter((job: any) => {
             //   this.groupsInfo.map((item) => {
