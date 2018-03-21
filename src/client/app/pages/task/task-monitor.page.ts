@@ -292,7 +292,6 @@ export class TaskMonitorPage {
           }
           this._jobService.updateFiles(putData)
             .then(res => {
-              console.log(res)
             })
             .catch(err => messager.error(err.message) || 'Update job file failed');
           this.jobNames = [];

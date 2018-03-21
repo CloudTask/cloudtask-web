@@ -112,6 +112,7 @@ createAuthorizationHeader(headers: Headers) {
     }
     return new Promise((resolve, reject) => {
       if (!options.disableLoading) {
+        this._globalLoading.sub();
         this._globalLoading.add();
       }
       p.toPromise()

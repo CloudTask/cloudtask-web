@@ -79,8 +79,10 @@
       <div class="form-group row" *ngIf="isNewGroup" [class.has-error]="submitted && userForm.controls.Password.invalid">
         <label class="col-md-2 control-label text-right">Password</label>
         <div class="col-md-5">
-          <input pattern="^[0-9A-Za-z]*$" type="password" formControlName="Password" class="form-control" placeholder="Default password is 123456">
+          <input pattern="^[0-9A-Za-z]*$" minlength="5" maxlength="20" type="password" formControlName="Password" class="form-control" placeholder="Default password is 123456">
           <div *ngIf="submitted && userForm.controls.Password.invalid">
+              <span class="help-block" *ngIf="userForm.controls.Password.errors.minlength">Password cannot less than 5 characters.</span>
+              <span class="help-block" *ngIf="userForm.controls.Password.errors.maxlength">Password cannot more than 20 characters.</span>
             <span class="help-block" *ngIf="userForm.controls.Password.errors.pattern">Password cannot contain any special symbol.</span>
           </div>
         </div>
@@ -91,10 +93,13 @@
           <input type="text" formControlName="Department" class="form-control">
         </div>
       </div>
-      <div class="form-group row">
+      <div class="form-group row" [class.has-error]="submitted && userForm.controls.Email.invalid">
         <label class="col-md-2 control-label text-right">Email</label>
         <div class="col-md-5">
-          <input type="text" formControlName="Email" class="form-control">
+          <input type="text" formControlName="Email" class="form-control" multipleEmails>
+          <div *ngIf="submitted && userForm.controls.Email.invalid">
+              <span class="help-block" *ngIf="userForm.controls.Email.errors?.multipleEmails">Invalid email address(es).</span>
+            </div>
         </div>
       </div>
       <div class="form-group row">

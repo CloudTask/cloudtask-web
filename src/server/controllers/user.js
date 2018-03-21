@@ -86,7 +86,7 @@ exports.updateUser = (req, res, next) => {
       if (!resdata) {
         return next(new Error('UserID is not exists.'));
       } else {
-        dbFactory.getCollection(collectionName).update({ 'userid': userId }, updateOpt, (err, data) => {
+        dbFactory.getCollection(collectionName).update({ 'userid': postUser.userid }, updateOpt, (err, data) => {
           if (err) {
             console.log('Error:' + err);
             return;

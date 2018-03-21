@@ -17,6 +17,7 @@ export class DfisUploader {
    */
   upload(dfisUrl: string, file: File, options: any): Promise<any> {
     return new Promise((resolve, reject) => {
+      this._globalLoading.add();
       let xhr = new XMLHttpRequest();
       xhr.open('POST', dfisUrl);
       // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');

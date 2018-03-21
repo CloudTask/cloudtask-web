@@ -235,7 +235,12 @@ export class UserListPage {
       isadmin: this.userForm.controls.IsAdmin.value,
     }
     let form = this.userForm;
-    if (form.invalid) return;
+    if(this.isNewGroup){
+      if (form.invalid) return;
+    }else{
+      if(form.controls.UserId.invalid || form.controls.FullName.invalid || form.controls.Department.invalid ||
+        form.controls.Email.invalid || form.controls.IsAdmin.invalid) return;
+    }
     let postUser = this.userSelected;
     if (this.isNewGroup) {
       if(!postUser.password){
