@@ -14,7 +14,7 @@ gulp dev
 git clone https://github.com/cloudTask/cloudtask-web.git
 cd cloudtask-web
 npm install
-gulp run build
+npm run build
 ```
 
 Open [http://localhost:8091](http://localhost:8091)
