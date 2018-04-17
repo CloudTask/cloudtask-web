@@ -14,7 +14,7 @@
             (ngModelChange)="search($event)">
           <span class="fa fa-search form-control-feedback"></span>
         </div>
-        <div class="form-group" *ngIf="userInfo?.isadmin">
+        <div class="form-group" *ngIf="!isGuest && userInfo?.isadmin">
           <a href="javascript:void(0)" class="btn btn-sm btn-flat bg-olive" (click)="addNewRuntime($event)">
               <i class="fa fa-plus"></i> Add Runtime
           </a>
@@ -30,7 +30,7 @@
             <th>Runtime</th>
             <th>EditUser</th>
             <th>EditDate</th>
-            <th></th>
+            <th *ngIf="!isGuest && showOperate"></th>
           </tr>
         </thead>
         <tbody>
@@ -38,7 +38,7 @@
             <td>{{ item.location }}</td>
             <td>{{ item.edituser }}</td>
             <td>{{ item.editat | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-            <td class="text-center" *ngIf="item.isRuntimeOwner || userInfo?.isadmin">
+            <td class="text-center" *ngIf="!isGuest && (item.isRuntimeOwner || userInfo?.isadmin)">
               <a href="javascript:void(0)" (click)="selectRuntime(i)" class="margin-right-10">
                 <i class="fa fa-pencil"></i>
               </a>

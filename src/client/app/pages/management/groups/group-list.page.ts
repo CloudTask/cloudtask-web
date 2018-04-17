@@ -53,6 +53,9 @@ export class GroupListPage {
 
   private showOperate: boolean = true;
 
+  private isGuest: boolean = false;
+
+
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
@@ -108,6 +111,10 @@ export class GroupListPage {
     this.userInfo = this._authService.getUserInfoFromCache();
     this.userName = this.userInfo.userid;
     this.userFullName = this.userInfo.fullname;
+
+    if(this.userName == 'guest'){
+      this.isGuest = true;
+    }
 
     this.ownerSelect2Options = {
       multiple: true,
@@ -222,7 +229,7 @@ export class GroupListPage {
     let end = start + this.pageSize;
     this.currentGroups = this.filterGroups.slice(start, end);
     this.currentGroups.some((group: any) => {
-      if (group.isOwner || this.userInfo.IsAdmin) {
+      if (group.isOwner || this.userInfo.isadmin) {
         return this.showOperate = true;
       } else {
         this.showOperate = false;

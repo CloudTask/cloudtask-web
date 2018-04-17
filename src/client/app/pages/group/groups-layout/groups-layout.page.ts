@@ -92,7 +92,7 @@ export class GroupsLayoutPage {
             return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
           });
         })
-        if (this.userInfo && !this.userInfo.isadmin) {
+        if (this.userInfo && !this.userInfo.isadmin && this.userName != 'guest') {
           this.ownerGroups.map((item: any) => {
             if (!item.isRuntimeOwner) {
               if (item.group.length > 0) {

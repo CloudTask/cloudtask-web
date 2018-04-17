@@ -43,6 +43,8 @@ export class JobDetailPage {
   private pageIndex: number = 1;
   private pageSize: number = 5;
 
+  private isGuest: boolean = false;
+
   constructor(
     private _route: ActivatedRoute,
     private _jobService: JobService,
@@ -58,6 +60,9 @@ export class JobDetailPage {
     this.userInfo = this._authService.getUserInfoFromCache();
     this.userName = this.userInfo.userid;
     this.userFullName = this.userInfo.fullname;
+    if(this.userName == 'guest'){
+      this.isGuest = true;
+    }
 
     this.subscriber = this._route.params.subscribe(params => {
       this.location = params['location'];

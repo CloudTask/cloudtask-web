@@ -66,7 +66,8 @@
                 <button type="button" class="btn btn-default" [class.active]="!isCommandRaw" (focus)="changeCommandForm('form')">Form</button>
             </div>
           </div>
-          <input *ngIf="isCommandRaw" type="text" class="form-control" name="command" value="" formControlName="Command" required (change)="onChangeCommand()">
+          <textarea style="min-height:74px;" *ngIf="isCommandRaw" type="text" class="form-control" name="command" value="" formControlName="Command" required (change)="onChangeCommand()">
+          </textarea>
           <div *ngIf="!isCommandRaw" formArrayName="CommandFormedValue" class="command-input-group box no-border">
             <div class="well-sm">
               <div class="equal-fields" *ngFor="let volume of serverForm.controls.CommandFormedValue.controls; let i = index;" [formGroupName]="i">

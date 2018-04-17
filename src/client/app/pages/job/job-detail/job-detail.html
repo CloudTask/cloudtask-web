@@ -29,11 +29,11 @@
         </li>
       </ul>
     </div>
-    <button type="button" id="edit" [disabled]="stateText == 'Running'" class="btn btn-default btn-flat" [routerLink]="['/task', location, groupId, 'detail', jobId, 'edit']">
+    <button *ngIf="!isGuest" type="button" id="edit" [disabled]="stateText == 'Running'" class="btn btn-default btn-flat" [routerLink]="['/task', location, groupId, 'detail', jobId, 'edit']">
       <i class="fa fa-pencil"></i>
       Edit
     </button>
-    <a class="btn btn-default btn-flat" [routerLink]="['/task', location, groupId, 'detail', jobId, 'clone']">
+    <a *ngIf="!isGuest" class="btn btn-default btn-flat" [routerLink]="['/task', location, groupId, 'detail', jobId, 'clone']">
       <i class="fa fa-clone"></i> Clone
     </a>
     <a class="btn btn-default btn-flat" [routerLink]="['/task', location, groupId, 'detail', jobId, 'job-log']">

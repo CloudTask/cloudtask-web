@@ -47,6 +47,9 @@ export class RuntimeListPage {
   private invalidServerName: boolean = false;
   private invalidServerIP: boolean = false;
 
+  private showOperate: boolean = true;
+  private isGuest: boolean = false;
+
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
@@ -59,6 +62,10 @@ export class RuntimeListPage {
   ngOnInit() {
     this.userInfo = this._authService.getUserInfoFromCache();
     this.userName = this.userInfo.userid;
+
+    if(this.userName == 'guest'){
+      this.isGuest = true;
+    }
 
     this.groups = this._route.snapshot.data['groups'];
     this.getLocations()
@@ -165,6 +172,13 @@ export class RuntimeListPage {
     let start = (pageIndex - 1) * this.pageSize;
     let end = start + this.pageSize;
     this.currentRuntimes = this.filterRuntimes.slice(start, end);
+    this.currentRuntimes.some((group: any) => {
+      if (group.isRuntimeOwner || this.userInfo.isadmin) {
+        return this.showOperate = true;
+      } else {
+        this.showOperate = false;
+      }
+    })
   }
 
   private searchTimeout: any;

@@ -55,6 +55,8 @@ export class TaskMonitorPage {
   public onChange: any = Function.prototype;
   public onTouched: any = Function.prototype;
 
+  private isGuest: boolean = false;
+
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
@@ -70,6 +72,9 @@ export class TaskMonitorPage {
     this.userInfo = this._authService.getUserInfoFromCache();
     this.userName = this.userInfo.userid;
     this.userFullName = this.userInfo.fullname;
+    if(this.userName == 'guest'){
+      this.isGuest = true;
+    }
 
     this.selectedGroupId = 0;
     this.jobPageOption = {
