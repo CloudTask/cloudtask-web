@@ -111,9 +111,7 @@
               <ng-template ngFor let-item let-i="index" [ngForOf]="commandInfo">
                 <tr>
                   <td class="basic-info-title col-sm-2">{{ commandInfo[i].title }}</td>
-                  <td style="max-width: 200px; word-wrap:break-word;">
-                    {{ commandInfo[i].content }}
-                  </td>
+                  <td style="max-width: 200px; word-wrap:break-word; white-space:pre-wrap;">{{ commandInfo[i].content }}</td>
                 </tr>
               </ng-template>
             </tbody>
@@ -210,7 +208,6 @@
           <table class="table table-bordered table-log" *ngIf="logs?.length > 0">
             <thead>
               <tr>
-                <th>Job Name</th>
                 <th>Start Time</th>
                 <th>Duration</th>
                 <th>Server</th>
@@ -220,9 +217,6 @@
             </thead>
             <tbody *ngFor="let log of logs;let i = index">
               <tr (click)="toggleDetailBox(i)" style="cursor:pointer">
-                <td>
-                  {{ jobInfor.name }}
-                </td>
                 <td>
                   {{ log. execat | date:'yyyy-MM-dd HH:mm:ss'}}
                 </td>

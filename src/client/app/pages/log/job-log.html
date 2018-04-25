@@ -76,7 +76,7 @@
         </thead>
         <tbody *ngFor="let log of logs;let i = index">
           <tr (click)="toggleDetailBox(i)" style="cursor:pointer">
-            <td>
+            <td class="td-jobname">
               {{ logJobName }}
             </td>
             <td>

@@ -41,3 +41,9 @@ table{
 .detail-box .row .col-sm-2{
   text-align: right;
 }
+
+.td-jobname{
+  max-width: 250px;
+  word-wrap: break-word;
+}
+

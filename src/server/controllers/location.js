@@ -69,7 +69,7 @@ exports.update = (req, res, next) => {
           let resultData = response.setResult(request.requestResultCode.RequestSuccessed, request.requestResultErr.ErrRequestSuccessed, {});
           res.json(result);
           let time = Date.now();
-          if (JSON.stringify(result.server) !== JSON.stringify(postLocation.server) || result.owners.sort().toString() !== postLocation.owners.sort().toString()) {
+          if (JSON.stringify(result.server) !== JSON.stringify(postLocation.server) || (result.owners && result.owners.sort().toString() !== postLocation.owners.sort().toString())) {
             let dataObj = {
               msgname: 'SystemEvent',
               msgid: '',
